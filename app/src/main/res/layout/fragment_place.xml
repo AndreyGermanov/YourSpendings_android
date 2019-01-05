@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:paddingLeft="10dp"
+  android:paddingRight="10dp"
+>
+    <TableRow android:layout_width="match_parent">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/place_name"
+        />
+        <EditText android:id="@+id/place_name"
+                  android:hint="@string/place_name"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+        />
+    </TableRow>
+    <TableRow android:layout_width="match_parent">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/latitude"
+        />
+        <EditText android:id="@+id/place_latitude"
+                  android:hint="@string/latitude"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:inputType="numberDecimal"
+        />
+    </TableRow>
+    <TableRow android:layout_width="match_parent">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/longitude"
+        />
+        <EditText android:id="@+id/place_longitude"
+                  android:hint="@string/longitude"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:inputType="numberDecimal"
+        />
+    </TableRow>
+</TableLayout>

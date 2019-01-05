@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Your Spendings</string>
+    <string name="select_place">Select place</string>
+    <string name="place_name">Name</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="places_list">Places list</string>
+    <string name="back">back</string>
+</resources>

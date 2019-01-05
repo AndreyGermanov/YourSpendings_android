@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "1049821021264",
+    "firebase_url": "https://yourspendings.firebaseio.com",
+    "project_id": "yourspendings",
+    "storage_bucket": "yourspendings.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049821021264:android:8f5fd807e2f93174",
+        "android_client_info": {
+          "package_name": "andrey.ru.yourspendings"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1049821021264-tg2mvcnmgqtc9gtkju87u3jafia82kni.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "andrey.ru.yourspendings",
+            "certificate_hash": "751837c074c097059a87952320f19f7b7fd1e079"
+          }
+        },
+        {
+          "client_id": "1049821021264-3lqltscrn9au54ok54orm1kltnkhkvfb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFDJUl4zBs58QFs9oYUdMKzW93YNmflDM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1049821021264-3lqltscrn9au54ok54orm1kltnkhkvfb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1049821021264-bo7hagi3k4on40m8jvqtvifk37udm1kc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.andreygermanov.YourSpendings"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
