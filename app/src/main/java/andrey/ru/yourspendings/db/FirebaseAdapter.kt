@@ -26,6 +26,20 @@ class FirebaseAdapter
         }
     }
 
+    override fun saveItem(collectionName:String,data:HashMap<String,Any>,callback:(result:String?)->Unit) {
+        val id = data["id"]?.toString() ?: return
+        data.remove(id)
+        db.collection(collectionName).document(id)
+            .set(data).addOnSuccessListener { callback(null) }
+            .addOnFailureListener { callback(it.message) }
+    }
+
+    override fun deleteItem(collectionName:String,id:String,callback:(error:String?)->Unit) {
+        db.collection(collectionName).document(id).delete()
+            .addOnSuccessListener { callback(null) }
+            .addOnFailureListener { callback(it.message)}
+    }
+
     override fun subscribe(subscriber: IDatabaseSubscriber) {
         val collectionName = subscriber.getCollectionName()
         if (!subscribers.containsKey(collectionName)) {
@@ -44,4 +58,5 @@ class FirebaseAdapter
         val collectionName = subscriber.getCollectionName()
         if (subscribers.containsKey(collectionName)) subscribers[collectionName]!!.remove()
     }
+
 }

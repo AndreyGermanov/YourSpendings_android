@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
  */
 interface IDatabaseAdapter {
     fun getList(collectionName:String,callback:(List<Map<String,Any>>) -> Unit)
+    fun saveItem(collectionName:String,data:HashMap<String,Any>,callback:(error:String?)->Unit)
+    fun deleteItem(collectionName:String,id:String,callback:(error:String?)->Unit)
     fun subscribe(subscriber: IDatabaseSubscriber)
     fun unsubscribe(subscriber: IDatabaseSubscriber)
 }

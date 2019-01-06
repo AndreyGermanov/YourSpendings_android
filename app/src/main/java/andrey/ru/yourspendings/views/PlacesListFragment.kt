@@ -17,8 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
  */
 class PlacesListFragment: PlaceFragment() {
 
-    private var places:List<Place> = ArrayList()
-    private var currentPlaceId:String = ""
+    private lateinit var places:List<Place>
     private lateinit var placesAdapter:PlacesAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -27,6 +26,11 @@ class PlacesListFragment: PlaceFragment() {
         setupList(view)
         setListeners(view)
         return view
+    }
+
+    override fun setViewModel() {
+        super.setViewModel()
+        places = viewModel.getPlaces().value ?: ArrayList()
     }
 
     override fun setListeners(view:View) {

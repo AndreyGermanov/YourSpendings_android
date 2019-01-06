@@ -15,12 +15,12 @@ class PlacesViewModel: ViewModel(),IDataSubscriber {
     private val currentPlaceId: MutableLiveData<String> = MutableLiveData()
     private val screenMode: MutableLiveData<PlacesScreenMode> = MutableLiveData()
     private val isLandscape: MutableLiveData<Boolean> = MutableLiveData()
+    private var fields: Map<String,String> = HashMap()
 
     init {
         PlacesCollection.subscribe(this)
         screenMode.postValue(PlacesScreenMode.LIST)
         isLandscape.postValue(false)
-
     }
 
     override fun onDataChange(items: ArrayList<Place>) = places.postValue(items)
@@ -45,7 +45,24 @@ class PlacesViewModel: ViewModel(),IDataSubscriber {
     fun isLandscapeMode():Boolean = isLandscape.value ?: false
 
     fun getLandscape() = isLandscape
+
     fun setLandscape(mode:Boolean) = isLandscape.postValue(mode)
+
+    fun saveChanges(fields:HashMap<String,String>,callback:(error:String?)->Unit) {
+        PlacesCollection.saveItem(fields) {result ->
+            if (result is Place) currentPlaceId.postValue(result.id)
+            callback(result as? String ?: "Item saved successfully")
+        }
+    }
+
+    fun deleteItem(callback:(error:String?)->Unit) {
+        val id = currentPlaceId.value ?: return
+        PlacesCollection.deleteItem(id) { error -> callback(error)}
+    }
+
+    fun getFields() = fields
+
+    fun setFields(fields:Map<String,String>) { this.fields = fields }
 }
 
 enum class PlacesScreenMode { LIST,ITEM }

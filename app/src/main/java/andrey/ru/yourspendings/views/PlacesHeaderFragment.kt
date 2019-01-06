@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 class PlacesHeaderFragment: PlaceFragment() {
 
     private lateinit var backButton: ImageButton
+    private lateinit var addButton: ImageButton
     private lateinit var headerTitle: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -26,8 +27,8 @@ class PlacesHeaderFragment: PlaceFragment() {
     }
 
     fun setupView(view:View) {
+        addButton = view.findViewById(R.id.add_button)
         backButton = view.findViewById(R.id.back_button)
-        backButton.setOnClickListener{ viewModel.setPlacesScreenMode(PlacesScreenMode.LIST) }
         headerTitle = view.findViewById(R.id.header_title)
     }
 
@@ -38,22 +39,30 @@ class PlacesHeaderFragment: PlaceFragment() {
         viewModel.getLandscape().observe(this, Observer { isLandscape ->
             switchHeaderMode(viewModel.getPlacesScreenMode().value!!,isLandscape)
         })
+        backButton.setOnClickListener{ viewModel.setPlacesScreenMode(PlacesScreenMode.LIST) }
+        addButton.setOnClickListener {
+            viewModel.setCurrentPlaceId("new")
+            viewModel.setPlacesScreenMode(PlacesScreenMode.ITEM)
+        }
     }
 
     fun switchHeaderMode(mode:PlacesScreenMode,isLandscape:Boolean) {
         if (isLandscape) {
-            backButton.visibility = View.INVISIBLE
+            backButton.visibility = View.GONE
             headerTitle.text = getString(R.string.places_list)
+            addButton.visibility = View.VISIBLE
             return
         }
         when (mode) {
             PlacesScreenMode.LIST -> {
-                backButton.visibility = View.INVISIBLE
+                backButton.visibility = View.GONE
+                addButton.visibility = View.VISIBLE
                 headerTitle.text = getString(R.string.places_list)
             }
             PlacesScreenMode.ITEM -> {
                 headerTitle.text = viewModel.getCurrentPlace()?.name ?: ""
                 backButton.visibility = View.VISIBLE
+                addButton.visibility = View.GONE
             }
         }
     }
