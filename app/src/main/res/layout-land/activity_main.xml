@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:theme="@android:style/Theme.NoTitleBar"
+        tools:context=".views.MainActivity" android:orientation="vertical">
+    <fragment android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:name="andrey.ru.yourspendings.views.PlacesHeaderFragment"
+              android:id="@+id/places_header_fragment"
+    />
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+    >
+        <fragment android:layout_width="wrap_content"
+                  android:layout_height="match_parent"
+                  android:name="andrey.ru.yourspendings.views.PlacesListFragment"
+                  android:id="@+id/places_list_fragment"
+        />
+        <fragment android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:name="andrey.ru.yourspendings.views.PlaceFragment"
+                  android:id="@+id/place_fragment"
+        />
+    </LinearLayout>
+</LinearLayout>

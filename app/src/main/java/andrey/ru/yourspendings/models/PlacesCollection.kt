@@ -41,9 +41,7 @@ object PlacesCollection: IDatabaseSubscriber,IDataCollection {
         }
     }
 
-    override fun getCollectionName(): String {
-        return tableName
-    }
+    override fun getCollectionName(): String = tableName
 
     private fun newItem(data:Map<String,Any>):Place {
         return Place(
@@ -55,9 +53,7 @@ object PlacesCollection: IDatabaseSubscriber,IDataCollection {
     }
 
     override fun subscribe(subscriber: IDataSubscriber) {
-        if (!subscribers.contains(subscriber)) {
-            subscribers.add(subscriber)
-        }
+        if (!subscribers.contains(subscriber)) subscribers.add(subscriber)
     }
 
     override fun unsubscribe(subscriber: IDataSubscriber) {

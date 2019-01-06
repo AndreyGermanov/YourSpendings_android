@@ -3,6 +3,7 @@ package andrey.ru.yourspendings.views
 import andrey.ru.yourspendings.R
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.FrameLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 
@@ -15,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setViewModel()
         setEventListeners()
+        viewModel.setLandscape(findViewById<FrameLayout>(R.id.fragment_container) == null)
     }
 
     private fun setViewModel() { viewModel = ViewModelProviders.of(this).get(PlacesViewModel::class.java) }
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private fun setEventListeners() = viewModel.getPlacesScreenMode().observe(this, Observer {switchScreen(it)})
 
     private fun switchScreen(mode:PlacesScreenMode) {
+        if (findViewById<FrameLayout>(R.id.fragment_container) == null) return
         when (mode) {
             PlacesScreenMode.LIST -> {
                 val list = PlacesListFragment()

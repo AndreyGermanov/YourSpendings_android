@@ -1,12 +1,8 @@
 package andrey.ru.yourspendings.db
 
 import andrey.ru.yourspendings.models.IDatabaseSubscriber
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.QuerySnapshot
 
 /**
  * Created by Andrey Germanov on 1/4/19.
@@ -18,11 +14,11 @@ class FirebaseAdapter
     ): IDatabaseAdapter {
 
     override fun getList(collectionName: String,callback:(List<Map<String,Any>>) -> Unit ) {
-        db.collection(collectionName).get().addOnSuccessListener {
-            if (it.documents.isNotEmpty()) {
-                val items: List<Map<String, Any>> = it.documents.map {
-                    val item = it.data!!
-                    item["id"] = it.id
+        db.collection(collectionName).get().addOnSuccessListener {snapshot ->
+            if (snapshot.documents.isNotEmpty()) {
+                val items: List<Map<String, Any>> = snapshot.documents.map { document ->
+                    val item = document.data!!
+                    item["id"] = document.id
                     item
                 }
                 callback(items)
@@ -34,12 +30,12 @@ class FirebaseAdapter
         val collectionName = subscriber.getCollectionName()
         if (!subscribers.containsKey(collectionName)) {
             subscribers[collectionName] = db.collection(collectionName).addSnapshotListener { snapshots, _ ->
-                subscriber.onDataChange(snapshots!!.documentChanges.asSequence().map {
-                    val item = it.document.data
-                    item["changeType"] = it.type.toString()
-                    item["id"] = it.document.id
+                subscriber.onDataChange(snapshots!!.documentChanges.asSequence().map { change ->
+                    val item = change.document.data
+                    item["changeType"] = change.type.toString()
+                    item["id"] = change.document.id
                     item
-                }.groupBy{ it -> it["changeType"]!!.toString()})
+                }.groupBy{ item -> item["changeType"]!!.toString()})
             }
         }
     }

@@ -33,16 +33,28 @@ class PlacesHeaderFragment: PlaceFragment() {
 
     override fun setListeners(view:View) {
         viewModel.getPlacesScreenMode().observe(this, Observer { mode ->
-            when (mode!!) {
-                PlacesScreenMode.LIST -> {
-                    backButton.visibility = View.INVISIBLE
-                    headerTitle.text = getString(R.string.places_list)
-                }
-                PlacesScreenMode.ITEM -> {
-                    headerTitle.text = viewModel.getCurrentPlace()?.name ?: ""
-                    backButton.visibility = View.VISIBLE
-                }
-            }
+            switchHeaderMode(mode,viewModel.isLandscapeMode())
         })
+        viewModel.getLandscape().observe(this, Observer { isLandscape ->
+            switchHeaderMode(viewModel.getPlacesScreenMode().value!!,isLandscape)
+        })
+    }
+
+    fun switchHeaderMode(mode:PlacesScreenMode,isLandscape:Boolean) {
+        if (isLandscape) {
+            backButton.visibility = View.INVISIBLE
+            headerTitle.text = getString(R.string.places_list)
+            return
+        }
+        when (mode) {
+            PlacesScreenMode.LIST -> {
+                backButton.visibility = View.INVISIBLE
+                headerTitle.text = getString(R.string.places_list)
+            }
+            PlacesScreenMode.ITEM -> {
+                headerTitle.text = viewModel.getCurrentPlace()?.name ?: ""
+                backButton.visibility = View.VISIBLE
+            }
+        }
     }
 }

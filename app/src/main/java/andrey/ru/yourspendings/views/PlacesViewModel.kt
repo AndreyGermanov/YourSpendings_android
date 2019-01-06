@@ -14,10 +14,13 @@ class PlacesViewModel: ViewModel(),IDataSubscriber {
     private val places: MutableLiveData<List<Place>> = MutableLiveData()
     private val currentPlaceId: MutableLiveData<String> = MutableLiveData()
     private val screenMode: MutableLiveData<PlacesScreenMode> = MutableLiveData()
+    private val isLandscape: MutableLiveData<Boolean> = MutableLiveData()
 
     init {
         PlacesCollection.subscribe(this)
         screenMode.postValue(PlacesScreenMode.LIST)
+        isLandscape.postValue(false)
+
     }
 
     override fun onDataChange(items: ArrayList<Place>) = places.postValue(items)
@@ -38,6 +41,11 @@ class PlacesViewModel: ViewModel(),IDataSubscriber {
         if (id != null && places != null) return places.find { it.id == id }
         return null
     }
+
+    fun isLandscapeMode():Boolean = isLandscape.value ?: false
+
+    fun getLandscape() = isLandscape
+    fun setLandscape(mode:Boolean) = isLandscape.postValue(mode)
 }
 
 enum class PlacesScreenMode { LIST,ITEM }
