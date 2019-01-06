@@ -35,4 +35,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:17.1.5'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation "com.google.android.gms:play-services-location:16.0.0"
 }

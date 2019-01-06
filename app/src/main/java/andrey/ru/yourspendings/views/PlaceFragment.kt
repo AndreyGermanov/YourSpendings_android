@@ -1,6 +1,7 @@
 package andrey.ru.yourspendings.views
 
 import andrey.ru.yourspendings.R
+import andrey.ru.yourspendings.services.LocationManager
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.KeyEvent
@@ -9,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -26,6 +28,8 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
     private lateinit var longitude: EditText
     private lateinit var deleteButton: Button
     private lateinit var saveButton: Button
+    private lateinit var latitudeButton: ImageButton
+    private lateinit var longitudeButton: ImageButton
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         setViewModel()
@@ -42,7 +46,10 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
         longitude = view.findViewById(R.id.place_longitude)
         saveButton = view.findViewById(R.id.save_place_btn)
         deleteButton = view.findViewById(R.id.delete_place_btn)
+        latitudeButton = view.findViewById(R.id.place_latitude_button)
+        longitudeButton = view.findViewById(R.id.place_longitude_button)
         setFields()
+        LocationManager.setup(this.activity!!)
     }
 
     open fun setViewModel() {
@@ -71,6 +78,9 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
         name.setOnKeyListener(this)
         latitude.setOnKeyListener(this)
         longitude.setOnKeyListener(this)
+
+        latitudeButton.setOnClickListener { LocationManager.getLocation { lat, _ -> setCoordinate(latitude,lat) }}
+        longitudeButton.setOnClickListener { LocationManager.getLocation { _, lng -> setCoordinate(longitude, lng) }}
     }
 
     private fun prepareItemForm(view:View) {
@@ -117,6 +127,11 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
     override fun onKey(p0: View?, p1: Int, p2: KeyEvent?): Boolean {
         viewModel.setFields(getFields())
         return false
+    }
+
+    fun setCoordinate(field:EditText,value:Double) {
+        field.setText(value.toString())
+        viewModel.setFields(getFields())
     }
 
 }
