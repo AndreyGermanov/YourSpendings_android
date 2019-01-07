@@ -1,13 +1,12 @@
-package andrey.ru.yourspendings.views
+package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Place
-import android.graphics.Color
+import andrey.ru.yourspendings.views.adapters.PlacesAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,8 +35,7 @@ class PlacesListFragment: PlaceFragment() {
     override fun setListeners(view:View) {
         viewModel.getPlaces().observe(this, Observer<List<Place>>{ placesList ->
             this.places = placesList
-            placesAdapter.setDataSet(placesList)
-            placesAdapter.notifyDataSetChanged()
+            placesAdapter.apply { setDataSet(placesList); notifyDataSetChanged()}
         })
         viewModel.getCurrentPlaceId().observe(this, Observer<String> { placeId ->
             this.currentPlaceId = placeId
@@ -46,7 +44,7 @@ class PlacesListFragment: PlaceFragment() {
     }
 
     private fun setupList(view:View) {
-        placesAdapter = PlacesAdapter(places)
+        placesAdapter = PlacesAdapter(places,viewModel)
         val viewManager = LinearLayoutManager(this.context)
         view.findViewById<RecyclerView>(R.id.places_list_container).apply {
             layoutManager = viewManager
@@ -54,29 +52,5 @@ class PlacesListFragment: PlaceFragment() {
         }
     }
 
-    inner class PlacesAdapter(private var dataset: List<Place>):RecyclerView.Adapter<PlacesAdapter.ViewHolder>() {
 
-         inner class ViewHolder(val item:View): RecyclerView.ViewHolder(item)
-
-         override fun getItemCount(): Int = dataset.size
-
-         fun setDataSet(dataset: List<Place>) { this.dataset = dataset }
-
-         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.places_list_item,parent,false))
-
-
-         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-             val placeLabel = holder.item.findViewById<TextView>(R.id.place_title)
-             placeLabel.text = dataset[position].name
-             holder.item.setOnClickListener {
-                 viewModel.setCurrentPlaceId(dataset[position].id)
-                 viewModel.setPlacesScreenMode(PlacesScreenMode.ITEM)
-             }
-             if (currentPlaceId == dataset[position].id)
-                 holder.item.setBackgroundColor(Color.GRAY)
-             else
-                 holder.item.setBackgroundColor(Color.WHITE)
-         }
-     }
 }

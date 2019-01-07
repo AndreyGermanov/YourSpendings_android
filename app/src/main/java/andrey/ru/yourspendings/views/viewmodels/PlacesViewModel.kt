@@ -1,4 +1,4 @@
-package andrey.ru.yourspendings.views
+package andrey.ru.yourspendings.views.viewmodels
 
 import andrey.ru.yourspendings.models.IDataSubscriber
 import andrey.ru.yourspendings.models.Place
@@ -33,7 +33,7 @@ class PlacesViewModel: ViewModel(),IDataSubscriber {
 
     fun getPlacesScreenMode() = screenMode
 
-    fun setPlacesScreenMode(mode:PlacesScreenMode) = screenMode.postValue(mode)
+    fun setPlacesScreenMode(mode: PlacesScreenMode) = screenMode.postValue(mode)
 
     fun getCurrentPlace():Place? {
         val id = currentPlaceId.value
@@ -63,6 +63,8 @@ class PlacesViewModel: ViewModel(),IDataSubscriber {
     fun getFields() = fields
 
     fun setFields(fields:Map<String,String>) { this.fields = fields }
+    
+    fun clearFields() = setFields(mapOf("name" to "","latitude" to "0.0","longitude" to "0.0"))
 }
 
 enum class PlacesScreenMode { LIST,ITEM }

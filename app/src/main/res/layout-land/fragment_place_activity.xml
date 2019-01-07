@@ -8,7 +8,7 @@
         tools:context=".views.MainActivity" android:orientation="vertical">
     <fragment android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:name="andrey.ru.yourspendings.views.PlacesHeaderFragment"
+              android:name="andrey.ru.yourspendings.views.fragments.PlacesHeaderFragment"
               android:id="@+id/places_header_fragment"
     />
     <LinearLayout
@@ -18,12 +18,12 @@
     >
         <fragment android:layout_width="wrap_content"
                   android:layout_height="match_parent"
-                  android:name="andrey.ru.yourspendings.views.PlacesListFragment"
+                  android:name="andrey.ru.yourspendings.views.fragments.PlacesListFragment"
                   android:id="@+id/places_list_fragment"
         />
         <fragment android:layout_width="match_parent"
                   android:layout_height="match_parent"
-                  android:name="andrey.ru.yourspendings.views.PlaceFragment"
+                  android:name="andrey.ru.yourspendings.views.fragments.PlaceFragment"
                   android:id="@+id/place_fragment"
         />
     </LinearLayout>

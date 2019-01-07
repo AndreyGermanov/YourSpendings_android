@@ -1,39 +1,18 @@
 package andrey.ru.yourspendings.views
 
 import andrey.ru.yourspendings.R
+import andrey.ru.yourspendings.views.fragments.PlacesScreenFragment
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.FrameLayout
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var viewModel:PlacesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setViewModel()
-        setEventListeners()
-        viewModel.setLandscape(findViewById<FrameLayout>(R.id.fragment_container) == null)
+        supportFragmentManager.beginTransaction().replace(R.id.screen_container,
+            PlacesScreenFragment()
+        ).commit()
     }
 
-    private fun setViewModel() { viewModel = ViewModelProviders.of(this).get(PlacesViewModel::class.java) }
-
-    private fun setEventListeners() = viewModel.getPlacesScreenMode().observe(this, Observer {switchScreen(it)})
-
-    private fun switchScreen(mode:PlacesScreenMode) {
-        if (findViewById<FrameLayout>(R.id.fragment_container) == null) return
-        when (mode) {
-            PlacesScreenMode.LIST -> {
-                val list = PlacesListFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.fragment_container,list).commit()
-            }
-            PlacesScreenMode.ITEM -> {
-                val item = PlaceFragment()
-                supportFragmentManager.beginTransaction().replace(R.id.fragment_container,item).commit()
-            }
-        }
-    }
 }

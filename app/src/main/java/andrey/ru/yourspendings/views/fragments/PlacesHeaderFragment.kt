@@ -1,6 +1,7 @@
-package andrey.ru.yourspendings.views
+package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
+import andrey.ru.yourspendings.views.viewmodels.PlacesScreenMode
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,12 +42,13 @@ class PlacesHeaderFragment: PlaceFragment() {
         })
         backButton.setOnClickListener{ viewModel.setPlacesScreenMode(PlacesScreenMode.LIST) }
         addButton.setOnClickListener {
+            viewModel.clearFields()
             viewModel.setCurrentPlaceId("new")
             viewModel.setPlacesScreenMode(PlacesScreenMode.ITEM)
         }
     }
 
-    fun switchHeaderMode(mode:PlacesScreenMode,isLandscape:Boolean) {
+    private fun switchHeaderMode(mode: PlacesScreenMode, isLandscape:Boolean) {
         if (isLandscape) {
             backButton.visibility = View.GONE
             headerTitle.text = getString(R.string.places_list)

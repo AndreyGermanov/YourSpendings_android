@@ -1,7 +1,9 @@
-package andrey.ru.yourspendings.views
+package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.services.LocationManager
+import andrey.ru.yourspendings.views.viewmodels.PlacesScreenMode
+import andrey.ru.yourspendings.views.viewmodels.PlacesViewModel
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.KeyEvent
@@ -19,10 +21,11 @@ import androidx.lifecycle.ViewModelProviders
 /**
  * Created by Andrey Germanov on 1/5/19.
  */
+@Suppress("NAME_SHADOWING")
 open class PlaceFragment: Fragment(), View.OnKeyListener {
 
     protected var currentPlaceId = ""
-    protected lateinit var viewModel:PlacesViewModel
+    protected lateinit var viewModel: PlacesViewModel
     private lateinit var name: EditText
     private lateinit var latitude: EditText
     private lateinit var longitude: EditText
@@ -32,12 +35,20 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
     private lateinit var longitudeButton: ImageButton
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        LocationManager.setup(this.activity!!)
         setViewModel()
         val view = inflater.inflate(R.layout.fragment_place,container,false)
         view.visibility = View.INVISIBLE
         bindUI(view)
         setListeners(view)
         return view
+    }
+
+    open fun setViewModel() {
+        viewModel = activity?.run {
+            ViewModelProviders.of(this).get(PlacesViewModel::class.java)
+        } ?: throw Exception("Invalid Activity")
+        currentPlaceId = viewModel.getCurrentPlaceId().value ?: ""
     }
 
     open fun bindUI(view:View) {
@@ -49,14 +60,6 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
         latitudeButton = view.findViewById(R.id.place_latitude_button)
         longitudeButton = view.findViewById(R.id.place_longitude_button)
         setFields()
-        LocationManager.setup(this.activity!!)
-    }
-
-    open fun setViewModel() {
-        viewModel = activity?.run {
-            ViewModelProviders.of(this).get(PlacesViewModel::class.java)
-        } ?: throw Exception("Invalid Activity")
-        currentPlaceId = viewModel.getCurrentPlaceId().value ?: ""
     }
 
     open fun setListeners(view:View) {
@@ -69,9 +72,9 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
 
         deleteButton.setOnClickListener {
             AlertDialog.Builder(this.context).apply {
-                setMessage("Are you sure ?")
-                setPositiveButton(getString(R.string.yes)) { dialog, id -> deleteItem() }
-                setNegativeButton(getString(R.string.no)) { dialog, id -> }
+                setMessage(getString(R.string.are_you_sure))
+                setPositiveButton(getString(R.string.yes)) { _,_ -> deleteItem() }
+                setNegativeButton(getString(R.string.no)) { _,_ -> }
             }.create().show()
         }
 
@@ -86,12 +89,15 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
     private fun prepareItemForm(view:View) {
         val place = viewModel.getPlaces().value?.find {it.id == currentPlaceId }
         if (currentPlaceId.isNotEmpty()) view.visibility = View.VISIBLE; else view.visibility = View.INVISIBLE
-        if (currentPlaceId == "new") deleteButton.visibility = View.GONE; else deleteButton.visibility = View.VISIBLE
-        if (viewModel.getFields()["id"] != place?.id) {
-            name.setText(place?.name ?: "")
-            latitude.setText(place?.latitude?.toString() ?: "0.0")
-            longitude.setText(place?.longitude?.toString() ?: "0.0")
-            viewModel.setFields(getFields())
+        if (currentPlaceId == "new") {
+            deleteButton.visibility = View.GONE
+            setFields()
+        } else {
+            deleteButton.visibility = View.VISIBLE
+            if (viewModel.getFields()["id"] != place?.id) {
+                setFields(place?.toHashMap())
+                viewModel.setFields(getFields())
+            }
         }
     }
 
@@ -104,24 +110,25 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
     private fun deleteItem() {
         viewModel.deleteItem { error ->
             if (error != null) Toast.makeText(this.context,error,Toast.LENGTH_LONG).show()
+            viewModel.clearFields()
             viewModel.setCurrentPlaceId("")
             viewModel.setPlacesScreenMode(PlacesScreenMode.LIST)
         }
 
     }
 
-    fun getFields():HashMap<String,String> =
+    private fun getFields():HashMap<String,String> =
         hashMapOf("name" to name.text.toString().trim(),
             "latitude" to latitude.text.toString().trim(),
             "longitude" to longitude.text.toString().trim(),
             "id" to currentPlaceId.trim()
         )
 
-    fun setFields() {
-        val fields = viewModel.getFields()
-        name.setText(fields["name"] ?: "")
-        latitude.setText(fields["latitude"] ?: "0.0")
-        longitude.setText(fields["longitude"] ?: "0.0")
+    private fun setFields(fields:Map<String,Any>?=null) {
+        val fields = fields ?: viewModel.getFields()
+        name.setText(fields["name"]?.toString() ?: "")
+        latitude.setText(fields["latitude"]?.toString() ?: "0.0")
+        longitude.setText(fields["longitude"]?.toString() ?: "0.0")
     }
 
     override fun onKey(p0: View?, p1: Int, p2: KeyEvent?): Boolean {
@@ -129,7 +136,7 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
         return false
     }
 
-    fun setCoordinate(field:EditText,value:Double) {
+    private fun setCoordinate(field:EditText,value:Double) {
         field.setText(value.toString())
         viewModel.setFields(getFields())
     }
