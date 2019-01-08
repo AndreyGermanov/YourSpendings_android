@@ -88,7 +88,8 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
     }
 
     private fun prepareItemForm(view:View) {
-        val place = viewModel.getItems().value?.find {it.id == currentPlaceId }
+        bindUI(view)
+        val place = viewModel.getItems().value?.find { it.id == currentPlaceId }
         if (currentPlaceId.isNotEmpty()) view.visibility = View.VISIBLE; else view.visibility = View.INVISIBLE
         if (currentPlaceId == "new") {
             deleteButton.visibility = View.GONE
