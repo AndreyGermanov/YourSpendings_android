@@ -8,16 +8,17 @@ import com.google.firebase.auth.FirebaseUser
  */
 object AuthManager {
     private val auth = FirebaseAuth.getInstance()
-
-    init {
-       auth.signOut()
-    }
+    private val subscribers = ArrayList<IAuthServiceSubscriber>()
 
     val user: FirebaseUser?
         get() = auth.currentUser
 
     val isLogin:Boolean
         get() = user != null
+
+    init {
+        auth.addAuthStateListener { onAuthStateChanged(it); }
+    }
 
     fun register(email:String,password:String,callback:(error:String?)->Unit) {
         auth.createUserWithEmailAndPassword(email,password)
@@ -29,6 +30,20 @@ object AuthManager {
         auth.signInWithEmailAndPassword(email,password)
             .addOnSuccessListener { callback(null) }
             .addOnFailureListener { callback(it.message) }
+    }
+
+    fun logout() = auth.signOut()
+
+    fun subscribe(subscriber:IAuthServiceSubscriber) {
+        if (!subscribers.contains(subscriber)) subscribers.add(subscriber)
+    }
+
+    fun unsubscribe(subscriber: IAuthServiceSubscriber) {
+        if (subscribers.contains(subscriber)) subscribers.remove(subscriber)
+    }
+
+    private fun onAuthStateChanged(auth:FirebaseAuth) {
+        subscribers.forEach { it.onAuthStatusChanged(auth.currentUser != null) }
     }
 
 }

@@ -1,7 +1,6 @@
 package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
-import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.viewmodels.LoginMode
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -49,8 +48,6 @@ open class LoginFragment  (open var fragmentId:Int = R.layout.fragment_login): L
         submitButton.setOnClickListener {viewModel.login {error ->
                 if (error != null) {
                     Toast.makeText(this.context,error,Toast.LENGTH_LONG).show()
-                } else {
-                    (activity as? MainActivity)?.setupScreen()
                 }
             }
         }

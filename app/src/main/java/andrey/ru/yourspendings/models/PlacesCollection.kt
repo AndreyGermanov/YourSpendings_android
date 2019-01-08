@@ -1,20 +1,25 @@
 package andrey.ru.yourspendings.models
 
 import andrey.ru.yourspendings.db.DatabaseManager
+import andrey.ru.yourspendings.services.AuthManager
+import andrey.ru.yourspendings.services.IAuthServiceSubscriber
 import java.util.*
 import kotlin.collections.HashMap
 
 /**
  * Created by Andrey Germanov on 1/4/19.
  */
-object PlacesCollection: IDatabaseSubscriber,IDataCollection {
+object PlacesCollection: IDatabaseSubscriber,IAuthServiceSubscriber,IDataCollection {
 
     private const val tableName = "shops"
     private val items = ArrayList<Place>()
     private val db = DatabaseManager.getDB()
     private val subscribers = ArrayList<IDataSubscriber>()
 
-    init { db.subscribe(this) }
+    init {
+        AuthManager.subscribe(this)
+        db.subscribe(this)
+    }
 
     override fun onDataChange(changes: Map<String, List<Map<String, Any>>>) {
         for (key in changes.keys) {
@@ -88,5 +93,13 @@ object PlacesCollection: IDatabaseSubscriber,IDataCollection {
     override fun unsubscribe(subscriber: IDataSubscriber) {
         if (subscribers.contains(subscriber)) subscribers.remove(subscriber)
     }
+
+    override fun onAuthStatusChanged(isAuthenticated: Boolean) {
+        if (isAuthenticated) db.subscribe(this); else {
+            items.clear()
+            db.unsubscribe(this)
+        }
+    }
+
 
 }

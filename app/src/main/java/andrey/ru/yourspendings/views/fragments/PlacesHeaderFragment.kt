@@ -2,38 +2,37 @@ package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.viewmodels.PlacesScreenMode
-import android.os.Bundle
-import android.view.LayoutInflater
+import andrey.ru.yourspendings.views.viewmodels.PlacesViewModel
+import android.annotation.SuppressLint
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.TextView
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+
+@SuppressLint("ValidFragment")
 
 /**
  * Created by Andrey Germanov on 1/5/19.
  */
-class PlacesHeaderFragment: PlaceFragment() {
+class PlacesHeaderFragment(override var fragmentId:Int = R.layout.fragment_places_header): HeaderFragment() {
 
     private lateinit var backButton: ImageButton
     private lateinit var addButton: ImageButton
-    private lateinit var headerTitle: TextView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_places_header,container,false)
-        setViewModel()
-        setupView(view)
-        setListeners(view)
-        return view
+    override fun setViewModel() {
+        viewModel = activity?.run { ViewModelProviders.of(this).get(PlacesViewModel::class.java) }
+                ?: throw Exception("Invalid Activity")
     }
 
-    fun setupView(view:View) {
+    override fun bindUI(view:View) {
+        super.bindUI(view)
         addButton = view.findViewById(R.id.add_button)
         backButton = view.findViewById(R.id.back_button)
-        headerTitle = view.findViewById(R.id.header_title)
     }
 
     override fun setListeners(view:View) {
+        super.setListeners(view)
+        val viewModel = viewModel as? PlacesViewModel ?: return
         viewModel.getPlacesScreenMode().observe(this, Observer { mode ->
             switchHeaderMode(mode,viewModel.isLandscapeMode())
         })
@@ -49,6 +48,7 @@ class PlacesHeaderFragment: PlaceFragment() {
     }
 
     private fun switchHeaderMode(mode: PlacesScreenMode, isLandscape:Boolean) {
+        val viewModel = viewModel as? PlacesViewModel ?: return
         if (isLandscape) {
             backButton.visibility = View.GONE
             headerTitle.text = getString(R.string.places_list)

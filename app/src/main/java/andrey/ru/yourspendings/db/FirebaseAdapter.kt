@@ -1,6 +1,7 @@
 package andrey.ru.yourspendings.db
 
 import andrey.ru.yourspendings.models.IDatabaseSubscriber
+import andrey.ru.yourspendings.services.AuthManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
@@ -14,7 +15,7 @@ class FirebaseAdapter
     ): IDatabaseAdapter {
 
     override fun getList(collectionName: String,callback:(List<Map<String,Any>>) -> Unit ) {
-        db.collection(collectionName).get().addOnSuccessListener {snapshot ->
+        db.collection(collectionName).whereEqualTo("user_id",AuthManager.user?.uid).get().addOnSuccessListener { snapshot ->
             if (snapshot.documents.isNotEmpty()) {
                 val items: List<Map<String, Any>> = snapshot.documents.map { document ->
                     val item = document.data!!
@@ -28,6 +29,7 @@ class FirebaseAdapter
 
     override fun saveItem(collectionName:String,data:HashMap<String,Any>,callback:(result:String?)->Unit) {
         val id = data["id"]?.toString() ?: return
+        data["user_id"] = AuthManager.user?.uid!!
         data.remove(id)
         db.collection(collectionName).document(id)
             .set(data).addOnSuccessListener { callback(null) }
@@ -43,20 +45,24 @@ class FirebaseAdapter
     override fun subscribe(subscriber: IDatabaseSubscriber) {
         val collectionName = subscriber.getCollectionName()
         if (!subscribers.containsKey(collectionName)) {
-            subscribers[collectionName] = db.collection(collectionName).addSnapshotListener { snapshots, _ ->
-                subscriber.onDataChange(snapshots!!.documentChanges.asSequence().map { change ->
-                    val item = change.document.data
-                    item["changeType"] = change.type.toString()
-                    item["id"] = change.document.id
-                    item
-                }.groupBy{ item -> item["changeType"]!!.toString()})
+            subscribers[collectionName] = db.collection(collectionName)
+                .whereEqualTo("user_id",AuthManager.user?.uid).addSnapshotListener { snapshots, _ ->
+                    subscriber.onDataChange(snapshots!!.documentChanges.asSequence().map { change ->
+                        val item = change.document.data
+                        item["changeType"] = change.type.toString()
+                        item["id"] = change.document.id
+                        item
+                    }.groupBy{ item -> item["changeType"]!!.toString()})
             }
         }
     }
 
     override fun unsubscribe(subscriber: IDatabaseSubscriber) {
         val collectionName = subscriber.getCollectionName()
-        if (subscribers.containsKey(collectionName)) subscribers[collectionName]!!.remove()
+        if (subscribers.containsKey(collectionName)) {
+            subscribers[collectionName]!!.remove()
+            subscribers.remove(collectionName)
+        }
     }
 
 }

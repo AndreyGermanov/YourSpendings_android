@@ -1,7 +1,6 @@
 package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
-import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.viewmodels.LoginMode
 import android.annotation.SuppressLint
 import android.view.View
@@ -30,7 +29,6 @@ class RegisterFragment  (override var fragmentId:Int = R.layout.fragment_registe
                 Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(this.context,getString(R.string.register_success), Toast.LENGTH_LONG).show()
-                (activity as? MainActivity)?.setupScreen()
             }
         }}
 

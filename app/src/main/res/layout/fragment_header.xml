@@ -14,20 +14,6 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_menu_black_24dp"
             android:contentDescription="@string/main_menu"/>
-    <ImageButton
-            android:visibility="gone"
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back_black_24dp"
-            android:contentDescription="@string/back"/>
-    <ImageButton
-            android:visibility="gone"
-            android:id="@+id/add_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_black_24dp"
-            android:contentDescription="@string/add"/>
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:id="@+id/header_title"
