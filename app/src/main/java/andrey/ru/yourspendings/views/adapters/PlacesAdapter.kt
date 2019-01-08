@@ -2,7 +2,7 @@ package andrey.ru.yourspendings.views.adapters
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Place
-import andrey.ru.yourspendings.views.viewmodels.PlacesScreenMode
+import andrey.ru.yourspendings.views.viewmodels.ScreenMode
 import andrey.ru.yourspendings.views.viewmodels.PlacesViewModel
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -32,10 +32,10 @@ class PlacesAdapter(private var dataset: List<Place>,
         val placeLabel = holder.item.findViewById<TextView>(R.id.place_title)
         placeLabel.text = dataset[position].name
         holder.item.setOnClickListener {
-            viewModel.setCurrentPlaceId(dataset[position].id)
-            viewModel.setPlacesScreenMode(PlacesScreenMode.ITEM)
+            viewModel.setCurrentItemId(dataset[position].id)
+            viewModel.setScreenMode(ScreenMode.ITEM)
         }
-        if (viewModel.getCurrentPlaceId().value == dataset[position].id)
+        if (viewModel.getCurrentItemId().value == dataset[position].id)
             holder.item.setBackgroundColor(Color.GRAY)
         else
             holder.item.setBackgroundColor(Color.WHITE)

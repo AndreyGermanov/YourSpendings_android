@@ -1,73 +1,19 @@
 package andrey.ru.yourspendings.models
 
-import andrey.ru.yourspendings.db.DatabaseManager
-import andrey.ru.yourspendings.services.AuthManager
-import andrey.ru.yourspendings.services.IAuthServiceSubscriber
 import java.util.*
 import kotlin.collections.HashMap
 
 /**
  * Created by Andrey Germanov on 1/4/19.
  */
-object PlacesCollection: IDatabaseSubscriber,IAuthServiceSubscriber,IDataCollection {
+object PlacesCollection: Collection<Place>() {
 
-    private const val tableName = "shops"
-    private val items = ArrayList<Place>()
-    private val db = DatabaseManager.getDB()
-    private val subscribers = ArrayList<IDataSubscriber>()
+    override val tableName
+        get() = "shops"
 
-    init {
-        AuthManager.subscribe(this)
-        db.subscribe(this)
-    }
+    override fun getCollectionName(): String = "shops"
 
-    override fun onDataChange(changes: Map<String, List<Map<String, Any>>>) {
-        for (key in changes.keys) {
-            when (key) {
-                "MODIFIED" -> modifyItems(changes[key]!!)
-                "REMOVED" -> deleteItems(changes[key]!!)
-                else -> addItems(changes[key]!!)
-            }
-        }
-        subscribers.forEach { subscriber -> subscriber.onDataChange(items) }
-    }
-
-    private fun addItems(changes:List<Map<String,Any>>) = changes.forEach { items.add(newItem(it)) }
-
-    private fun modifyItems(changes:List<Map<String,Any>>) {
-        changes.forEach {change ->
-            val index = items.indexOfFirst { it.id == change["id"]!!.toString() }
-            if (index != -1) items[index] = newItem(change)
-        }
-    }
-
-    private fun deleteItems(changes:List<Map<String,Any>>) {
-        changes.forEach {change ->
-            val index = items.indexOfFirst { it.id == change["id"]!!.toString() }
-            if (index != -1) items.removeAt(index)
-        }
-    }
-
-    override fun getCollectionName(): String = tableName
-
-    private fun newItem(data:Map<String,Any>):Place = Place.fromHashMap(data)
-
-    fun saveItem(fields:HashMap<String,String>,callback:(result:Any)->Unit) {
-        validateItem(fields) { result ->
-            when (result) {
-                is String -> callback(result)
-                is Place ->
-                    db.saveItem(tableName,result.toHashMap()) { error ->
-                        callback(error ?: result)
-                    }
-                else -> callback("System error")
-            }
-        }
-    }
-
-    fun deleteItem(id:String,callback:(error:String?)->Unit) {
-        db.deleteItem(tableName,id) {error -> callback(error) }
-    }
+    override fun newItem(data:Map<String,Any>):Place = Place.fromHashMap(data)
 
     fun validateItem(fields:HashMap<String,String>,callback:(result:Any) -> Unit) {
         val name = fields["name"] ?: ""
@@ -85,21 +31,5 @@ object PlacesCollection: IDatabaseSubscriber,IAuthServiceSubscriber,IDataCollect
         }
         callback(item)
     }
-
-    override fun subscribe(subscriber: IDataSubscriber) {
-        if (!subscribers.contains(subscriber)) subscribers.add(subscriber)
-    }
-
-    override fun unsubscribe(subscriber: IDataSubscriber) {
-        if (subscribers.contains(subscriber)) subscribers.remove(subscriber)
-    }
-
-    override fun onAuthStatusChanged(isAuthenticated: Boolean) {
-        if (isAuthenticated) db.subscribe(this); else {
-            items.clear()
-            db.unsubscribe(this)
-        }
-    }
-
 
 }

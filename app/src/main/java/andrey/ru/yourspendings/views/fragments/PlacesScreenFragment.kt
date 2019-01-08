@@ -1,7 +1,7 @@
 package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
-import andrey.ru.yourspendings.views.viewmodels.PlacesScreenMode
+import andrey.ru.yourspendings.views.viewmodels.ScreenMode
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,16 +23,16 @@ class PlacesScreenFragment: PlaceFragment() {
     }
 
     private fun setEventListeners(view:View) =
-        viewModel.getPlacesScreenMode().observe(this, Observer {switchScreen(view,it)})
+        viewModel.getScreenMode().observe(this, Observer {switchScreen(view,it)})
 
-    private fun switchScreen(view:View,mode: PlacesScreenMode) {
+    private fun switchScreen(view:View,mode: ScreenMode) {
         if (view.findViewById<FrameLayout>(R.id.fragment_container) == null) return
         when (mode) {
-            PlacesScreenMode.LIST -> {
+            ScreenMode.LIST -> {
                 val list = PlacesListFragment()
                 activity!!.supportFragmentManager.beginTransaction().replace(R.id.fragment_container,list).commit()
             }
-            PlacesScreenMode.ITEM -> {
+            ScreenMode.ITEM -> {
                 val item = PlaceFragment()
                 activity!!.supportFragmentManager.beginTransaction().replace(R.id.fragment_container,item).commit()
             }

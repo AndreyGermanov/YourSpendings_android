@@ -2,7 +2,7 @@ package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.services.LocationManager
-import andrey.ru.yourspendings.views.viewmodels.PlacesScreenMode
+import andrey.ru.yourspendings.views.viewmodels.ScreenMode
 import andrey.ru.yourspendings.views.viewmodels.PlacesViewModel
 import android.app.AlertDialog
 import android.os.Bundle
@@ -48,7 +48,8 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
         viewModel = activity?.run {
             ViewModelProviders.of(this).get(PlacesViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
-        currentPlaceId = viewModel.getCurrentPlaceId().value ?: ""
+        viewModel.initialize()
+        currentPlaceId = viewModel.getCurrentItemId().value ?: ""
     }
 
     open fun bindUI(view:View) {
@@ -63,7 +64,7 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
     }
 
     open fun setListeners(view:View) {
-        viewModel.getCurrentPlaceId().observe(this, Observer<String> { id ->
+        viewModel.getCurrentItemId().observe(this, Observer<String> { id ->
             currentPlaceId = id
             prepareItemForm(view)
         })
@@ -87,7 +88,7 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
     }
 
     private fun prepareItemForm(view:View) {
-        val place = viewModel.getPlaces().value?.find {it.id == currentPlaceId }
+        val place = viewModel.getItems().value?.find {it.id == currentPlaceId }
         if (currentPlaceId.isNotEmpty()) view.visibility = View.VISIBLE; else view.visibility = View.INVISIBLE
         if (currentPlaceId == "new") {
             deleteButton.visibility = View.GONE
@@ -111,8 +112,8 @@ open class PlaceFragment: Fragment(), View.OnKeyListener {
         viewModel.deleteItem { error ->
             if (error != null) Toast.makeText(this.context,error,Toast.LENGTH_LONG).show()
             viewModel.clearFields()
-            viewModel.setCurrentPlaceId("")
-            viewModel.setPlacesScreenMode(PlacesScreenMode.LIST)
+            viewModel.setCurrentItemId("")
+            viewModel.setScreenMode(ScreenMode.LIST)
         }
 
     }

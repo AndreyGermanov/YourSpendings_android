@@ -29,15 +29,15 @@ class PlacesListFragment: PlaceFragment() {
 
     override fun setViewModel() {
         super.setViewModel()
-        places = viewModel.getPlaces().value ?: ArrayList()
+        places = viewModel.getItems().value ?: ArrayList()
     }
 
     override fun setListeners(view:View) {
-        viewModel.getPlaces().observe(this, Observer<List<Place>>{ placesList ->
+        viewModel.getItems().observe(this, Observer<List<Place>>{ placesList ->
             this.places = placesList
             placesAdapter.apply { setDataSet(placesList); notifyDataSetChanged()}
         })
-        viewModel.getCurrentPlaceId().observe(this, Observer<String> { placeId ->
+        viewModel.getCurrentItemId().observe(this, Observer<String> { placeId ->
             this.currentPlaceId = placeId
             placesAdapter.notifyDataSetChanged()
         })
