@@ -1,9 +1,9 @@
 package andrey.ru.yourspendings.views.adapters
 
 import andrey.ru.yourspendings.R
-import andrey.ru.yourspendings.models.Place
+import andrey.ru.yourspendings.models.Model
+import andrey.ru.yourspendings.views.viewmodels.EntityViewModel
 import andrey.ru.yourspendings.views.viewmodels.ScreenMode
-import andrey.ru.yourspendings.views.viewmodels.PlacesViewModel
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -14,23 +14,23 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Created by Andrey Germanov on 1/7/19.
  */
-class PlacesAdapter(private var dataset: List<Place>,
-                    private var viewModel: PlacesViewModel
-): RecyclerView.Adapter<PlacesAdapter.ViewHolder>() {
+class EntityListAdapter<T: Model>(private var dataset: List<T>,
+                                  private var viewModel: EntityViewModel<T>
+): RecyclerView.Adapter<EntityListAdapter<T>.ViewHolder>() {
 
     inner class ViewHolder(val item: View): RecyclerView.ViewHolder(item)
 
     override fun getItemCount(): Int = dataset.size
 
-    fun setDataSet(dataset: List<Place>) { this.dataset = dataset }
+    fun setDataSet(dataset: List<T>) { this.dataset = dataset }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.places_list_item,parent,false))
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val placeLabel = holder.item.findViewById<TextView>(R.id.place_title)
-        placeLabel.text = dataset[position].name
+        val label = holder.item.findViewById<TextView>(R.id.place_title)
+        label.text = dataset[position].getTitle()
         holder.item.setOnClickListener {
             viewModel.setCurrentItemId(dataset[position].id)
             viewModel.setScreenMode(ScreenMode.ITEM)

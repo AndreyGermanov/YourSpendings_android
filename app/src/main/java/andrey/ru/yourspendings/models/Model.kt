@@ -8,4 +8,6 @@ open class Model(open var id:String) {
         fun fromHashMap(data:Map<String,Any>):Model =
             Model(id = data["id"]?.toString() ?: "")
     }
+    open fun toHashMap():HashMap<String,Any> = hashMapOf("id" to id)
+    open fun getTitle():String = ""
 }

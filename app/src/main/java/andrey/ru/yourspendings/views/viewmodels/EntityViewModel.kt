@@ -1,8 +1,10 @@
 package andrey.ru.yourspendings.views.viewmodels
 
 import andrey.ru.yourspendings.models.*
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 
 /**
  * Created by Andrey Germanov on 1/8/19.
@@ -30,11 +32,11 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T> = Col
 
     fun getCurrentItemId() = currentItemId
 
-    fun setCurrentItemId(id:String) = currentItemId.postValue(id)
+    fun setCurrentItemId(id:String) { currentItemId.postValue(id);}
 
     fun getScreenMode() = screenMode
 
-    fun setScreenMode(mode: ScreenMode) = screenMode.postValue(mode)
+    fun setScreenMode(mode: ScreenMode) { screenMode.postValue(mode);}
 
     fun getCurrentItem(): T? {
         val id = currentItemId.value
@@ -66,6 +68,17 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T> = Col
     fun setFields(fields:Map<String,String>) { this.fields = fields }
 
     fun clearFields() = setFields(mapOf("name" to "","latitude" to "0.0","longitude" to "0.0"))
+
+    companion object {
+        fun <T:Model> getViewModel(fragment: Fragment, className:String):EntityViewModel<T>? {
+            var modelClass = PlacesViewModel::class.java
+            when (className) {
+                "Place" -> modelClass = PlacesViewModel::class.java
+            }
+            return fragment.activity?.run { ViewModelProviders.of(fragment.activity!!).get(modelClass) } as? EntityViewModel<T> ?:
+            throw Exception("Invalid Activity")
+        }
+    }
 
 }
 

@@ -9,9 +9,9 @@ data class Place(
     var latitude:Double = 0.0,
     var longitude:Double = 0.0
 ): Model(id) {
-    fun toHashMap():HashMap<String,Any> =
+    override fun toHashMap() =
         hashMapOf("id" to id,"name" to name, "latitude" to latitude, "longitude" to longitude)
-
+    override fun getTitle() = this.name
     companion object {
         fun fromHashMap(data:Map<String,Any>):Place =
             Place(
@@ -20,5 +20,6 @@ data class Place(
                 latitude = (data["latitude"]?.toString() ?: "0.0").toDouble(),
                 longitude = (data["longitude"]?.toString() ?: "0.0").toDouble()
             )
+        fun getClassName() = "Place"
     }
 }
