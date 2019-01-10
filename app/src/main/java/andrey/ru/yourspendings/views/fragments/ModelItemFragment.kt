@@ -77,7 +77,7 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
 
     }
 
-    open fun getFields():HashMap<String,String> = HashMap()
+    open fun getFields():HashMap<String,Any> = HashMap()
 
     open fun setFields(fields:Map<String,Any>?=null) {}
 

@@ -15,10 +15,12 @@ object PlacesCollection: Collection<Place>() {
 
     override fun newItem(data:Map<String,Any>):Place = Place.fromHashMap(data)
 
-    override fun validateItem(fields:HashMap<String,String>,callback:(result:Any) -> Unit) {
-        val name = fields["name"] ?: ""
-        val latitude = (fields["latitude"] ?: "").toDoubleOrNull()
-        val longitude= (fields["longitude"] ?: "").toDoubleOrNull()
+    override fun newItemFromDB(data:Map<String,Any>):Place = Place.fromHashMapOfDB(data)
+
+    override fun validateItem(fields:HashMap<String,Any>,callback:(result:Any) -> Unit) {
+        val name = fields["name"]?.toString() ?: ""
+        val latitude = (fields["latitude"]?.toString() ?: "").toDoubleOrNull()
+        val longitude= (fields["longitude"]?.toString() ?: "").toDoubleOrNull()
         if (name.isEmpty()) { callback("Name must be specified");return }
         if (latitude == null) { callback("Latitude must be specified"); return }
         if (longitude == null) { callback("Longitude must be specified"); return }

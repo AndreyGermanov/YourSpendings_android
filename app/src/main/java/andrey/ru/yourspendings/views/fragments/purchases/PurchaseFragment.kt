@@ -5,6 +5,8 @@ import andrey.ru.yourspendings.models.Purchase
 import andrey.ru.yourspendings.views.fragments.ModelItemFragment
 import android.view.View
 import android.widget.EditText
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Suppress("NAME_SHADOWING")
 
@@ -31,9 +33,9 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         place.setOnKeyListener(this)
     }
 
-    override fun getFields(): HashMap<String, String> {
+    override fun getFields(): HashMap<String, Any> {
         return hashMapOf(
-            "date" to date.text.toString().trim(),
+            "date" to LocalDateTime.ofEpochSecond(date.text.toString().trim().toLong(),0, ZoneOffset.UTC),
             "place_id" to place.text.toString().trim(),
             "id" to currentItemId.trim()
         )
@@ -41,7 +43,7 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
 
     override fun setFields(fields:Map<String,Any>?) {
         val fields = fields ?: viewModel.getFields()
-        date.setText(fields["date"]?.toString() ?: "")
+        date.setText((fields["date"] as? LocalDateTime)?.toEpochSecond(ZoneOffset.UTC).toString())
         place.setText(fields["place_id"]?.toString() ?: "")
     }
 }

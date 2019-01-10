@@ -43,7 +43,7 @@ class PlaceFragment : ModelItemFragment<Place>() {
         longitudeButton.setOnClickListener { LocationManager.getLocation { _, lng -> setCoordinate(longitude, lng) }}
     }
 
-    override fun getFields():HashMap<String,String> =
+    override fun getFields():HashMap<String,Any> =
         hashMapOf("name" to name.text.toString().trim(),
             "latitude" to latitude.text.toString().trim(),
             "longitude" to longitude.text.toString().trim(),

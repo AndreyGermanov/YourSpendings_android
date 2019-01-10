@@ -2,7 +2,6 @@ package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Model
-import andrey.ru.yourspendings.services.LocationManager
 import andrey.ru.yourspendings.views.fragments.places.PlaceFragment
 import andrey.ru.yourspendings.views.fragments.places.PlacesHeaderFragment
 import andrey.ru.yourspendings.views.fragments.places.PlacesListFragment
@@ -10,10 +9,7 @@ import andrey.ru.yourspendings.views.fragments.purchases.PurchaseFragment
 import andrey.ru.yourspendings.views.fragments.purchases.PurchasesHeaderFragment
 import andrey.ru.yourspendings.views.fragments.purchases.PurchasesListFragment
 import andrey.ru.yourspendings.views.viewmodels.ScreenMode
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.lifecycle.Observer
 
@@ -25,15 +21,6 @@ open class ModelScreenFragment<T: Model>: ModelFragment<T>() {
 
     override var fragmentId:Int = R.layout.fragment_model_activity
     override var className:String = ""
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(fragmentId,container,false)
-        LocationManager.setup(this.activity!!)
-        setViewModel()
-        bindUI(view)
-        setListeners(view)
-        return view
-    }
 
     override fun bindUI(view: View) {
         activity!!.supportFragmentManager.beginTransaction().replace(R.id.header_fragment,getHeaderFragment()).commit()

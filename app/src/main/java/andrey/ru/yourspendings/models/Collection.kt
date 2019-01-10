@@ -51,12 +51,12 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
         subscribers.forEach { subscriber -> subscriber.onDataChange(items) }
     }
 
-    private fun addItems(changes:List<Map<String,Any>>) = changes.forEach { items.add(this.newItem(it)) }
+    private fun addItems(changes:List<Map<String,Any>>) = changes.forEach { items.add(this.newItemFromDB(it)) }
 
     private fun modifyItems(changes:List<Map<String,Any>>) {
         changes.forEach {change ->
             val index = items.indexOfFirst { it.id == change["id"]!!.toString() }
-            if (index != -1) items[index] = newItem(change)
+            if (index != -1) items[index] = newItemFromDB(change)
         }
     }
 
@@ -67,11 +67,12 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
         }
     }
 
-    override fun saveItem(fields:HashMap<String,String>,callback:(result:Any)->Unit) {
+    override fun saveItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit) {
+
         validateItem(fields) { result ->
             when (result) {
                 is String -> callback(result)
-                is Model -> db.saveItem(tableName, result.toHashMap()) { error -> callback(error ?: result)}
+                is Model -> db.saveItem(tableName, result.toHashMapForDB()) { error -> callback(error ?: result)}
                 else -> callback("System error")
             }
         }
@@ -82,6 +83,8 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
     }
 
     override fun newItem(data:Map<String,Any>):T = Model.fromHashMap(data) as T
+
+    override fun newItemFromDB(data:Map<String,Any>):T = Model.fromHashMapOfDB(data) as T
 
     override fun getList() = items
 

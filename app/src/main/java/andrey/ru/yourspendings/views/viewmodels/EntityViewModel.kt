@@ -16,7 +16,7 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Vie
     private val currentItemId: MutableLiveData<String> = MutableLiveData()
     private val screenMode: MutableLiveData<ScreenMode> = MutableLiveData()
     private val isLandscape: MutableLiveData<Boolean> = MutableLiveData()
-    private var fields: Map<String,String> = HashMap()
+    private var fields: Map<String,Any> = HashMap()
 
     init {
         screenMode.postValue(ScreenMode.LIST)
@@ -53,7 +53,7 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Vie
 
     fun setLandscape(mode:Boolean) = isLandscape.postValue(mode)
 
-    fun saveChanges(fields:HashMap<String,String>,callback:(error:String?)->Unit) {
+    fun saveChanges(fields:HashMap<String,Any>,callback:(error:String?)->Unit) {
         Collection.saveItem(fields) { result ->
             if (result is Model) currentItemId.postValue(result.id)
             callback(result as? String ?: "Item saved successfully")
@@ -67,9 +67,9 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Vie
 
     fun getFields() = fields
 
-    fun setFields(fields:Map<String,String>) { this.fields = fields }
+    fun setFields(fields:Map<String,Any>) { this.fields = fields }
 
-    fun clearFields() = setFields(Collection.newItem(HashMap()).toHashMap() as Map<String,String>)
+    fun clearFields() = setFields(Collection.newItem(HashMap()).toHashMap())
 
     fun getListTitle() = Collection.getListTitle()
 
