@@ -14,9 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Created by Andrey Germanov on 1/7/19.
  */
-class EntityListAdapter<T: Model>(private var dataset: List<T>,
-                                  private var viewModel: EntityViewModel<T>
-): RecyclerView.Adapter<EntityListAdapter<T>.ViewHolder>() {
+class ModelListAdapter<T: Model>(private var dataset: List<T>,
+                                 private var viewModel: EntityViewModel<T>
+): RecyclerView.Adapter<ModelListAdapter<T>.ViewHolder>() {
 
     inner class ViewHolder(val item: View): RecyclerView.ViewHolder(item)
 
