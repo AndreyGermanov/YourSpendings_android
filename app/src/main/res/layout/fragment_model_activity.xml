@@ -7,10 +7,9 @@
         android:orientation="vertical"
         android:theme="@android:style/Theme.NoTitleBar"
         tools:context=".views.MainActivity">
-    <fragment android:layout_width="match_parent"
+    <FrameLayout android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:name="andrey.ru.yourspendings.views.fragments.PlacesHeaderFragment"
-              android:id="@+id/places_header_fragment"
+              android:id="@+id/header_fragment"
     />
     <FrameLayout
             android:id="@+id/fragment_container"

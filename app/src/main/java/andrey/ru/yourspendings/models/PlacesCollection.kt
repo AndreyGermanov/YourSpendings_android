@@ -15,7 +15,7 @@ object PlacesCollection: Collection<Place>() {
 
     override fun newItem(data:Map<String,Any>):Place = Place.fromHashMap(data)
 
-    fun validateItem(fields:HashMap<String,String>,callback:(result:Any) -> Unit) {
+    override fun validateItem(fields:HashMap<String,String>,callback:(result:Any) -> Unit) {
         val name = fields["name"] ?: ""
         val latitude = (fields["latitude"] ?: "").toDoubleOrNull()
         val longitude= (fields["longitude"] ?: "").toDoubleOrNull()
@@ -32,4 +32,5 @@ object PlacesCollection: Collection<Place>() {
         callback(item)
     }
 
+    override fun getListTitle() = "Places List"
 }

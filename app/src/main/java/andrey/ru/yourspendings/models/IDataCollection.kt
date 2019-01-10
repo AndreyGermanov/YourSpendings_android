@@ -8,4 +8,9 @@ interface IDataCollection<T:Model> {
     fun unsubscribe(subscriber: IDataSubscriber<T>)
     fun saveItem(fields:HashMap<String,String>,callback:(result:Any)->Unit)
     fun deleteItem(id:String,callback:(error:String?)->Unit)
+    fun getList():ArrayList<T>
+    fun getItemById(id:String):T?
+    fun newItem(data:Map<String,Any>):T
+    fun validateItem(fields:HashMap<String,String>,callback:(result:Any)->Unit)
+    fun getListTitle():String
 }

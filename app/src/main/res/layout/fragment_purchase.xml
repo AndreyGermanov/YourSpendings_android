@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:orientation="vertical"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:paddingLeft="10dp"
+             android:paddingRight="10dp"
+             android:visibility="visible"
+>
+    <TableRow android:layout_width="match_parent">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/date"
+        />
+        <EditText android:id="@+id/purchase_date"
+                  android:hint="@string/date"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+        />
+    </TableRow>
+    <TableRow android:layout_width="match_parent">
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/shop"
+        />
+        <EditText android:id="@+id/purchase_shop"
+                  android:hint="@string/shop"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+        />
+    </TableRow>
+    <TableRow>
+        <Button android:id="@+id/save_place_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/save"
+        />
+        <Button android:id="@+id/delete_place_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/delete"
+        />
+    </TableRow>
+</TableLayout>

@@ -25,7 +25,7 @@ class EntityListAdapter<T: Model>(private var dataset: List<T>,
     fun setDataSet(dataset: List<T>) { this.dataset = dataset }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.places_list_item,parent,false))
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.model_list_item,parent,false))
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

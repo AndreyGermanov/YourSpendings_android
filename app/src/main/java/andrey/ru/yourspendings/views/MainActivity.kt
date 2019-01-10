@@ -1,9 +1,10 @@
 package andrey.ru.yourspendings.views
 
 import andrey.ru.yourspendings.R
-import andrey.ru.yourspendings.views.fragments.DashboardFragment
-import andrey.ru.yourspendings.views.fragments.LoginContainerFragment
-import andrey.ru.yourspendings.views.fragments.PlacesScreenFragment
+import andrey.ru.yourspendings.views.fragments.dashboard.DashboardFragment
+import andrey.ru.yourspendings.views.fragments.login.LoginContainerFragment
+import andrey.ru.yourspendings.views.fragments.places.PlacesScreenFragment
+import andrey.ru.yourspendings.views.fragments.purchases.PurchasesScreenFragment
 import andrey.ru.yourspendings.views.viewmodels.MainViewModel
 import andrey.ru.yourspendings.views.viewmodels.Screens
 import androidx.appcompat.app.AppCompatActivity
@@ -56,11 +57,14 @@ class MainActivity : AppCompatActivity() {
         drawer.closeDrawer(GravityCompat.START)
         val transaction = supportFragmentManager.beginTransaction()
         when (screen) {
-            Screens.DASHBOARD -> transaction.replace(R.id.screen_container,DashboardFragment())
-            Screens.PLACES -> transaction.replace(R.id.screen_container,PlacesScreenFragment())
+            Screens.DASHBOARD -> transaction.replace(R.id.screen_container, DashboardFragment())
+            Screens.PLACES -> transaction.replace(R.id.screen_container, PlacesScreenFragment())
+            Screens.PURCHASES -> transaction.replace(R.id.screen_container, PurchasesScreenFragment())
             else -> {
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-                transaction.replace(R.id.screen_container, LoginContainerFragment())
+                transaction.replace(R.id.screen_container,
+                    LoginContainerFragment()
+                )
             }
         }
         transaction.commit()

@@ -3,7 +3,6 @@ package andrey.ru.yourspendings.views.fragments
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Model
 import andrey.ru.yourspendings.views.viewmodels.ScreenMode
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.view.KeyEvent
 import android.view.View
@@ -11,20 +10,18 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.lifecycle.Observer
 
-@SuppressLint("ValidFragment")
-
 /**
  * Created by Andrey Germanov on 1/9/19.
  */
-open class EntityItemFragment<T: Model>(
-    override var fragmentId:Int,
-    override var className:String): EntityScreenFragment<T>(fragmentId,className), View.OnKeyListener {
+open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
+
+    override var fragmentId:Int = 0
+    override var className:String = ""
 
     private lateinit var deleteButton: Button
     private lateinit var saveButton: Button
 
     override fun bindUI(view: View) {
-        super.bindUI(view)
         view.visibility = View.INVISIBLE
         saveButton = view.findViewById(R.id.save_place_btn)
         deleteButton = view.findViewById(R.id.delete_place_btn)
@@ -32,7 +29,6 @@ open class EntityItemFragment<T: Model>(
     }
 
     override fun setListeners(view: View) {
-        super.setListeners(view)
         viewModel.getCurrentItemId().observe(this, Observer<String> { id ->
             currentItemId = id
             prepareItemForm(view)

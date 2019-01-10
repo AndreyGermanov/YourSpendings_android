@@ -3,27 +3,21 @@ package andrey.ru.yourspendings.views.fragments
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Model
 import andrey.ru.yourspendings.views.adapters.EntityListAdapter
-import android.annotation.SuppressLint
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-@SuppressLint("ValidFragment")
 /**
  * Created by Andrey Germanov on 1/9/19.
  */
-open class EntityListFragment<T: Model>(
-    override var fragmentId:Int,
-    override var className:String): EntityScreenFragment<T>(fragmentId,className) {
+open class ModelListFragment<T: Model>: ModelFragment<T>() {
+
+    override var fragmentId:Int = R.layout.fragment_model_list
+    override var className:String = ""
 
     private lateinit var items:List<T>
     private lateinit var listAdapter: EntityListAdapter<T>
-
-    override fun setViewModel() {
-        super.setViewModel()
-        items = viewModel.getItems().value ?: ArrayList()
-    }
 
     override fun bindUI(view: View) { setupList(view) }
 
@@ -39,9 +33,9 @@ open class EntityListFragment<T: Model>(
     }
 
     private fun setupList(view: View) {
-        listAdapter = EntityListAdapter<T>(items,viewModel)
+        listAdapter = EntityListAdapter(viewModel.getItems().value ?: ArrayList(),viewModel)
         val viewManager = LinearLayoutManager(this.context)
-        view.findViewById<RecyclerView>(R.id.places_list_container).apply {
+        view.findViewById<RecyclerView>(R.id.list_container).apply {
             layoutManager = viewManager
             adapter = listAdapter
         }

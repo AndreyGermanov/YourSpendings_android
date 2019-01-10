@@ -1,4 +1,4 @@
-package andrey.ru.yourspendings.views.fragments
+package andrey.ru.yourspendings.views.fragments.login
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.viewmodels.LoginMode
@@ -34,8 +34,12 @@ open class LoginContainerFragment: Fragment() {
         viewModel.getLoginMode().observe(this, Observer { loginMode ->
             val transaction = activity!!.supportFragmentManager.beginTransaction()
             when (loginMode) {
-                LoginMode.LOGIN -> transaction.replace(R.id.fragment_login_container, LoginFragment())
-                LoginMode.REGISTER -> transaction.replace(R.id.fragment_login_container,RegisterFragment())
+                LoginMode.LOGIN -> transaction.replace(R.id.fragment_login_container,
+                    LoginFragment()
+                )
+                LoginMode.REGISTER -> transaction.replace(R.id.fragment_login_container,
+                    RegisterFragment()
+                )
                 else -> {}
             }
             transaction.commit()

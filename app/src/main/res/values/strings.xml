@@ -23,4 +23,7 @@
     <string name="purchases">Purchases</string>
     <string name="places">Places</string>
     <string name="dashboard">Dashboard</string>
+    <string name="date">Date</string>
+    <string name="shop">Shop</string>
+    <string name="select_item">Select item</string>
 </resources>

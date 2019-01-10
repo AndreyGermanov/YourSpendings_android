@@ -1,7 +1,7 @@
 package andrey.ru.yourspendings.views.viewmodels
 
 import andrey.ru.yourspendings.models.*
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
@@ -9,7 +9,8 @@ import androidx.lifecycle.ViewModelProviders
 /**
  * Created by Andrey Germanov on 1/8/19.
  */
-open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T> = Collection()): ViewModel(), IDataSubscriber<T> {
+@Suppress("UNCHECKED_CAST")
+open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): ViewModel(), IDataSubscriber<T> {
 
     private val items: MutableLiveData<List<T>> = MutableLiveData()
     private val currentItemId: MutableLiveData<String> = MutableLiveData()
@@ -24,6 +25,7 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T> = Col
 
     fun initialize() {
         Collection.subscribe(this)
+        items.postValue(Collection.getList())
     }
 
     override fun onDataChange(items: ArrayList<T>) = this.items.postValue(items)
@@ -52,8 +54,8 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T> = Col
     fun setLandscape(mode:Boolean) = isLandscape.postValue(mode)
 
     fun saveChanges(fields:HashMap<String,String>,callback:(error:String?)->Unit) {
-        PlacesCollection.saveItem(fields) { result ->
-            if (result is Place) currentItemId.postValue(result.id)
+        Collection.saveItem(fields) { result ->
+            if (result is Model) currentItemId.postValue(result.id)
             callback(result as? String ?: "Item saved successfully")
         }
     }
@@ -67,17 +69,16 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T> = Col
 
     fun setFields(fields:Map<String,String>) { this.fields = fields }
 
-    fun clearFields() = setFields(mapOf("name" to "","latitude" to "0.0","longitude" to "0.0"))
+    fun clearFields() = setFields(Collection.newItem(HashMap()).toHashMap() as Map<String,String>)
+
+    fun getListTitle() = Collection.getListTitle()
 
     companion object {
-        fun <T:Model> getViewModel(fragment: Fragment, className:String):EntityViewModel<T>? {
-            var modelClass = PlacesViewModel::class.java
-            when (className) {
-                "Place" -> modelClass = PlacesViewModel::class.java
-            }
-            return fragment.activity?.run { ViewModelProviders.of(fragment.activity!!).get(modelClass) } as? EntityViewModel<T> ?:
-            throw Exception("Invalid Activity")
-        }
+        fun <T:Model> getViewModel(activity: FragmentActivity, className:String):EntityViewModel<T>? = (when (className) {
+            "Place" -> activity.run { ViewModelProviders.of(activity).get(PlacesViewModel::class.java) }
+            "Purchase" -> activity.run { ViewModelProviders.of(activity).get(PurchasesViewModel::class.java) }
+            else -> null
+        }) as? EntityViewModel<T>
     }
 
 }

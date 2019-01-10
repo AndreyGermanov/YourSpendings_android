@@ -4,7 +4,7 @@ package andrey.ru.yourspendings.models
  * Created by Andrey Germanov on 1/4/19.
  */
 data class Place(
-    override var id:String,
+    override var id:String="",
     var name:String="",
     var latitude:Double = 0.0,
     var longitude:Double = 0.0
@@ -12,6 +12,7 @@ data class Place(
     override fun toHashMap() =
         hashMapOf("id" to id,"name" to name, "latitude" to latitude, "longitude" to longitude)
     override fun getTitle() = this.name
+
     companion object {
         fun fromHashMap(data:Map<String,Any>):Place =
             Place(

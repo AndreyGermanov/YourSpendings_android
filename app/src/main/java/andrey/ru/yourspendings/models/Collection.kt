@@ -8,11 +8,12 @@ import java.util.ArrayList
 /**
  * Created by Andrey Germanov on 1/8/19.
  */
-open class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthServiceSubscriber {
+@Suppress("UNCHECKED_CAST")
+abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthServiceSubscriber {
 
-    val items = ArrayList<T>()
-    val db = DatabaseManager.getDB()
-    val subscribers = ArrayList<IDataSubscriber<T>>()
+    protected val items = ArrayList<T>()
+    protected val db = DatabaseManager.getDB()
+    private val subscribers = ArrayList<IDataSubscriber<T>>()
 
     open val tableName
         get() = "entities"
@@ -42,9 +43,9 @@ open class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthServi
     override fun onDataChange(changes: Map<String, List<Map<String, Any>>>) {
         for (key in changes.keys) {
             when (key) {
-                "MODIFIED" -> this.modifyItems(changes[key]!!)
-                "REMOVED" -> this.deleteItems(changes[key]!!)
-                else -> this.addItems(changes[key]!!)
+                "MODIFIED" -> modifyItems(changes[key]!!)
+                "REMOVED" -> deleteItems(changes[key]!!)
+                else -> addItems(changes[key]!!)
             }
         }
         subscribers.forEach { subscriber -> subscriber.onDataChange(items) }
@@ -55,7 +56,7 @@ open class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthServi
     private fun modifyItems(changes:List<Map<String,Any>>) {
         changes.forEach {change ->
             val index = items.indexOfFirst { it.id == change["id"]!!.toString() }
-            if (index != -1) items[index] = this.newItem(change)
+            if (index != -1) items[index] = newItem(change)
         }
     }
 
@@ -67,22 +68,23 @@ open class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthServi
     }
 
     override fun saveItem(fields:HashMap<String,String>,callback:(result:Any)->Unit) {
-        PlacesCollection.validateItem(fields) { result ->
+        validateItem(fields) { result ->
             when (result) {
                 is String -> callback(result)
-                is Place ->
-                    PlacesCollection.db.saveItem(PlacesCollection.tableName, result.toHashMap()) { error ->
-                        callback(error ?: result)
-                    }
+                is Model -> db.saveItem(tableName, result.toHashMap()) { error -> callback(error ?: result)}
                 else -> callback("System error")
             }
         }
     }
 
     override fun deleteItem(id:String,callback:(error:String?)->Unit) {
-        PlacesCollection.db.deleteItem(PlacesCollection.tableName,id) { error -> callback(error) }
+        db.deleteItem(PlacesCollection.tableName,id) { error -> callback(error) }
     }
 
-    open fun newItem(data:Map<String,Any>):T = Model.fromHashMap(data) as T
+    override fun newItem(data:Map<String,Any>):T = Model.fromHashMap(data) as T
+
+    override fun getList() = items
+
+    override fun getItemById(id:String):T? = items.find { it.id == id }
 
 }

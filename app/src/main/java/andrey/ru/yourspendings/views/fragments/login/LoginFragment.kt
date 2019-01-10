@@ -1,4 +1,4 @@
-package andrey.ru.yourspendings.views.fragments
+package andrey.ru.yourspendings.views.fragments.login
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.viewmodels.LoginMode

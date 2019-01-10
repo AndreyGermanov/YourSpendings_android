@@ -13,7 +13,7 @@ class LoginViewModel: ViewModel() {
     private val mode: MutableLiveData<LoginMode> = MutableLiveData()
 
     init {
-        clearFields();
+        clearFields()
         mode.postValue(LoginMode.LOGIN)
     }
 
@@ -35,7 +35,7 @@ class LoginViewModel: ViewModel() {
         AuthManager.register(fields["login"]!!,fields["password"]!!) { error -> callback(error) }
     }
 
-    fun validateLogin():String? {
+    private fun validateLogin():String? {
         val login = fields["login"]?.trim() ?: ""
         val password = fields["password"]?.trim() ?: ""
         if (login.isEmpty()) return "Login should not be empty"
@@ -43,7 +43,7 @@ class LoginViewModel: ViewModel() {
         return null
     }
 
-    fun validateRegister():String? {
+    private fun validateRegister():String? {
         val result:String? = validateLogin()
         if (result != null) return result
         val password = fields["password"]?.trim() ?: ""

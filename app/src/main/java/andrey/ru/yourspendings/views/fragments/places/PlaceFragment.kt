@@ -1,22 +1,21 @@
-package andrey.ru.yourspendings.views.fragments
+package andrey.ru.yourspendings.views.fragments.places
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Place
 import andrey.ru.yourspendings.services.LocationManager
-import android.annotation.SuppressLint
+import andrey.ru.yourspendings.views.fragments.ModelItemFragment
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
-
-@SuppressLint("ValidFragment")
 
 /**
  * Created by Andrey Germanov on 1/5/19.
  */
 @Suppress("NAME_SHADOWING")
-class PlaceFragment(override var fragmentId:Int = R.layout.fragment_place,
-                    override var className:String = Place.getClassName())
-    : EntityItemFragment<Place>(fragmentId,className) {
+class PlaceFragment : ModelItemFragment<Place>() {
+
+    override var fragmentId:Int = R.layout.fragment_place
+    override var className:String = Place.getClassName()
 
     private lateinit var name: EditText
     private lateinit var latitude: EditText
