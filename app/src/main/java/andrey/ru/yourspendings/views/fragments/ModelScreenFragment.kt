@@ -34,7 +34,9 @@ open class ModelScreenFragment<T: Model>: ModelFragment<T>() {
     private fun switchScreen(view: View, mode: ScreenMode) {
         val transaction = activity!!.supportFragmentManager.beginTransaction()
         val list = getListFragment()
+        list.arguments = arguments
         val item = getItemFragment()
+        item.arguments = arguments
         if (view.findViewById<FrameLayout>(R.id.list_fragment) != null) {
             transaction.replace(R.id.list_fragment,list).replace(R.id.item_fragment,item).commit()
             viewModel.setLandscape(true)

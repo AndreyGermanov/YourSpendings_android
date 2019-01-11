@@ -10,6 +10,8 @@ import andrey.ru.yourspendings.views.viewmodels.ActivityEvent
 import andrey.ru.yourspendings.views.viewmodels.ActivityEventSubscriber
 import andrey.ru.yourspendings.views.viewmodels.MainViewModel
 import andrey.ru.yourspendings.views.viewmodels.Screens
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.view.GravityCompat
@@ -18,11 +20,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 
-class MainActivity : AppCompatActivity(),DialogFragmentListener {
+open class MainActivity : AppCompatActivity(),DialogFragmentListener {
 
     lateinit var drawer:DrawerLayout
     private lateinit var navigationView:NavigationView
-    private lateinit var viewModel:MainViewModel
+    lateinit var viewModel:MainViewModel
+    var RESULT_ACTIVITY_SELECTED = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +40,12 @@ class MainActivity : AppCompatActivity(),DialogFragmentListener {
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
     }
 
-    fun bindUI() {
+    open fun bindUI() {
         drawer = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
     }
 
-    fun setupListeners() {
+    open fun setupListeners() {
         viewModel.getScreen().observe(this, Observer { setupScreen(it) })
         navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
@@ -55,7 +58,7 @@ class MainActivity : AppCompatActivity(),DialogFragmentListener {
         }
     }
 
-    fun setupScreen(screen: Screens) {
+    private fun setupScreen(screen: Screens) {
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         drawer.closeDrawer(GravityCompat.START)
         val transaction = supportFragmentManager.beginTransaction()
@@ -79,5 +82,15 @@ class MainActivity : AppCompatActivity(),DialogFragmentListener {
 
     override fun onPositiveButtonClicked(subscriberId:String,result: Any?) {
         viewModel.triggerEvent(ActivityEvent(subscriberId,"dialogSubmit",result))
+    }
+
+    override fun onActivityResult(requestCode:Int, resultCode:Int,data: Intent?) {
+        if (resultCode == Activity.RESULT_CANCELED) return
+        if (requestCode == RESULT_ACTIVITY_SELECTED && data != null) {
+            viewModel.triggerEvent(ActivityEvent(
+                data.getStringExtra("subscriberId"),
+                "itemSelected",
+                data.getStringExtra("selectedItemId")))
+        }
     }
 }

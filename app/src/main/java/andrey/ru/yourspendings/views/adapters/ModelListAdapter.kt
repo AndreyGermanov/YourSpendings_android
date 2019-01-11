@@ -33,7 +33,8 @@ class ModelListAdapter<T: Model>(private var dataset: List<T>,
         label.text = dataset[position].getTitle()
         holder.item.setOnClickListener {
             viewModel.setCurrentItemId(dataset[position].id)
-            viewModel.setScreenMode(ScreenMode.ITEM)
+            if (!viewModel.isSelectMode())
+                viewModel.setScreenMode(ScreenMode.ITEM)
         }
         if (viewModel.getCurrentItemId().value == dataset[position].id)
             holder.item.setBackgroundColor(Color.GRAY)

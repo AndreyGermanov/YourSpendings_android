@@ -17,15 +17,18 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Vie
     private val screenMode: MutableLiveData<ScreenMode> = MutableLiveData()
     private val isLandscape: MutableLiveData<Boolean> = MutableLiveData()
     private var fields: Map<String,Any> = HashMap()
+    private var selectMode:Boolean? = null
 
     init {
         screenMode.postValue(ScreenMode.LIST)
         isLandscape.postValue(false)
     }
 
-    fun initialize() {
+    open fun initialize(selectMode:Boolean) {
         Collection.subscribe(this)
         items.postValue(Collection.getList())
+        if (this.selectMode == null)
+            this.selectMode = selectMode
     }
 
     override fun onDataChange(items: ArrayList<T>) = this.items.postValue(items)
@@ -80,6 +83,10 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Vie
             else -> null
         }) as? EntityViewModel<T>
     }
+
+    fun isSelectMode() = selectMode ?: false
+
+    fun setSelectMode(mode:Boolean) = {selectMode = mode}
 
 }
 

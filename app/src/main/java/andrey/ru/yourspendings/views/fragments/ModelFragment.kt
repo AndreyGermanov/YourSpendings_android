@@ -41,8 +41,12 @@ abstract class ModelFragment<T: Model>: Fragment(),ActivityEventSubscriber {
     open fun setViewModel() {
         if (className.isNotEmpty()) {
             viewModel = EntityViewModel.getViewModel(this.activity!!, className)!!
-            viewModel.initialize()
+            viewModel.initialize(arguments?.getBoolean("selectMode") ?: false)
             currentItemId = viewModel.getCurrentItemId().value ?: ""
+            if (currentItemId.isEmpty()) {
+                currentItemId = arguments?.getString("currentItemId") ?: ""
+                viewModel.setCurrentItemId(currentItemId)
+            }
         }
     }
 

@@ -51,7 +51,10 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
         subscribers.forEach { subscriber -> subscriber.onDataChange(items) }
     }
 
-    private fun addItems(changes:List<Map<String,Any>>) = changes.forEach { items.add(this.newItemFromDB(it)) }
+    private fun addItems(changes:List<Map<String,Any>>) = changes.forEach { change ->
+        val index = items.indexOfFirst { it.id == change["id"]!!.toString() }
+        if (index == -1) items.add(this.newItemFromDB(change))
+    }
 
     private fun modifyItems(changes:List<Map<String,Any>>) {
         changes.forEach {change ->
@@ -66,6 +69,8 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
             if (index != -1) items.removeAt(index)
         }
     }
+
+    fun loadList() = db.getList(tableName) { addItems(it) }
 
     override fun saveItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit) {
 

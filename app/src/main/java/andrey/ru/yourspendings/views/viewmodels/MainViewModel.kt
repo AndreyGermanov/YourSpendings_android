@@ -1,5 +1,6 @@
 package andrey.ru.yourspendings.views.viewmodels
 
+import andrey.ru.yourspendings.models.PlacesCollection
 import andrey.ru.yourspendings.services.AuthManager
 import andrey.ru.yourspendings.services.IAuthServiceSubscriber
 import androidx.lifecycle.MutableLiveData
@@ -13,7 +14,7 @@ class MainViewModel: ViewModel(),IAuthServiceSubscriber {
     private val screen: MutableLiveData<Screens> = MutableLiveData()
     private val subscribers: ArrayList<ActivityEventSubscriber> = ArrayList()
 
-    init { AuthManager.subscribe(this) }
+    init { AuthManager.subscribe(this); PlacesCollection.loadList() }
 
     fun getScreen() = screen
     fun getCurrentScreen() = screen.value ?: Screens.LOGIN
