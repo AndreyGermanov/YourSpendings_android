@@ -5,6 +5,9 @@ import andrey.ru.yourspendings.views.fragments.dashboard.DashboardFragment
 import andrey.ru.yourspendings.views.fragments.login.LoginContainerFragment
 import andrey.ru.yourspendings.views.fragments.places.PlacesScreenFragment
 import andrey.ru.yourspendings.views.fragments.purchases.PurchasesScreenFragment
+import andrey.ru.yourspendings.views.fragments.ui.DialogFragmentListener
+import andrey.ru.yourspendings.views.viewmodels.ActivityEvent
+import andrey.ru.yourspendings.views.viewmodels.ActivityEventSubscriber
 import andrey.ru.yourspendings.views.viewmodels.MainViewModel
 import andrey.ru.yourspendings.views.viewmodels.Screens
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),DialogFragmentListener {
 
     lateinit var drawer:DrawerLayout
     private lateinit var navigationView:NavigationView
@@ -69,5 +72,15 @@ class MainActivity : AppCompatActivity() {
         }
         transaction.commit()
     }
+
+    override fun onPositiveButtonClicked(subscriberId:String,result: Any?) {
+        viewModel.triggerEvent(ActivityEvent(subscriberId,"dialogSubmit",result))
+    }
+
+    fun subscribe(subscriber: ActivityEventSubscriber) = viewModel.subscribe(subscriber)
+
+    fun unsubscribe(subscriber: ActivityEventSubscriber) = viewModel.unsubscribe(subscriber)
+
+
 
 }

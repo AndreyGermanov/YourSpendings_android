@@ -4,8 +4,8 @@ import com.google.firebase.Timestamp
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.collections.HashMap
+import andrey.ru.yourspendings.extensions.*
 
 /**
  * Created by Andrey Germanov on 1/9/19.
@@ -40,14 +40,14 @@ class Purchase(override var id:String="",
         fun fromHashMap(data:Map<String,Any>):Purchase {
             return Purchase(
                 id = data["id"]?.toString() ?: "",
-                date = data["date"] as? LocalDateTime ?: LocalDateTime.now(),
+                date = DateFromAny(data["date"]),
                 place = PlacesCollection.getItemById(data["place_id"]?.toString() ?: "") ?: Place()
             )
         }
         fun fromHashMapOfDB(data:Map<String,Any>):Purchase {
             return Purchase(
                 id = data["id"]?.toString() ?: "",
-                date = LocalDateTime.ofEpochSecond(((data["date"] as? Date)?.time ?: 0)/1000,0,ZoneOffset.UTC),
+                date = DateFromAny(data["date"]),
                 place = PlacesCollection.getItemById(data["place_id"]?.toString() ?: "") ?: Place()
             )
         }

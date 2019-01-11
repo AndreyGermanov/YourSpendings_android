@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 class MainViewModel: ViewModel(),IAuthServiceSubscriber {
 
     private val screen: MutableLiveData<Screens> = MutableLiveData()
+    private val subscribers: ArrayList<ActivityEventSubscriber> = ArrayList()
 
     init { AuthManager.subscribe(this) }
 
@@ -24,7 +25,23 @@ class MainViewModel: ViewModel(),IAuthServiceSubscriber {
         if (!isAuthenticated) screen.postValue(Screens.LOGIN) else screen.postValue(Screens.DASHBOARD)
     }
 
+    fun subscribe(subscriber:ActivityEventSubscriber) {
+        if (!subscribers.contains(subscriber)) subscribers.add(subscriber)
+    }
+
+    fun unsubscribe(subscriber:ActivityEventSubscriber) {
+        if (subscribers.contains(subscriber)) subscribers.remove(subscriber)
+    }
+
+    fun triggerEvent(event:ActivityEvent) = subscribers.forEach { it.onActivityEvent(event)}
+
 }
+
+interface ActivityEventSubscriber {
+    fun onActivityEvent(event:ActivityEvent)
+}
+
+data class ActivityEvent(val subscriberId:String,val eventName:String,val eventData:Any?)
 
 enum class Screens {LOGIN,DASHBOARD,PLACES,PURCHASES}
 

@@ -13,10 +13,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/date"
         />
-        <EditText android:id="@+id/purchase_date"
+        <TextView android:id="@+id/purchase_date"
                   android:hint="@string/date"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
+                  android:clickable="true"
         />
     </TableRow>
     <TableRow android:layout_width="match_parent">
