@@ -79,7 +79,7 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
     }
 
     override fun deleteItem(id:String,callback:(error:String?)->Unit) {
-        db.deleteItem(PlacesCollection.tableName,id) { error -> callback(error) }
+        db.deleteItem(tableName,id) { error -> callback(error) }
     }
 
     override fun newItem(data:Map<String,Any>):T = Model.fromHashMap(data) as T

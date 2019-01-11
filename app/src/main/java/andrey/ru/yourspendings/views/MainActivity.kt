@@ -73,14 +73,11 @@ class MainActivity : AppCompatActivity(),DialogFragmentListener {
         transaction.commit()
     }
 
-    override fun onPositiveButtonClicked(subscriberId:String,result: Any?) {
-        viewModel.triggerEvent(ActivityEvent(subscriberId,"dialogSubmit",result))
-    }
-
     fun subscribe(subscriber: ActivityEventSubscriber) = viewModel.subscribe(subscriber)
 
     fun unsubscribe(subscriber: ActivityEventSubscriber) = viewModel.unsubscribe(subscriber)
 
-
-
+    override fun onPositiveButtonClicked(subscriberId:String,result: Any?) {
+        viewModel.triggerEvent(ActivityEvent(subscriberId,"dialogSubmit",result))
+    }
 }
