@@ -1,54 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:orientation="vertical"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:paddingLeft="10dp"
-             android:paddingRight="10dp"
-             android:visibility="visible"
->
-    <TableRow android:layout_width="match_parent">
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/date"
-        />
-        <TextView android:id="@+id/purchase_date"
-                  android:hint="@string/date"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:clickable="true"
-        />
-    </TableRow>
-    <TableRow android:layout_width="match_parent">
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/shop"
-                android:layout_gravity="center_vertical"
-        />
-        <TextView android:id="@+id/purchase_shop"
-                  android:hint="@string/shop"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_gravity="center_vertical"
-        />
-        <ImageButton android:id="@+id/select_place_btn"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:src="@drawable/ic_border_color_black_24dp"
-         />
-    </TableRow>
-    <TableRow>
-        <Button android:id="@+id/save_place_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/save"
-        />
-        <Button android:id="@+id/delete_place_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/delete"
-        />
-    </TableRow>
-</TableLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
+              android:layout_width="match_parent"
+              tools:ignore="RtlSymmetry"
+              android:layout_height="match_parent"
+              android:paddingTop="10dp"
+              android:paddingLeft="10dp"
+              android:paddingRight="10dp">
+    <TableLayout android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:visibility="visible"
+                 android:stretchColumns="1">
+        <TableRow android:layout_width="match_parent"
+                  android:paddingEnd="5dp">
+            <TextView android:layout_height="wrap_content"
+                      android:text="@string/date"
+                      android:layout_gravity="center_vertical"/>
+            <TextView android:id="@+id/purchase_date"
+                      android:hint="@string/date"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center_vertical"/>
+            <include android:id="@+id/select_date_btn"
+                     layout="@layout/include_edit_button"/>
+        </TableRow>
+        <TableRow android:layout_width="match_parent">
+            <TextView
+                    android:layout_height="wrap_content"
+                    android:text="@string/shop"
+                    android:layout_gravity="center_vertical"
+                    android:paddingEnd="5dp"/>
+            <TextView android:id="@+id/purchase_shop"
+                      android:hint="@string/shop"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center_vertical"/>
+            <include android:id="@+id/select_place_btn"
+                     layout="@layout/include_edit_button"/>
+        </TableRow>
+    </TableLayout>
+    <include layout="@layout/include_model_button_bar"/>
+</LinearLayout>

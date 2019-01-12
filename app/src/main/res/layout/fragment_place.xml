@@ -1,72 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
+              android:layout_width="match_parent"
+              tools:ignore="RtlSymmetry"
+              android:layout_height="match_parent"
+              android:paddingTop="10dp"
+              android:paddingLeft="10dp"
+              android:paddingRight="10dp">
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:paddingLeft="10dp"
-  android:paddingRight="10dp"
-  android:visibility="visible"
->
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:stretchColumns="1"
+             android:visibility="visible">
     <TableRow android:layout_width="match_parent">
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/place_name"
-        />
+                android:text="@string/place_name"/>
         <EditText android:id="@+id/place_name"
                   android:hint="@string/place_name"
                   android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-        />
+                  android:layout_height="wrap_content"/>
     </TableRow>
     <TableRow android:layout_width="match_parent">
         <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/latitude"
-        />
+                android:text="@string/latitude"/>
         <EditText android:id="@+id/place_latitude"
                   android:hint="@string/latitude"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:inputType="numberDecimal"
-        />
-        <ImageButton
-                android:id="@+id/place_latitude_button"
-                android:src="@drawable/ic_location_searching_black_24dp"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-        />
+                  android:inputType="numberDecimal"/>
+        <include android:id="@+id/place_latitude_button"
+                 layout="@layout/include_detect_button"/>
     </TableRow>
     <TableRow android:layout_width="match_parent">
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/longitude"
-        />
+        <TextView android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="@string/longitude"/>
         <EditText android:id="@+id/place_longitude"
                   android:hint="@string/longitude"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:inputType="numberDecimal"
-        />
-        <ImageButton
-                android:id="@+id/place_longitude_button"
-                android:src="@drawable/ic_location_searching_black_24dp"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-        />
-    </TableRow>
-    <TableRow>
-        <Button android:id="@+id/save_place_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/save"
-        />
-        <Button android:id="@+id/delete_place_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/delete"
-        />
+                  android:inputType="numberDecimal"/>
+        <include android:id="@+id/place_longitude_button"
+                 layout="@layout/include_detect_button"/>
     </TableRow>
 </TableLayout>
+<include layout="@layout/include_model_button_bar"/>
+</LinearLayout>

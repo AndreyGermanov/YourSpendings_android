@@ -30,11 +30,13 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
     private lateinit var date: TextView
     private lateinit var placeLabel: TextView
     private lateinit var place_id: String
+    private lateinit var dateSelectBtn: ImageButton
     private lateinit var placeSelectBtn: ImageButton
 
     override fun bindUI(view: View) {
         date = view.findViewById(R.id.purchase_date)
         placeLabel = view.findViewById(R.id.purchase_shop)
+        dateSelectBtn = view.findViewById(R.id.select_date_btn)
         placeSelectBtn = view.findViewById(R.id.select_place_btn)
         super.bindUI(view)
     }
@@ -43,7 +45,7 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         super.setListeners(view)
         date.setOnKeyListener(this)
 
-        date.setOnClickListener {
+        dateSelectBtn.setOnClickListener {
             val dateTimePicker = DateTimePickerFragment()
             val arguments = Bundle()
             arguments.putSerializable("initialDateTime",DateFromAny(date.text))
