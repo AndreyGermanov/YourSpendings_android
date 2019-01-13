@@ -1,6 +1,7 @@
 package andrey.ru.yourspendings.views.viewmodels
 
 import andrey.ru.yourspendings.models.*
+import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -87,6 +88,10 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Vie
     fun isSelectMode() = selectMode ?: false
 
     fun setSelectMode(mode:Boolean) = {selectMode = mode}
+
+    fun setContext(context: Context) { Collection.setContext(context)}
+
+    fun getContext() = Collection.getContext()
 
 }
 

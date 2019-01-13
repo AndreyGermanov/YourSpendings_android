@@ -28,4 +28,7 @@
     <string name="select_item">Select item</string>
     <string name="select">Select</string>
     <string name="edit">Edit</string>
+    <string name="images">Images</string>
+    <string name="take_a_picture">Take a Picture</string>
+    <string name="exit">Exit</string>
 </resources>

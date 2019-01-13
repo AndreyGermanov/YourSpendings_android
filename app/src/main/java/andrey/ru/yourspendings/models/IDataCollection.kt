@@ -1,5 +1,7 @@
 package andrey.ru.yourspendings.models
 
+import android.content.Context
+
 /**
  * Created by Andrey Germanov on 1/5/19.
  */
@@ -14,4 +16,6 @@ interface IDataCollection<T:Model> {
     fun newItemFromDB(data:Map<String,Any>):T
     fun validateItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit)
     fun getListTitle():String
+    fun setContext(context: Context)
+    fun getContext():Context
 }

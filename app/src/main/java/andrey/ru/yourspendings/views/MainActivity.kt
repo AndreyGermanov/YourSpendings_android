@@ -25,7 +25,9 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
     lateinit var drawer:DrawerLayout
     private lateinit var navigationView:NavigationView
     lateinit var viewModel:MainViewModel
-    var RESULT_ACTIVITY_SELECTED = 1
+    var REQUEST_SELECT_ITEM = 1
+    var REQUEST_TAKE_PICTURE_FROM_CAMERA = 2
+    var REQUEST_PURCHASE_IMAGE_TO_REMOVE = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,11 +88,22 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
 
     override fun onActivityResult(requestCode:Int, resultCode:Int,data: Intent?) {
         if (resultCode == Activity.RESULT_CANCELED) return
-        if (requestCode == RESULT_ACTIVITY_SELECTED && data != null) {
-            viewModel.triggerEvent(ActivityEvent(
-                data.getStringExtra("subscriberId"),
-                "itemSelected",
-                data.getStringExtra("selectedItemId")))
+        val subscriberId = data?.getStringExtra("subscriberId") ?: ""
+        when(requestCode) {
+            REQUEST_SELECT_ITEM ->
+                if (data != null)
+                    viewModel.triggerEvent(
+                        ActivityEvent(subscriberId, "itemSelected", data.getStringExtra("selectedItemId"))
+                    )
+            REQUEST_TAKE_PICTURE_FROM_CAMERA ->
+                viewModel.triggerEvent(
+                    ActivityEvent(subscriberId, "purchaseImageCaptured", null)
+                )
+            REQUEST_PURCHASE_IMAGE_TO_REMOVE ->
+                if (data != null)
+                    viewModel.triggerEvent(
+                        ActivityEvent(subscriberId, "purchaseImageRemoved", data.getStringExtra("imagePath"))
+                    )
         }
     }
 }

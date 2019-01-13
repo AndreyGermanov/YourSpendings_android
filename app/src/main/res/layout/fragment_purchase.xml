@@ -37,5 +37,17 @@
                      layout="@layout/include_edit_button"/>
         </TableRow>
     </TableLayout>
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="@string/images"/>
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:id="@+id/images_list_container"
+    />
+    <Button android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/take_picture_button"
+            android:text="@string/take_a_picture"/>
     <include layout="@layout/include_model_button_bar"/>
 </LinearLayout>

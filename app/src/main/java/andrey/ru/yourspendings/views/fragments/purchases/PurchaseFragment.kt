@@ -6,18 +6,30 @@ import andrey.ru.yourspendings.models.PlacesCollection
 import andrey.ru.yourspendings.models.Purchase
 import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.SelectModelActivity
+import andrey.ru.yourspendings.views.adapters.ModelImagesAdapter
 import andrey.ru.yourspendings.views.fragments.ModelItemFragment
 import andrey.ru.yourspendings.views.fragments.ui.DateTimePickerFragment
 import andrey.ru.yourspendings.views.viewmodels.ActivityEvent
+import andrey.ru.yourspendings.views.viewmodels.PurchasesViewModel
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import java.io.*
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
-@Suppress("NAME_SHADOWING")
+@Suppress("NAME_SHADOWING", "UNCHECKED_CAST")
 
 /**
  * Created by Andrey Germanov on 1/9/19.
@@ -30,14 +42,23 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
     private lateinit var date: TextView
     private lateinit var placeLabel: TextView
     private lateinit var place_id: String
+    private lateinit var images:Map<String,String>
+
     private lateinit var dateSelectBtn: ImageButton
     private lateinit var placeSelectBtn: ImageButton
+    private lateinit var takePictureBtn: Button
+
+    private lateinit var listAdapter:ModelImagesAdapter<Purchase>
 
     override fun bindUI(view: View) {
+        val viewModel = viewModel as PurchasesViewModel
         date = view.findViewById(R.id.purchase_date)
         placeLabel = view.findViewById(R.id.purchase_shop)
         dateSelectBtn = view.findViewById(R.id.select_date_btn)
         placeSelectBtn = view.findViewById(R.id.select_place_btn)
+        takePictureBtn = view.findViewById(R.id.take_picture_button)
+        viewModel.setContext(activity!!)
+        setupImagesList(view)
         super.bindUI(view)
     }
 
@@ -60,16 +81,40 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
                 putExtra("currentItemId", place_id)
                 putExtra("subscriberId",fragmentId.toString()+"-"+currentItemId)
             }
-            activity!!.startActivityForResult(intent,(activity as MainActivity).RESULT_ACTIVITY_SELECTED)
+            activity!!.startActivityForResult(intent,(activity as MainActivity).REQUEST_SELECT_ITEM)
         }
 
+        takePictureBtn.setOnClickListener {
+            takePictureFromCamera()
+        }
+    }
+
+    override fun prepareItemForm(view: View) {
+        super.prepareItemForm(view)
+        val viewModel = viewModel as PurchasesViewModel
+        val item = viewModel.getItems().value?.find { it.id == currentItemId }
+        if (viewModel.getFields()["id"] != item?.id)  viewModel.syncImageCache { listAdapter.notifyDataSetChanged() }
+
+    }
+
+    private fun takePictureFromCamera() {
+        val viewModel = viewModel as PurchasesViewModel
+        val storageDir = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val fileName = UUID.randomUUID().toString()
+        val file = File.createTempFile(fileName,".jpg",storageDir)
+        viewModel.setImagePath(file.absolutePath)
+        val fileUri = FileProvider.getUriForFile(activity!!,"andrey.ru.yourspendings.fileprovider",file)
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,fileUri)
+        activity!!.startActivityForResult(intent,(activity as MainActivity).REQUEST_TAKE_PICTURE_FROM_CAMERA)
     }
 
     override fun getFields(): HashMap<String, Any> {
         return hashMapOf(
             "date" to date.text.toString().trim(),
             "place_id" to place_id,
-            "id" to currentItemId.trim()
+            "id" to currentItemId.trim(),
+            "images" to images
         )
     }
 
@@ -78,14 +123,37 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         date.text = DateFromAny(fields["date"]).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         placeLabel.text = PlacesCollection.getItemById(fields["place_id"]?.toString() ?: "")?.name ?: ""
         place_id = fields["place_id"]?.toString() ?: ""
+        images = fields["images"] as? Map<String,String> ?: HashMap()
     }
 
     override fun onActivityEvent(event: ActivityEvent) {
+        val viewModel = viewModel as PurchasesViewModel
+        if (event.eventName == "purchaseImageCaptured") onAddImage(viewModel.getImagePath())
         if (event.subscriberId != fragmentId.toString()+"-"+currentItemId) return
         when (event.eventName) {
             "dialogSubmit" -> onDateTimeChange(event.eventData as LocalDateTime)
             "itemSelected" -> onPlaceChange(event.eventData.toString())
+            "purchaseImageRemoved"-> {onRemoveImage(event.eventData.toString())}
         }
+    }
+
+    private fun onAddImage(path:String) {
+        val file = File(path)
+        val destDir = activity!!.filesDir.absolutePath+"/images/"+currentItemId
+        Files.createDirectories(Paths.get(destDir))
+        (images as HashMap<String,String>)[file.nameWithoutExtension] = (file.lastModified()/1000).toString()
+        Files.move(Paths.get(file.absolutePath),Paths.get(destDir+"/"+file.name))
+        viewModel.setFields(getFields())
+        setFields()
+        listAdapter.notifyDataSetChanged()
+    }
+
+    private fun onRemoveImage(imagePath:String) {
+        val imageId = File(imagePath).nameWithoutExtension
+        (images as HashMap<String,String>).remove(imageId)
+        viewModel.setFields(getFields())
+        setFields()
+        listAdapter.notifyDataSetChanged()
     }
 
     private fun onDateTimeChange(datetime: LocalDateTime) {
@@ -99,4 +167,12 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         setFields()
     }
 
+    private fun setupImagesList(view: View) {
+        listAdapter = ModelImagesAdapter(viewModel)
+        val viewManager = LinearLayoutManager(this.context,LinearLayoutManager.HORIZONTAL,false)
+        view.findViewById<RecyclerView>(R.id.images_list_container).apply {
+            layoutManager = viewManager
+            adapter = listAdapter
+        }
+    }
 }

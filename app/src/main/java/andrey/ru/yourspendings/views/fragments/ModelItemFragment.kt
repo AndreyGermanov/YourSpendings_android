@@ -45,7 +45,7 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
         }
     }
 
-    private fun prepareItemForm(view: View) {
+    open fun prepareItemForm(view: View) {
         bindUI(view)
         val item = viewModel.getItems().value?.find { it.id == currentItemId }
         if (currentItemId.isNotEmpty()) view.visibility = View.VISIBLE; else view.visibility = View.INVISIBLE
@@ -62,14 +62,16 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
     }
 
     private fun saveItem() {
+        viewModel.setContext(activity!!)
         viewModel.saveChanges(getFields()) {error ->
-            if (error != null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
+            if (this.context!=null)
+                if (error != null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
         }
     }
 
     private fun deleteItem() {
         viewModel.deleteItem { error ->
-            if (error != null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
+            if (error != null && this.context!=null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
             viewModel.clearFields()
             viewModel.setCurrentItemId("")
             viewModel.setScreenMode(ScreenMode.LIST)

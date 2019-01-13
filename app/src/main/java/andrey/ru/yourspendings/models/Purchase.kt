@@ -10,9 +10,11 @@ import andrey.ru.yourspendings.extensions.*
 /**
  * Created by Andrey Germanov on 1/9/19.
  */
+@Suppress("UNCHECKED_CAST")
 class Purchase(override var id:String="",
                var date: LocalDateTime = LocalDateTime.now(),
-               var place:Place = Place()):Model(id) {
+               var place:Place = Place(),
+               var images:Map<String,String> = HashMap()):Model(id) {
 
     override fun getTitle():String {
         return formatDate()+" - "+place.name
@@ -27,6 +29,7 @@ class Purchase(override var id:String="",
         val result = super.toHashMap()
         result["place_id"] = place.id
         result["date"] = date
+        result["images"] = (HashMap<String,String>()).apply { putAll(images) }
         return result
     }
 
@@ -41,14 +44,16 @@ class Purchase(override var id:String="",
             return Purchase(
                 id = data["id"]?.toString() ?: "",
                 date = DateFromAny(data["date"]),
-                place = PlacesCollection.getItemById(data["place_id"]?.toString() ?: "") ?: Place()
+                place = PlacesCollection.getItemById(data["place_id"]?.toString() ?: "") ?: Place(),
+                images = (HashMap<String,String>()).apply { putAll((data["images"] as? Map<String,String> ?: HashMap()))}
             )
         }
         fun fromHashMapOfDB(data:Map<String,Any>):Purchase {
             return Purchase(
                 id = data["id"]?.toString() ?: "",
                 date = DateFromAny(data["date"]),
-                place = PlacesCollection.getItemById(data["place_id"]?.toString() ?: "") ?: Place()
+                place = PlacesCollection.getItemById(data["place_id"]?.toString() ?: "") ?: Place(),
+                images = (HashMap<String,String>()).apply { putAll((data["images"] as? Map<String,String> ?: HashMap()))}
             )
         }
         fun getClassName() = "Purchase"

@@ -3,6 +3,7 @@ package andrey.ru.yourspendings.models
 import andrey.ru.yourspendings.db.DatabaseManager
 import andrey.ru.yourspendings.services.AuthManager
 import andrey.ru.yourspendings.services.IAuthServiceSubscriber
+import android.content.Context
 import java.util.ArrayList
 
 /**
@@ -14,6 +15,7 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
     protected val items = ArrayList<T>()
     protected val db = DatabaseManager.getDB()
     private val subscribers = ArrayList<IDataSubscriber<T>>()
+    protected lateinit var ctx:Context
 
     open val tableName
         get() = "entities"
@@ -73,7 +75,6 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
     fun loadList() = db.getList(tableName) { addItems(it) }
 
     override fun saveItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit) {
-
         validateItem(fields) { result ->
             when (result) {
                 is String -> callback(result)
@@ -94,5 +95,9 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
     override fun getList() = items
 
     override fun getItemById(id:String):T? = items.find { it.id == id }
+
+    override fun setContext(context:Context) { ctx = context}
+
+    override fun getContext() = ctx
 
 }

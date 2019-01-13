@@ -14,6 +14,8 @@ import com.google.android.gms.location.LocationServices
  */
 object LocationManager {
     const val LOCATION_REQUEST_CODE = 1
+    const val CAMERA_REQUEST_CODE = 1
+    @SuppressLint("StaticFieldLeak")
     lateinit var client: FusedLocationProviderClient
 
     fun getLocation(callback:(latitude:Double, longitude:Double)->Unit) {
@@ -29,6 +31,9 @@ object LocationManager {
         }
         if (ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(context,arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),LOCATION_REQUEST_CODE)
+        }
+        if (ContextCompat.checkSelfPermission(context,Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(context,arrayOf(Manifest.permission.CAMERA),CAMERA_REQUEST_CODE)
         }
     }
 }
