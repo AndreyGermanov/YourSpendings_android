@@ -1,6 +1,6 @@
 package andrey.ru.yourspendings.views.adapters
 
-import andrey.ru.yourspendings.PurchaseImageActivity
+import andrey.ru.yourspendings.views.PurchaseImageActivity
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Model
 import andrey.ru.yourspendings.views.MainActivity
@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Created by Andrey Germanov on 1/7/19.
  */
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "NestedLambdaShadowedImplicitParameter")
 class ModelImagesAdapter<T: Model>(private var viewModel: EntityViewModel<T>
 ): RecyclerView.Adapter<ModelImagesAdapter<T>.ImagesViewHolder>() {
 
@@ -37,12 +37,14 @@ class ModelImagesAdapter<T: Model>(private var viewModel: EntityViewModel<T>
         val path = ctx.filesDir.absolutePath+"/images/"+viewModel.getCurrentItemId().value+"/"+dataset[position]+".jpg"
         imageView.setImageBitmap(BitmapFactory.decodeFile(path))
         imageView.setOnClickListener {
-            val intent = Intent(ctx,PurchaseImageActivity::class.java)
-            val itemId = viewModel.getCurrentItemId().value
-            intent.putExtra("subscriberId",R.layout.fragment_purchase.toString()+"-"+itemId)
-            intent.putExtra("currentItemId",position)
-            intent.putExtra("images",dataset.map { ctx.filesDir.absolutePath+"/images/"+itemId+"/"+it+".jpg"} as ArrayList<String>)
-            ctx.startActivityForResult(intent,ctx.REQUEST_PURCHASE_IMAGE_TO_REMOVE)
+            ctx.run {
+                startActivityForResult(Intent(this,PurchaseImageActivity::class.java).apply {
+                    val itemId = this@ModelImagesAdapter.viewModel.getCurrentItemId().value
+                    putExtra("subscriberId",R.layout.fragment_purchase.toString()+"-"+itemId)
+                    putExtra("currentItemId",position)
+                    putExtra("images",dataset.map { filesDir.absolutePath+"/images/"+itemId+"/"+it+".jpg"} as ArrayList<String>)
+                },REQUEST_PURCHASE_IMAGE_TO_REMOVE)
+            }
         }
     }
 }

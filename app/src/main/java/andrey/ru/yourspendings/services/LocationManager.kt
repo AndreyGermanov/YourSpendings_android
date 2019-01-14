@@ -13,8 +13,8 @@ import com.google.android.gms.location.LocationServices
  * Created by Andrey Germanov on 1/6/19.
  */
 object LocationManager {
-    const val LOCATION_REQUEST_CODE = 1
-    const val CAMERA_REQUEST_CODE = 1
+    private const val LOCATION_REQUEST_CODE = 1
+    private const val CAMERA_REQUEST_CODE = 1
     @SuppressLint("StaticFieldLeak")
     lateinit var client: FusedLocationProviderClient
 

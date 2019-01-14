@@ -1,5 +1,6 @@
-package andrey.ru.yourspendings
+package andrey.ru.yourspendings.views
 
+import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.adapters.PurchaseImagesPagerAdapter
 import andrey.ru.yourspendings.views.viewmodels.PurchaseImageViewModel
 import android.os.Bundle

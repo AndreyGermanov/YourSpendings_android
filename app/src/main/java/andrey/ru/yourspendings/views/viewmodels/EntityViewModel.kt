@@ -19,6 +19,7 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Vie
     private val isLandscape: MutableLiveData<Boolean> = MutableLiveData()
     private var fields: Map<String,Any> = HashMap()
     private var selectMode:Boolean? = null
+    var isLoaded = false
 
     init {
         screenMode.postValue(ScreenMode.LIST)

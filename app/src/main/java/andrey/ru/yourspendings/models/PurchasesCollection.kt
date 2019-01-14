@@ -36,15 +36,31 @@ object PurchasesCollection: Collection<Purchase>() {
         syncImages(getItemById(item.id),item) { error -> if (error) callback(error); else callback(item) }
     }
 
+    override fun deleteItem(id: String, callback: (error: String?) -> Unit) {
+        val oldItem = getItemById(id)
+        if (oldItem != null) {
+            val newItem = newItem(oldItem.toHashMap())
+            (newItem.images as HashMap<String,String>).clear()
+            syncImages(oldItem,newItem) {
+                super.deleteItem(id, callback)
+            }
+        } else super.deleteItem(id, callback)
+    }
+
     private fun syncImages(oldItem:Purchase?,newItem:Purchase,callback:(result:Boolean)->Unit) {
+        val storage = StorageManager.getStorage()
         syncImageCache(newItem.id,newItem.images) {
             val oldImages = oldItem?.images ?: HashMap()
             val imagesToAdd = newItem.images.filter {
                 !oldImages.containsKey(it.key) || it.value.toLong() > oldImages[it.key]!!.toLong()
             }
             val imagesToRemove = oldImages.filter { !newItem.images.containsKey(it.key) }
-            uploadImages(newItem.id,imagesToAdd) {
-                if (!it) removeImages(newItem.id, imagesToRemove) { callback(it); } else callback(it)
+            uploadImages(newItem.id,imagesToAdd) { uploadError ->
+                if (!uploadError) removeImages(newItem.id, imagesToRemove) { removeError ->
+                    if (newItem.images.isEmpty())
+                        storage.deleteFile("images/${newItem.id}") { callback(it?.isEmpty() ?: true); }
+                    else callback(removeError)
+                } else callback(uploadError)
             }
         }
     }
@@ -69,8 +85,8 @@ object PurchasesCollection: Collection<Purchase>() {
         if (images.keys.isEmpty()) {callback();return;}
         images.keys.forEach {
             if (!Files.exists(path)) Files.createDirectories(path)
-            if (Files.notExists(Paths.get("${ctx.filesDir.absolutePath}/images/${itemId}/$it.jpg"))) {
-                storage.getFile("images/$itemId/$it.jpg","${ctx.filesDir.absolutePath}/images/${itemId}/$it.jpg") {
+            if (Files.notExists(Paths.get("${ctx.filesDir.absolutePath}/images/$itemId/$it.jpg"))) {
+                storage.getFile("images/$itemId/$it.jpg","${ctx.filesDir.absolutePath}/images/$itemId/$it.jpg") {
                     counter += 1
                     if (counter == images.size) callback()
                 }

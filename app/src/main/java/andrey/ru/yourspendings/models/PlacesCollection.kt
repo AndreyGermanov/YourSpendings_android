@@ -1,11 +1,13 @@
 package andrey.ru.yourspendings.models
 
+import android.annotation.SuppressLint
 import java.util.*
 import kotlin.collections.HashMap
 
 /**
  * Created by Andrey Germanov on 1/4/19.
  */
+@SuppressLint("StaticFieldLeak")
 object PlacesCollection: Collection<Place>() {
 
     override val tableName
@@ -32,6 +34,14 @@ object PlacesCollection: Collection<Place>() {
             return
         }
         callback(item)
+    }
+
+    override fun deleteItem(id: String, callback: (error: String?) -> Unit) {
+        val item = getItemById(id)!!
+        PurchasesCollection.loadList {
+            if (!PurchasesCollection.getList().any { it.place.id == item.id }) super.deleteItem(id, callback)
+            else callback("This place used in purchases. Please remove purchases first")
+        }
     }
 
     override fun getListTitle() = "Places List"

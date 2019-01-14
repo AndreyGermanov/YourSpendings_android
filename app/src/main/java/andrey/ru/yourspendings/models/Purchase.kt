@@ -43,7 +43,7 @@ class Purchase(override var id:String="",
         fun fromHashMap(data:Map<String,Any>):Purchase {
             return Purchase(
                 id = data["id"]?.toString() ?: "",
-                date = DateFromAny(data["date"]),
+                date = dateFromAny(data["date"]),
                 place = PlacesCollection.getItemById(data["place_id"]?.toString() ?: "") ?: Place(),
                 images = (HashMap<String,String>()).apply { putAll((data["images"] as? Map<String,String> ?: HashMap()))}
             )
@@ -51,7 +51,7 @@ class Purchase(override var id:String="",
         fun fromHashMapOfDB(data:Map<String,Any>):Purchase {
             return Purchase(
                 id = data["id"]?.toString() ?: "",
-                date = DateFromAny(data["date"]),
+                date = dateFromAny(data["date"]),
                 place = PlacesCollection.getItemById(data["place_id"]?.toString() ?: "") ?: Place(),
                 images = (HashMap<String,String>()).apply { putAll((data["images"] as? Map<String,String> ?: HashMap()))}
             )

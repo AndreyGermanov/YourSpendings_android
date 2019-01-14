@@ -72,7 +72,7 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
         }
     }
 
-    fun loadList() = db.getList(tableName) { addItems(it) }
+    fun loadList(callback:(()->Unit)?=null) = db.getList(tableName) { addItems(it); if (callback!=null) callback()}
 
     override fun saveItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit) {
         validateItem(fields) { result ->

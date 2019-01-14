@@ -55,8 +55,8 @@ open class ModelHeaderFragment<T: Model>: ModelFragment<T>() {
     private fun switchHeaderMode(mode: ScreenMode, isLandscape:Boolean) {
         if (isLandscape) {
             backButton.visibility = View.GONE
-            headerTitle.text = viewModel.getListTitle()
             addButton.visibility = View.VISIBLE
+            headerTitle.text = viewModel.getListTitle()
             return
         }
         when (mode) {
@@ -66,9 +66,9 @@ open class ModelHeaderFragment<T: Model>: ModelFragment<T>() {
                 headerTitle.text = viewModel.getListTitle()
             }
             ScreenMode.ITEM -> {
-                headerTitle.text = viewModel.getCurrentItem()?.getTitle() ?: ""
                 backButton.visibility = View.VISIBLE
                 addButton.visibility = View.GONE
+                headerTitle.text = viewModel.getCurrentItem()?.getTitle() ?: ""
             }
         }
     }

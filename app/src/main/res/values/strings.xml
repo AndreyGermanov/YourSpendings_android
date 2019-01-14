@@ -31,4 +31,9 @@
     <string name="images">Images</string>
     <string name="take_a_picture">Take a Picture</string>
     <string name="exit">Exit</string>
+    <array name="imageSources">
+        <item>Camera</item>
+        <item>Picture Library</item>
+    </array>
+    <string name="imageSource">Image Source</string>
 </resources>

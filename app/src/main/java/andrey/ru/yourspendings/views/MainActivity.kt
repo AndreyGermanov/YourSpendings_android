@@ -20,14 +20,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 
+@Suppress("PropertyName")
 open class MainActivity : AppCompatActivity(),DialogFragmentListener {
 
     lateinit var drawer:DrawerLayout
     private lateinit var navigationView:NavigationView
     lateinit var viewModel:MainViewModel
-    var REQUEST_SELECT_ITEM = 1
-    var REQUEST_TAKE_PICTURE_FROM_CAMERA = 2
-    var REQUEST_PURCHASE_IMAGE_TO_REMOVE = 3
+    val REQUEST_SELECT_ITEM = 1
+    val REQUEST_TAKE_PICTURE_FROM_CAMERA = 2
+    val REQUEST_PURCHASE_IMAGE_TO_REMOVE = 3
+    val REQUEST_TAKE_PICTURE_FROM_PICTURE_LIBRARY = 4
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +40,7 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
         setupScreen(viewModel.getCurrentScreen())
     }
 
-    fun setViewModel() {
+    private fun setViewModel() {
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
     }
 
@@ -97,13 +99,19 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
                     )
             REQUEST_TAKE_PICTURE_FROM_CAMERA ->
                 viewModel.triggerEvent(
-                    ActivityEvent(subscriberId, "purchaseImageCaptured", null)
+                    ActivityEvent(subscriberId, "purchaseImageCapturedFromCamera", null)
                 )
             REQUEST_PURCHASE_IMAGE_TO_REMOVE ->
                 if (data != null)
                     viewModel.triggerEvent(
                         ActivityEvent(subscriberId, "purchaseImageRemoved", data.getStringExtra("imagePath"))
                     )
+            REQUEST_TAKE_PICTURE_FROM_PICTURE_LIBRARY ->
+                if (data != null && data.data != null)
+                    viewModel.triggerEvent(
+                        ActivityEvent(subscriberId,"purchaseImageCapturedFromLibrary",data.data)
+                    )
+
         }
     }
 }

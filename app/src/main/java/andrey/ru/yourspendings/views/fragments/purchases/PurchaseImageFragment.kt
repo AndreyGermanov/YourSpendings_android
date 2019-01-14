@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 /**
  * Created by Andrey Germanov on 1/13/19.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 class PurchaseImageFragment: Fragment() {
 
     lateinit var imageView: ImageView
@@ -31,22 +32,26 @@ class PurchaseImageFragment: Fragment() {
     }
 
     fun bindUI(view:View) {
-        imageView = view.findViewById(R.id.purchase_image)
+        with(view) {
+            imageView = findViewById(R.id.purchase_image)
+            exitButton = findViewById(R.id.exit_button)
+            deleteButton = findViewById(R.id.delete_button)
+        }
         imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath))
-        exitButton = view.findViewById(R.id.exit_button)
-        deleteButton = view.findViewById(R.id.delete_button)
     }
 
     fun setListeners() {
-        exitButton.setOnClickListener {
-            activity!!.finish()
-        }
+        exitButton.setOnClickListener { activity!!.finish() }
         deleteButton.setOnClickListener {
-            val intent = Intent()
-            intent.putExtra("imagePath",imagePath)
-            intent.putExtra("subscriberId",subscriberId)
-            activity!!.setResult(RESULT_OK,intent)
-            activity!!.finish()
+            with(activity!!) {
+                setResult(RESULT_OK,
+                    Intent().apply {
+                        putExtra("imagePath",imagePath)
+                        putExtra("subscriberId",subscriberId)
+                    }
+                )
+                finish()
+            }
         }
     }
 

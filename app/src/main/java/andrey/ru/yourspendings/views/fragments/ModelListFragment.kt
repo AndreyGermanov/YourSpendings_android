@@ -32,13 +32,19 @@ open class ModelListFragment<T: Model>: ModelFragment<T>() {
         setupButtons()
     }
 
-    fun setupButtons() {
+    private fun setupList(view: View) {
+        listAdapter = ModelListAdapter(viewModel.getItems().value ?: ArrayList(), viewModel)
+        view.findViewById<RecyclerView>(R.id.list_container).apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = listAdapter
+        }
+    }
+
+    private fun setupButtons() {
         val visibility = if (viewModel.isSelectMode()) View.VISIBLE;else View.GONE
-        selectBtn.visibility = visibility
-        editBtn.visibility = visibility
         val clickable = viewModel.getCurrentItemId().value?.isNotEmpty() ?: false
-        selectBtn.isClickable = clickable
-        editBtn.isClickable = clickable
+        selectBtn.apply { setVisibility(visibility);isClickable = clickable }
+        editBtn.apply { setVisibility(visibility);isClickable = clickable }
     }
 
     override fun setListeners(view: View) {
@@ -55,20 +61,13 @@ open class ModelListFragment<T: Model>: ModelFragment<T>() {
         editBtn.setOnClickListener { viewModel.setScreenMode(ScreenMode.ITEM) }
 
         selectBtn.setOnClickListener {
-            val intent = Intent()
-            intent.putExtra("subscriberId",arguments?.getString("subscriberId") ?: "")
-            intent.putExtra("selectedItemId",currentItemId)
-            activity!!.setResult(RESULT_OK,intent)
-            activity!!.finish()
-        }
-    }
-
-    private fun setupList(view: View) {
-        listAdapter = ModelListAdapter(viewModel.getItems().value ?: ArrayList(),viewModel)
-        val viewManager = LinearLayoutManager(this.context)
-        view.findViewById<RecyclerView>(R.id.list_container).apply {
-            layoutManager = viewManager
-            adapter = listAdapter
+            with(activity!!) {
+                setResult(RESULT_OK,Intent().apply {
+                    putExtra("subscriberId",arguments?.getString("subscriberId") ?: "")
+                    putExtra("selectedItemId",currentItemId)
+                })
+                finish()
+            }
         }
     }
 }

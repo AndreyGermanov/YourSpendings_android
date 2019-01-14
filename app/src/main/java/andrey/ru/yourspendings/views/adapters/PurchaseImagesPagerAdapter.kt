@@ -13,12 +13,9 @@ class PurchaseImagesPagerAdapter(fm:FragmentManager,val viewModel:PurchaseImageV
 
     override fun getCount(): Int = viewModel.images.size
 
-    override fun getItem(position: Int): Fragment {
-        val fragment = PurchaseImageFragment()
-        with(fragment) {
+    override fun getItem(position: Int): Fragment =
+        PurchaseImageFragment().apply {
             imagePath = viewModel.images[position]
             subscriberId = viewModel.subscriberId
         }
-        return fragment
-    }
 }

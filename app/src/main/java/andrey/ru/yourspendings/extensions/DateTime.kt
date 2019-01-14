@@ -8,7 +8,7 @@ import java.util.*
 /**
  * Created by Andrey Germanov on 1/10/19.
  */
-fun DateFromAny(value:Any?):LocalDateTime =
+fun dateFromAny(value:Any?):LocalDateTime =
     when (value) {
         is LocalDateTime -> value
         is Long -> LocalDateTime.ofEpochSecond(value,0, ZoneOffset.UTC)

@@ -63,20 +63,16 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
 
     private fun saveItem() {
         viewModel.setContext(activity!!)
-        viewModel.saveChanges(getFields()) {error ->
-            if (this.context!=null)
-                if (error != null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
+        viewModel.saveChanges(getFields()) { error ->
+            if (this.context!=null && error!=null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
         }
     }
 
     private fun deleteItem() {
         viewModel.deleteItem { error ->
             if (error != null && this.context!=null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
-            viewModel.clearFields()
-            viewModel.setCurrentItemId("")
-            viewModel.setScreenMode(ScreenMode.LIST)
+            else with (viewModel) { clearFields(); setCurrentItemId(""); setScreenMode(ScreenMode.LIST) }
         }
-
     }
 
     open fun getFields():HashMap<String,Any> = HashMap()
