@@ -24,12 +24,14 @@ open class ModelHeaderFragment<T: Model>: ModelFragment<T>() {
     private lateinit var addButton: ImageButton
 
     override fun bindUI(view: View) {
-        headerTitle = view.findViewById(R.id.header_title)
-        menuButton = view.findViewById(R.id.drawer_menu)
-        if (!className.isEmpty()) {
-            addButton = view.findViewById(R.id.add_button)
-            backButton = view.findViewById(R.id.back_button)
-        } else headerTitle.text = getString(R.string.dashboard)
+        with(view) {
+            headerTitle = findViewById(R.id.header_title)
+            menuButton = findViewById(R.id.drawer_menu)
+            if (!className.isEmpty()) {
+                addButton = findViewById(R.id.add_button)
+                backButton = findViewById(R.id.back_button)
+            } else headerTitle.text = getString(R.string.dashboard)
+        }
     }
 
     override fun setListeners(view: View) {

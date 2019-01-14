@@ -35,6 +35,8 @@
                       android:layout_gravity="center_vertical"/>
             <include android:id="@+id/select_place_btn"
                      layout="@layout/include_edit_button"/>
+            <include android:id="@+id/detect_place_btn"
+                     layout="@layout/include_detect_button"/>
         </TableRow>
     </TableLayout>
     <TextView android:layout_width="match_parent"

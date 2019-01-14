@@ -26,8 +26,10 @@ open class ModelListFragment<T: Model>: ModelFragment<T>() {
     private lateinit var editBtn:Button
 
     override fun bindUI(view: View) {
-        selectBtn = view.findViewById(R.id.select_item)
-        editBtn = view.findViewById(R.id.edit_item)
+        with(view) {
+            selectBtn = findViewById(R.id.select_item)
+            editBtn = findViewById(R.id.edit_item)
+        }
         setupList(view)
         setupButtons()
     }

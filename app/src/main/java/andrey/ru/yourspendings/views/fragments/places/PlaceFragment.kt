@@ -24,11 +24,13 @@ class PlaceFragment : ModelItemFragment<Place>() {
     private lateinit var longitudeButton: ImageButton
 
     override fun bindUI(view:View) {
-        name = view.findViewById(R.id.place_name)
-        latitude = view.findViewById(R.id.place_latitude)
-        longitude = view.findViewById(R.id.place_longitude)
-        latitudeButton = view.findViewById(R.id.place_latitude_button)
-        longitudeButton = view.findViewById(R.id.place_longitude_button)
+        with(view) {
+            name = findViewById(R.id.place_name)
+            latitude = findViewById(R.id.place_latitude)
+            longitude = findViewById(R.id.place_longitude)
+            latitudeButton = findViewById(R.id.place_latitude_button)
+            longitudeButton = findViewById(R.id.place_longitude_button)
+        }
         super.bindUI(view)
     }
 

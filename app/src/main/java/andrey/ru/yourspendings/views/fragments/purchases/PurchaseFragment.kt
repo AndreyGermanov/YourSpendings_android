@@ -4,6 +4,7 @@ import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.extensions.dateFromAny
 import andrey.ru.yourspendings.models.PlacesCollection
 import andrey.ru.yourspendings.models.Purchase
+import andrey.ru.yourspendings.services.LocationManager
 import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.SelectModelActivity
 import andrey.ru.yourspendings.views.adapters.ModelImagesAdapter
@@ -49,17 +50,20 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
 
     private lateinit var dateSelectBtn: ImageButton
     private lateinit var placeSelectBtn: ImageButton
+    private lateinit var placeDetectBtn: ImageButton
     private lateinit var takePictureBtn: Button
 
     private lateinit var listAdapter:ModelImagesAdapter<Purchase>
 
     override fun bindUI(view: View) {
-        val viewModel = viewModel as PurchasesViewModel
-        date = view.findViewById(R.id.purchase_date)
-        placeLabel = view.findViewById(R.id.purchase_shop)
-        dateSelectBtn = view.findViewById(R.id.select_date_btn)
-        placeSelectBtn = view.findViewById(R.id.select_place_btn)
-        takePictureBtn = view.findViewById(R.id.take_picture_button)
+        with (view) {
+            date = findViewById(R.id.purchase_date)
+            placeLabel = findViewById(R.id.purchase_shop)
+            dateSelectBtn = findViewById(R.id.select_date_btn)
+            placeSelectBtn = findViewById(R.id.select_place_btn)
+            placeDetectBtn = findViewById(R.id.detect_place_btn)
+            takePictureBtn = findViewById(R.id.take_picture_button)
+        }
         viewModel.setContext(activity!!)
         setupImagesList(view)
         super.bindUI(view)
@@ -74,6 +78,7 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
                 listAdapter.notifyDataSetChanged()
                 viewModel.isLoaded = true
             }
+            if (currentItemId == "new") detectPlace()
         }
     }
 
@@ -82,6 +87,16 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         view.findViewById<RecyclerView>(R.id.images_list_container).apply {
             layoutManager = LinearLayoutManager(this.context,LinearLayoutManager.HORIZONTAL,false)
             adapter = listAdapter
+        }
+    }
+
+    private fun detectPlace() {
+        LocationManager.getLocation { lat,lng ->
+            PlacesCollection.getClosestPlace(lat,lng) {
+                place_id = it?.id ?: ""
+                viewModel.setFields(getFields())
+                setFields()
+            }
         }
     }
 
@@ -107,6 +122,8 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
                 },this.REQUEST_SELECT_ITEM)
             }
         }
+
+        placeDetectBtn.setOnClickListener { detectPlace() }
 
         takePictureBtn.setOnClickListener {
             activity?.let { activity ->

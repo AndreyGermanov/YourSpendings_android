@@ -1,5 +1,6 @@
 package andrey.ru.yourspendings.models
 
+import andrey.ru.yourspendings.extensions.distance
 import android.annotation.SuppressLint
 import java.util.*
 import kotlin.collections.HashMap
@@ -45,4 +46,8 @@ object PlacesCollection: Collection<Place>() {
     }
 
     override fun getListTitle() = "Places List"
+
+    fun getClosestPlace(lat:Double,lng:Double,callback:(place:Place?)->Unit) {
+        loadList { callback(items.minBy { distance(it.latitude,it.longitude,lat,lng) })}
+    }
 }

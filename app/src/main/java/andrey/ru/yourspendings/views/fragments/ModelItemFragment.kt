@@ -22,9 +22,11 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
     private lateinit var saveButton: Button
 
     override fun bindUI(view: View) {
-        view.visibility = View.INVISIBLE
-        saveButton = view.findViewById(R.id.save_place_btn)
-        deleteButton = view.findViewById(R.id.delete_place_btn)
+        with(view) {
+            visibility = View.INVISIBLE
+            saveButton = findViewById(R.id.save_place_btn)
+            deleteButton = findViewById(R.id.delete_place_btn)
+        }
         setFields()
     }
 
