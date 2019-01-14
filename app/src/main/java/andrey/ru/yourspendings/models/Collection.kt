@@ -100,4 +100,6 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
 
     override fun getContext() = ctx
 
+    fun clear() = items.clear()
+
 }

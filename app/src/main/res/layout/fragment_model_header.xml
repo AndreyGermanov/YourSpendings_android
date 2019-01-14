@@ -12,7 +12,9 @@
             android:id="@+id/drawer_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:src="@drawable/ic_menu_black_24dp"
+            android:background="@null"
             android:contentDescription="@string/main_menu"/>
     <ImageButton
             android:visibility="gone"
@@ -20,6 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_arrow_back_black_24dp"
+            android:background="@null"
+            android:layout_gravity="center"
             android:contentDescription="@string/back"/>
     <ImageButton
             android:visibility="gone"
@@ -27,6 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add_black_24dp"
+            android:background="@null"
+            android:layout_gravity="center"
             android:contentDescription="@string/add"/>
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"

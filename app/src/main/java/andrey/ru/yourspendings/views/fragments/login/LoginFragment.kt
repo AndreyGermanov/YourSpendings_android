@@ -45,7 +45,9 @@ open class LoginFragment  (open var fragmentId:Int = R.layout.fragment_login): L
     }
 
     override fun setListeners(view:View) {
-        submitButton.setOnClickListener {viewModel.login {error ->
+        submitButton.setOnClickListener {
+            saveFields()
+            viewModel.login {error ->
                 if (error != null) {
                     Toast.makeText(this.context,error,Toast.LENGTH_LONG).show()
                 }

@@ -20,7 +20,6 @@
     <string name="register_success">Your account registered successfully. Now you can use application</string>
     <string name="main_menu">Main menu</string>
     <string name="sign_out">Sign Out</string>
-    <string name="purchases">Purchases</string>
     <string name="places">Places</string>
     <string name="dashboard">Dashboard</string>
     <string name="date">Date</string>
@@ -36,4 +35,6 @@
         <item>Picture Library</item>
     </array>
     <string name="imageSource">Image Source</string>
+    <string name="new_purchase">New purchase</string>
+    <string name="purchases">Purchases</string>
 </resources>

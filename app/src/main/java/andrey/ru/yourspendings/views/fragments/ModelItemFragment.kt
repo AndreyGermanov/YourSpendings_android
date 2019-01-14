@@ -50,6 +50,7 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
     open fun prepareItemForm(view: View) {
         bindUI(view)
         val item = viewModel.getItems().value?.find { it.id == currentItemId }
+        currentItemId = viewModel.getCurrentItemId()?.value ?: ""
         if (currentItemId.isNotEmpty()) view.visibility = View.VISIBLE; else view.visibility = View.INVISIBLE
         if (currentItemId == "new") {
             deleteButton.visibility = View.GONE

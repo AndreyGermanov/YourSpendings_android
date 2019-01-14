@@ -70,6 +70,9 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
             Screens.DASHBOARD -> transaction.replace(R.id.screen_container, DashboardFragment())
             Screens.PLACES -> transaction.replace(R.id.screen_container, PlacesScreenFragment())
             Screens.PURCHASES -> transaction.replace(R.id.screen_container, PurchasesScreenFragment())
+            Screens.NEW_PURCHASE -> transaction.replace(R.id.screen_container, PurchasesScreenFragment().apply {
+                arguments = Bundle().apply { putBoolean("newItem",true);putString("currentItemId","new") }
+            })
             else -> {
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
                 transaction.replace(R.id.screen_container,

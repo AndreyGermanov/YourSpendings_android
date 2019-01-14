@@ -24,6 +24,10 @@ open class ModelScreenFragment<T: Model>: ModelFragment<T>() {
 
     override fun bindUI(view: View) {
         activity!!.supportFragmentManager.beginTransaction().replace(R.id.header_fragment,getHeaderFragment()).commit()
+        if (arguments?.getBoolean("newItem") == true) {
+            viewModel.setScreenMode(ScreenMode.ITEM)
+            viewModel.setCurrentItemId("new")
+        }
     }
 
     override fun setListeners(view: View) {

@@ -16,13 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Created by Andrey Germanov on 1/7/19.
  */
-@Suppress("UNCHECKED_CAST", "NestedLambdaShadowedImplicitParameter")
+@Suppress("UNCHECKED_CAST")
 class ModelImagesAdapter<T: Model>(private var viewModel: EntityViewModel<T>
 ): RecyclerView.Adapter<ModelImagesAdapter<T>.ImagesViewHolder>() {
 
     inner class ImagesViewHolder(val item: View): RecyclerView.ViewHolder(item)
 
-    override fun getItemCount(): Int = (viewModel.getFields()["images"] as HashMap<String,String>).size
+    override fun getItemCount(): Int = ((viewModel.getFields()["images"] ?: HashMap<String,String>()) as HashMap<String,String>).size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImagesViewHolder =
         ImagesViewHolder(
