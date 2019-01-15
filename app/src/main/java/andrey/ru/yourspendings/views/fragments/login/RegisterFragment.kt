@@ -24,7 +24,9 @@ class RegisterFragment  (override var fragmentId:Int = R.layout.fragment_registe
     override fun setListeners(view: View) {
         super.setListeners(view)
 
-        submitButton.setOnClickListener {viewModel.register { error ->
+        submitButton.setOnClickListener {
+            saveFields()
+            viewModel.register { error ->
             if (error != null) {
                 Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
             } else {

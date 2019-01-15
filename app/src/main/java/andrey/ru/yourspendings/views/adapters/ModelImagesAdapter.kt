@@ -5,6 +5,7 @@ import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Model
 import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.viewmodels.EntityViewModel
+import andrey.ru.yourspendings.views.viewmodels.PurchasesViewModel
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
@@ -31,10 +32,12 @@ class ModelImagesAdapter<T: Model>(private var viewModel: EntityViewModel<T>
 
     override fun onBindViewHolder(holder: ImagesViewHolder, position: Int) {
         val dataset = (viewModel.getFields()["images"] as HashMap<String,String>).keys.map { it } as ArrayList<String>
+        val viewModel = viewModel as PurchasesViewModel
         dataset.sort()
         val imageView: ImageView = holder.item.findViewById(R.id.item_image)
         val ctx: MainActivity = viewModel.getContext() as MainActivity
-        val path = ctx.filesDir.absolutePath+"/images/"+viewModel.getCurrentItemId().value+"/"+dataset[position]+".jpg"
+
+        val path = "${viewModel.imgCachePath}/${viewModel.getCurrentItemId().value}/${dataset[position]}.jpg"
         imageView.setImageBitmap(BitmapFactory.decodeFile(path))
         imageView.setOnClickListener {
             ctx.run {
@@ -42,7 +45,7 @@ class ModelImagesAdapter<T: Model>(private var viewModel: EntityViewModel<T>
                     val itemId = this@ModelImagesAdapter.viewModel.getCurrentItemId().value
                     putExtra("subscriberId",R.layout.fragment_purchase.toString()+"-"+itemId)
                     putExtra("currentItemId",position)
-                    putExtra("images",dataset.map { filesDir.absolutePath+"/images/"+itemId+"/"+it+".jpg"} as ArrayList<String>)
+                    putExtra("images",dataset.map { "${viewModel.imgCachePath}/$itemId/$it.jpg"} as ArrayList<String>)
                 },REQUEST_PURCHASE_IMAGE_TO_REMOVE)
             }
         }

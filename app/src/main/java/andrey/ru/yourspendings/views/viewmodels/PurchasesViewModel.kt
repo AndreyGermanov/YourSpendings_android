@@ -10,6 +10,10 @@ import andrey.ru.yourspendings.models.PurchasesCollection
 class PurchasesViewModel(override var Collection: IDataCollection<Purchase> = PurchasesCollection)
     : EntityViewModel<Purchase>(Collection) {
     private lateinit var imagePath:String
+    val imgCloudPath
+        get() = (Collection as PurchasesCollection).imgCloudPath
+    val imgCachePath
+        get() = (Collection as PurchasesCollection).imgCachePath
     fun getImagePath() = imagePath
     fun setImagePath(path:String) { imagePath = path}
     fun syncImageCache(callback:()->Unit) {

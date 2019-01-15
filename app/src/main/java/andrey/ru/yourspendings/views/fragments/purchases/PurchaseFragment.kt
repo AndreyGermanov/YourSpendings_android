@@ -107,7 +107,7 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         dateSelectBtn.setOnClickListener {
             DateTimePickerFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable("initialDateTime", dateFromAny(date.text))
+                    putSerializable("initialDateTime", dateFromAny(date.text).minusMonths(1))
                     putString("subscriberId", fragmentId.toString() + "-" + currentItemId)
                 }
             }.show(activity!!.supportFragmentManager, "Select date")
@@ -203,7 +203,8 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
 
     private fun onAddImageFromCamera(path:String) {
         val file = File(path)
-        val destDir = activity!!.filesDir.absolutePath+"/images/"+currentItemId
+        val viewModel = viewModel as PurchasesViewModel
+        val destDir = "${viewModel.imgCachePath}/$currentItemId"
         Files.createDirectories(Paths.get(destDir))
         (images as HashMap<String,String>)[file.nameWithoutExtension] = (file.lastModified()/1000).toString()
         Files.move(Paths.get(file.absolutePath),Paths.get(destDir+"/"+file.name))
@@ -214,7 +215,8 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
 
     private fun onAddImageFromLibrary(uri:Uri) {
         val imageId = UUID.randomUUID().toString()
-        val filePath = activity!!.filesDir.absolutePath+"/images/"+currentItemId
+        val viewModel = viewModel as PurchasesViewModel
+        val filePath = "${viewModel.imgCachePath}/$currentItemId"
         Files.createDirectories(Paths.get(filePath))
         (images as HashMap<String,String>)[imageId] = (File("$filePath/$imageId.jpg").apply {
             outputStream().write(activity!!.contentResolver.openInputStream(uri)!!.readBytes()

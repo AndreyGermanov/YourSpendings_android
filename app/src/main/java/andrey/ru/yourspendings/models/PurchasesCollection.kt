@@ -1,5 +1,6 @@
 package andrey.ru.yourspendings.models
 
+import andrey.ru.yourspendings.services.AuthManager
 import andrey.ru.yourspendings.storage.StorageManager
 import android.annotation.SuppressLint
 import java.nio.file.Files
@@ -15,6 +16,12 @@ object PurchasesCollection: Collection<Purchase>() {
     override val tableName
         get() = "purchases"
 
+    val imgCachePath
+        get() = "${ctx.filesDir.absolutePath}/images/${AuthManager.userId}"
+
+    val imgCloudPath
+        get() = "images/${AuthManager.userId}"
+
     override fun getCollectionName(): String = "purchases"
 
     override fun getListTitle() = "Purchases List"
@@ -23,15 +30,15 @@ object PurchasesCollection: Collection<Purchase>() {
 
     override fun newItemFromDB(data:Map<String,Any>):Purchase = Purchase.fromHashMapOfDB(data)
 
+
     override fun validateItem(fields: HashMap<String, Any>, callback: (result: Any) -> Unit) {
         if ((fields["place_id"]?.toString() ?: "").isEmpty()) {callback("Place must be specified ");return;}
         if ((fields["date"]?.toString() ?: "").isEmpty()) {callback("Date must be specified ");return;}
         val item = newItem(fields)
         if (item.id == "new") {
-            val basePath = "${ctx.filesDir.absolutePath}/images"
             item.id = UUID.randomUUID().toString()
-            if (Files.exists(Paths.get("$basePath/new")))
-                Files.move(Paths.get("$basePath/new"),Paths.get("$basePath/${item.id}"))
+            if (Files.exists(Paths.get("$imgCachePath/new")))
+                Files.move(Paths.get("$imgCachePath/new"),Paths.get("$imgCachePath/${item.id}"))
         }
         syncImages(getItemById(item.id),item) { error -> if (error) callback(error); else callback(item) }
     }
@@ -58,7 +65,7 @@ object PurchasesCollection: Collection<Purchase>() {
             uploadImages(newItem.id,imagesToAdd) { uploadError ->
                 if (!uploadError) removeImages(newItem.id, imagesToRemove) { removeError ->
                     if (newItem.images.isEmpty())
-                        storage.deleteFile("images/${newItem.id}") { callback(it?.isEmpty() ?: true); }
+                        storage.deleteFile("$imgCloudPath/${newItem.id}") { callback(it?.isEmpty() ?: true); }
                     else callback(removeError)
                 } else callback(uploadError)
             }
@@ -66,14 +73,14 @@ object PurchasesCollection: Collection<Purchase>() {
     }
 
     fun syncImageCache(itemId:String,images:Map<String,String>,callback:()->Unit) {
-        val path = Paths.get("${ctx.filesDir.absolutePath}/images/$itemId/")
+        val path = Paths.get("$imgCachePath/$itemId/")
         if (!Files.exists(path)) Files.createDirectories(path)
         if (path.toFile().list().isNotEmpty()) {
             Files.walk(path).forEach {
                 if (!images.containsKey(it.toFile().nameWithoutExtension)) it.toFile().delete()
             }
             try {
-                Files.walk(Paths.get("${ctx.filesDir.absolutePath}/images/")).forEach {
+                Files.walk(Paths.get("$imgCachePath")).forEach {
                     if (it.toFile().isDirectory && it.toFile().list().isEmpty()) it.toFile().delete()
                 }
             } catch (e:Exception) { callback() }
@@ -85,8 +92,8 @@ object PurchasesCollection: Collection<Purchase>() {
         if (images.keys.isEmpty()) {callback();return;}
         images.keys.forEach {
             if (!Files.exists(path)) Files.createDirectories(path)
-            if (Files.notExists(Paths.get("${ctx.filesDir.absolutePath}/images/$itemId/$it.jpg"))) {
-                storage.getFile("images/$itemId/$it.jpg","${ctx.filesDir.absolutePath}/images/$itemId/$it.jpg") {
+            if (Files.notExists(Paths.get("$imgCachePath/$itemId/$it.jpg"))) {
+                storage.getFile("$imgCloudPath/$itemId/$it.jpg","$imgCachePath/$itemId/$it.jpg") {
                     counter += 1
                     if (counter == images.size) callback()
                 }
@@ -104,8 +111,7 @@ object PurchasesCollection: Collection<Purchase>() {
         var error = false
         images.keys.forEach {imageId ->
             if (error) return
-            val path = "${ctx.filesDir.absolutePath}/images/$itemId/$imageId.jpg"
-            storage.putFile(path, "images/$itemId/$imageId.jpg") {
+            storage.putFile("$imgCachePath/$itemId/$imageId.jpg", "$imgCloudPath/$itemId/$imageId.jpg") {
                 if (it==null) counter++; else { error=true;callback(error) }
                 if (counter == images.size) {callback(false);}
             }
@@ -119,7 +125,7 @@ object PurchasesCollection: Collection<Purchase>() {
         var error = false
         images.keys.forEach { imageId ->
             if (error) return
-            storage.deleteFile("images/$itemId/$imageId.jpg") {
+            storage.deleteFile("$imgCloudPath/$itemId/$imageId.jpg") {
                 if (it==null) counter++; else { error = true;callback(error) }
                 if (counter == images.size) callback(false)
             }

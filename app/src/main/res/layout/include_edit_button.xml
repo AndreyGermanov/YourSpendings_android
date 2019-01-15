@@ -3,4 +3,6 @@
              android:layout_height="wrap_content"
              android:layout_width="wrap_content"
              android:src="@drawable/ic_border_color_black_24dp"
+             android:background="@null"
+             android:paddingEnd="5dp"
 />

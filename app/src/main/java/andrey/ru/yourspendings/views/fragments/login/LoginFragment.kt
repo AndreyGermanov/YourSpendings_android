@@ -74,7 +74,7 @@ open class LoginFragment  (open var fragmentId:Int = R.layout.fragment_login): L
         password.setText(fields["password"] ?: "")
     }
 
-    private fun saveFields() = viewModel.setFields(getFields())
+    fun saveFields() = viewModel.setFields(getFields())
 
     override fun onKey(p0: View?, p1: Int, p2: KeyEvent?): Boolean {
         saveFields()

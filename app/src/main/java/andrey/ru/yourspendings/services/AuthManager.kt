@@ -13,6 +13,9 @@ object AuthManager {
     val user: FirebaseUser?
         get() = auth.currentUser
 
+    val userId: String
+        get() = auth.currentUser?.uid ?: ""
+
     val isLogin:Boolean
         get() = user != null
 

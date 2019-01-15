@@ -33,7 +33,7 @@ class DateTimePickerFragment: DialogFragment() {
             val builder = AlertDialog.Builder(it)
             builder.setView(view)
             .setPositiveButton("OK") { _: DialogInterface, _: Int ->
-                delegate.onPositiveButtonClicked(subscriberId,getDateTime())
+                delegate.onPositiveButtonClicked(subscriberId,getDateTime().plusMonths(1))
             }
                 .setNegativeButton("Cancel") {_:DialogInterface,_:Int ->}
             builder.create()
