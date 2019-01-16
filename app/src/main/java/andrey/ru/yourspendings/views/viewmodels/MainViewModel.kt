@@ -5,21 +5,27 @@ import andrey.ru.yourspendings.models.PurchasesCollection
 import andrey.ru.yourspendings.services.AuthManager
 import andrey.ru.yourspendings.services.IAuthServiceSubscriber
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 
 /**
  * Created by Andrey Germanov on 1/8/19.
  */
-class MainViewModel: ViewModel(),IAuthServiceSubscriber {
+object MainViewModel: PersistedViewModel(),IAuthServiceSubscriber {
 
-    private val screen: MutableLiveData<Screens> = MutableLiveData()
+    private var mScreen: Screens = Screens.LOGIN
+    val screenObserver:MutableLiveData<Screens> = MutableLiveData()
+
+    var screen:Screens
+        get() = mScreen
+        set(value) {
+            mScreen = value
+            screenObserver.postValue(value)
+            save()
+        }
+
     private val subscribers: ArrayList<ActivityEventSubscriber> = ArrayList()
 
     init { AuthManager.subscribe(this); PlacesCollection.loadList() }
 
-    fun getScreen() = screen
-    fun getCurrentScreen() = screen.value ?: Screens.LOGIN
-    fun setScreen(screen:Screens) = this.screen.postValue(screen)
 
     fun logout() {
         PurchasesCollection.clear()
@@ -28,7 +34,12 @@ class MainViewModel: ViewModel(),IAuthServiceSubscriber {
     }
 
     override fun onAuthStatusChanged(isAuthenticated: Boolean) {
-        if (!isAuthenticated) screen.postValue(Screens.LOGIN) else screen.postValue(Screens.DASHBOARD)
+        if (!isAuthenticated) screen = Screens.LOGIN else {
+            val state = getState()
+            var stateScreen = state["screen"]?.toString() ?: "DASHBOARD"
+            if (stateScreen == "LOGIN" || stateScreen == "REGISTER") stateScreen = "DASHBOARD"
+            screen = Screens.valueOf(stateScreen)
+        }
     }
 
     fun subscribe(subscriber:ActivityEventSubscriber) {
@@ -40,6 +51,12 @@ class MainViewModel: ViewModel(),IAuthServiceSubscriber {
     }
 
     fun triggerEvent(event:ActivityEvent) = subscribers.forEach { it.onActivityEvent(event)}
+
+    override fun getState():HashMap<String,Any> = hashMapOf("screen" to mScreen)
+
+    override fun setState(state:HashMap<String,Any>) {
+        screen = Screens.valueOf(state["screen"]?.toString() ?: "LOGIN")
+    }
 
 }
 

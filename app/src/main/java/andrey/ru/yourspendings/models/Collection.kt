@@ -15,7 +15,7 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
     protected val items = ArrayList<T>()
     protected val db = DatabaseManager.getDB()
     private val subscribers = ArrayList<IDataSubscriber<T>>()
-    protected lateinit var ctx:Context
+    lateinit var rootPath:String
 
     open val tableName
         get() = "entities"
@@ -72,7 +72,7 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
         }
     }
 
-    fun loadList(callback:(()->Unit)?=null) = db.getList(tableName) { addItems(it); if (callback!=null) callback()}
+    override fun loadList(callback:(()->Unit)?) = db.getList(tableName) { addItems(it); if (callback!=null) callback()}
 
     override fun saveItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit) {
         validateItem(fields) { result ->
@@ -96,10 +96,8 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
 
     override fun getItemById(id:String):T? = items.find { it.id == id }
 
-    override fun setContext(context:Context) { ctx = context}
-
-    override fun getContext() = ctx
-
     fun clear() = items.clear()
+
+    override fun setPath(rootPath:String) { this.rootPath = rootPath }
 
 }

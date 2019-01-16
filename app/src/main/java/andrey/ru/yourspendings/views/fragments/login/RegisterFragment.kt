@@ -36,7 +36,7 @@ class RegisterFragment  (override var fragmentId:Int = R.layout.fragment_registe
 
         link.setOnClickListener { gotoLoginMode(LoginMode.LOGIN) }
 
-        confirmPassword.setOnKeyListener(this)
+        confirmPassword.addTextChangedListener(this)
     }
 
     override fun getFields():HashMap<String,String> {
@@ -47,7 +47,7 @@ class RegisterFragment  (override var fragmentId:Int = R.layout.fragment_registe
 
     override fun loadFields() {
         super.loadFields()
-        val fields = viewModel.getFields()
+        val fields = viewModel.fields
         confirmPassword.setText(fields["confirmPassword"] ?: "")
     }
 }

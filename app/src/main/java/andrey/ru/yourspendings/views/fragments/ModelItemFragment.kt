@@ -4,6 +4,8 @@ import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Model
 import andrey.ru.yourspendings.views.viewmodels.ScreenMode
 import android.app.AlertDialog
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Button
@@ -13,7 +15,7 @@ import androidx.lifecycle.Observer
 /**
  * Created by Andrey Germanov on 1/9/19.
  */
-open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
+open class ModelItemFragment<T: Model>: ModelFragment<T>(), TextWatcher {
 
     override var fragmentId:Int = 0
     override var className:String = ""
@@ -27,11 +29,11 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
             saveButton = findViewById(R.id.save_place_btn)
             deleteButton = findViewById(R.id.delete_place_btn)
         }
-        setFields()
+        prepareItemForm(view)
     }
 
     override fun setListeners(view: View) {
-        viewModel.getCurrentItemId().observe(this, Observer<String> { id ->
+        viewModel.currentItemIdObserver.observe(this, Observer<String> { id ->
             currentItemId = id
             prepareItemForm(view)
         })
@@ -48,24 +50,23 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
     }
 
     open fun prepareItemForm(view: View) {
-        bindUI(view)
-        val item = viewModel.getItems().value?.find { it.id == currentItemId }
-        currentItemId = viewModel.getCurrentItemId()?.value ?: ""
+        currentItemId = viewModel.currentItemId
+        setFields(viewModel.fields)
+        val item = viewModel.items.find { it.id == currentItemId }
         if (currentItemId.isNotEmpty()) view.visibility = View.VISIBLE; else view.visibility = View.INVISIBLE
         if (currentItemId == "new") {
             deleteButton.visibility = View.GONE
             setFields()
         } else {
             deleteButton.visibility = View.VISIBLE
-            if (viewModel.getFields()["id"] != item?.id) {
+            if (viewModel.fields["id"] != item?.id) {
                 setFields(item?.toHashMap())
-                viewModel.setFields(getFields())
+                viewModel.fields = getFields()
             }
         }
     }
 
     private fun saveItem() {
-        viewModel.setContext(activity!!)
         viewModel.saveChanges(getFields()) { error ->
             if (this.context!=null && error!=null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
         }
@@ -74,7 +75,7 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
     private fun deleteItem() {
         viewModel.deleteItem { error ->
             if (error != null && this.context!=null) Toast.makeText(this.context,error, Toast.LENGTH_LONG).show()
-            else with (viewModel) { clearFields(); setCurrentItemId(""); setScreenMode(ScreenMode.LIST) }
+            else with (viewModel) { clearFields(); currentItemId=""; screenMode=ScreenMode.LIST }
         }
     }
 
@@ -82,8 +83,9 @@ open class ModelItemFragment<T: Model>: ModelFragment<T>(), View.OnKeyListener {
 
     open fun setFields(fields:Map<String,Any>?=null) {}
 
-    override fun onKey(p0: View?, p1: Int, p2: KeyEvent?): Boolean {
-        viewModel.setFields(getFields())
-        return false
-    }
+    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+    override fun afterTextChanged(p0: Editable?) { viewModel.fields = getFields() }
 }

@@ -35,32 +35,33 @@ open class ModelListFragment<T: Model>: ModelFragment<T>() {
     }
 
     private fun setupList(view: View) {
-        listAdapter = ModelListAdapter(viewModel.getItems().value ?: ArrayList(), viewModel)
+        listAdapter = ModelListAdapter(viewModel.items, viewModel)
         view.findViewById<RecyclerView>(R.id.list_container).apply {
             layoutManager = LinearLayoutManager(this.context)
             adapter = listAdapter
         }
+        listAdapter.notifyDataSetChanged()
     }
 
     private fun setupButtons() {
-        val visibility = if (viewModel.isSelectMode()) View.VISIBLE;else View.GONE
-        val clickable = viewModel.getCurrentItemId().value?.isNotEmpty() ?: false
+        val visibility = if (viewModel.selectMode == true) View.VISIBLE;else View.GONE
+        val clickable = viewModel.currentItemId.isNotEmpty()
         selectBtn.apply { setVisibility(visibility);isClickable = clickable }
         editBtn.apply { setVisibility(visibility);isClickable = clickable }
     }
 
     override fun setListeners(view: View) {
-        viewModel.getItems().observe(this, Observer<List<T>>{ list ->
+        viewModel.itemsObserver.observe(this, Observer<List<T>>{ list ->
             this.items = list
             listAdapter.apply { setDataSet(list); notifyDataSetChanged()}
         })
-        viewModel.getCurrentItemId().observe(this, Observer<String> { itemId ->
+        viewModel.currentItemIdObserver.observe(this, Observer<String> { itemId ->
             this.currentItemId = itemId
             listAdapter.notifyDataSetChanged()
             setupButtons()
         })
 
-        editBtn.setOnClickListener { viewModel.setScreenMode(ScreenMode.ITEM) }
+        editBtn.setOnClickListener { viewModel.screenMode = ScreenMode.ITEM }
 
         selectBtn.setOnClickListener {
             with(activity!!) {

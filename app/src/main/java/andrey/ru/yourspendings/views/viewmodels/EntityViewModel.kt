@@ -1,99 +1,120 @@
 package andrey.ru.yourspendings.views.viewmodels
 
 import andrey.ru.yourspendings.models.*
-import android.content.Context
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import com.google.gson.internal.LinkedTreeMap
 
 /**
  * Created by Andrey Germanov on 1/8/19.
  */
 @Suppress("UNCHECKED_CAST")
-open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): ViewModel(), IDataSubscriber<T> {
+open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): PersistedViewModel(), IDataSubscriber<T> {
 
-    private val items: MutableLiveData<List<T>> = MutableLiveData()
-    private val currentItemId: MutableLiveData<String> = MutableLiveData()
-    private val screenMode: MutableLiveData<ScreenMode> = MutableLiveData()
-    private val isLandscape: MutableLiveData<Boolean> = MutableLiveData()
-    private var fields: Map<String,Any> = HashMap()
-    private var selectMode:Boolean? = null
+    private var mItems:List<T> = ArrayList<T>()
+    val itemsObserver: MutableLiveData<List<T>> = MutableLiveData()
+    var items:List<T>
+        get() = mItems
+        set(value) {
+            mItems = value
+            itemsObserver.postValue(value)
+        }
+
+    private var mCurrentItemId = ""
+    val currentItemIdObserver: MutableLiveData<String> = MutableLiveData()
+    var currentItemId:String
+        get() = mCurrentItemId
+        set(value) {
+            mCurrentItemId = value
+            currentItemIdObserver.postValue(value)
+            save()
+        }
+
+    private var mScreenMode:ScreenMode = ScreenMode.LIST
+    val screenModeObserver: MutableLiveData<ScreenMode> = MutableLiveData()
+    var screenMode:ScreenMode
+        get() = mScreenMode
+        set(value) {
+            mScreenMode = value
+            screenModeObserver.postValue(value)
+            save()
+        }
+
+    private var mIsLandscape:Boolean = false
+    val isLandscapeObserver: MutableLiveData<Boolean> = MutableLiveData()
+    var isLandscape:Boolean
+        get() = mIsLandscape
+        set(value) {
+            mIsLandscape = value
+            isLandscapeObserver.postValue(value)
+            save()
+        }
+
+
+    private var mFields: Map<String,Any> = HashMap()
+    var fields:Map<String,Any>
+        get() = mFields
+        set(value) {
+            mFields = HashMap<String,Any>().apply{ putAll(value) }
+            save()
+        }
+
+    var selectMode:Boolean? = null
     var isLoaded = false
 
-    init {
-        screenMode.postValue(ScreenMode.LIST)
-        isLandscape.postValue(false)
-    }
-
-    open fun initialize(selectMode:Boolean) {
+    open fun initialize(rootPath:String,selectMode:Boolean) {
+        Collection.setPath(rootPath)
         Collection.subscribe(this)
-        items.postValue(Collection.getList())
-        if (this.selectMode == null)
-            this.selectMode = selectMode
+        Collection.loadList {
+            items = Collection.getList()
+        }
+        if (this.selectMode == null) this.selectMode = selectMode
+        super.initialize(rootPath)
     }
 
-    override fun onDataChange(items: ArrayList<T>) = this.items.postValue(items)
-
-    fun getItems() = items
-
-    fun getCurrentItemId() = currentItemId
-
-    fun setCurrentItemId(id:String) { currentItemId.postValue(id);}
-
-    fun getScreenMode() = screenMode
-
-    fun setScreenMode(mode: ScreenMode) { screenMode.postValue(mode);}
+    override fun onDataChange(items: ArrayList<T>) { this.items = items }
 
     fun getCurrentItem(): T? {
-        val id = currentItemId.value
-        val items = this.items.value
-        if (id != null && items != null) return items.find { it.id == id }
+        if (currentItemId.isNotEmpty() && items.isNotEmpty()) return items.find { it.id == currentItemId }
         return null
     }
 
-    fun isLandscapeMode():Boolean = isLandscape.value ?: false
-
-    fun getLandscape() = isLandscape
-
-    fun setLandscape(mode:Boolean) = isLandscape.postValue(mode)
-
     fun saveChanges(fields:HashMap<String,Any>,callback:(error:String?)->Unit) {
         Collection.saveItem(fields) { result ->
-            if (result is Model) currentItemId.postValue(result.id)
+            if (result is Model) currentItemId = result.id
             callback(result as? String ?: "Item saved successfully")
         }
     }
 
     fun deleteItem(callback:(error:String?)->Unit) {
-        val id = currentItemId.value ?: return
-        Collection.deleteItem(id) { error -> callback(error)}
+        if (currentItemId.isEmpty()) return
+        Collection.deleteItem(currentItemId) { error -> callback(error)}
     }
 
-    fun getFields() = fields
-
-    fun setFields(fields:Map<String,Any>) { this.fields = fields }
-
-    fun clearFields() = setFields(Collection.newItem(HashMap()).toHashMap())
+    fun clearFields() { fields = Collection.newItem(HashMap()).toHashMap() }
 
     fun getListTitle() = Collection.getListTitle()
 
     companion object {
-        fun <T:Model> getViewModel(activity: FragmentActivity, className:String):EntityViewModel<T>? = (when (className) {
-            "Place" -> activity.run { ViewModelProviders.of(activity).get(PlacesViewModel::class.java) }
-            "Purchase" -> activity.run { ViewModelProviders.of(activity).get(PurchasesViewModel::class.java) }
+        fun <T:Model> getViewModel(className:String):EntityViewModel<T>? = (when (className) {
+            "Place" -> PlacesViewModel
+            "Purchase" -> PurchasesViewModel
             else -> null
         }) as? EntityViewModel<T>
     }
 
-    fun isSelectMode() = selectMode ?: false
+    override fun getState():HashMap<String,Any> = hashMapOf(
+        "currentItemId" to mCurrentItemId,
+        "fields" to mFields,
+        "screenMode" to mScreenMode,
+        "isLandscape" to mIsLandscape
+    )
 
-    fun setSelectMode(mode:Boolean) = {selectMode = mode}
-
-    fun setContext(context: Context) { Collection.setContext(context)}
-
-    fun getContext() = Collection.getContext()
-
+    override fun setState(state: HashMap<String, Any>) {
+        mCurrentItemId = state["currentItemId"]?.toString() ?: ""
+        mFields = ((state["fields"] as? LinkedTreeMap<String, Any> ?: LinkedTreeMap()).toMap() as? HashMap<String,Any> ?: HashMap())
+        mScreenMode = ScreenMode.valueOf(state["screenMode"]?.toString() ?: "LIST")
+        mIsLandscape = state["isLandscape"]?.toString()?.toBoolean() ?: false
+    }
 }
 
 enum class ScreenMode { LIST,ITEM }

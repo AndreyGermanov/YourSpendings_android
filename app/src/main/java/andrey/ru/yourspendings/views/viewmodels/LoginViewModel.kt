@@ -2,26 +2,38 @@ package andrey.ru.yourspendings.views.viewmodels
 
 import andrey.ru.yourspendings.services.AuthManager
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.google.gson.internal.LinkedTreeMap
 
 /**
  * Created by Andrey Germanov on 1/7/19.
  */
-class LoginViewModel: ViewModel() {
+@Suppress("UNCHECKED_CAST")
+object LoginViewModel: PersistedViewModel() {
 
-    private lateinit var fields:HashMap<String,String>
-    private val mode: MutableLiveData<LoginMode> = MutableLiveData()
+    private var mFields:HashMap<String,String> = hashMapOf("login" to "","password" to "","confirmPassword" to "")
 
-    init {
-        clearFields()
-        mode.postValue(LoginMode.LOGIN)
+    var fields:HashMap<String,String>
+        get() = mFields
+        set(value) {
+            mFields = value
+            save()
+        }
+
+    private var mMode:LoginMode = LoginMode.LOGIN
+    val modeObserver: MutableLiveData<LoginMode> = MutableLiveData()
+
+    var mode:LoginMode
+        get() = mMode
+        set(value) {
+            mMode = value
+            modeObserver.postValue(value)
+            save()
+        }
+
+    fun clearFields():HashMap<String,String> {
+        fields = hashMapOf("login" to "","password" to "","confirmPassword" to "")
+        return fields
     }
-
-    fun getFields() = fields
-    fun setFields(fields:HashMap<String,String>) { this.fields = fields}
-    fun clearFields() { fields = hashMapOf("login" to "","password" to "","confirmPassword" to "") }
-    fun getLoginMode() = mode
-    fun setLoginMode(newMode:LoginMode) = mode.postValue(newMode)
 
     fun login(callback:(error:String?)->Unit) {
         val result:String? = validateLogin()
@@ -52,6 +64,15 @@ class LoginViewModel: ViewModel() {
         return null
     }
 
+    override fun getState():HashMap<String,Any> = hashMapOf(
+        "fields" to fields,
+        "mode" to mode
+    )
+
+    override fun setState(state:HashMap<String,Any>) {
+        mFields = ((state["fields"] as? LinkedTreeMap<String,String> ?: LinkedTreeMap()).toMap() as HashMap<String,String>)
+        mMode = LoginMode.valueOf(state["mode"]?.toString() ?: "LOGIN")
+    }
 }
 
 enum class LoginMode { LOGIN, REGISTER }

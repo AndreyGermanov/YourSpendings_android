@@ -39,17 +39,17 @@ open class ModelHeaderFragment<T: Model>: ModelFragment<T>() {
         menuButton.setOnClickListener { (activity as MainActivity).drawer.openDrawer(GravityCompat.START,true)}
 
         if (!className.isEmpty()) {
-            viewModel.getScreenMode().observe(this, Observer { mode ->
-                switchHeaderMode(mode, viewModel.isLandscapeMode())
+            viewModel.screenModeObserver.observe(this, Observer { mode ->
+                switchHeaderMode(mode, viewModel.isLandscape)
             })
-            viewModel.getLandscape().observe(this, Observer { isLandscape ->
-                switchHeaderMode(viewModel.getScreenMode().value!!, isLandscape)
+            viewModel.isLandscapeObserver.observe(this, Observer { isLandscape ->
+                switchHeaderMode(viewModel.screenMode, isLandscape)
             })
-            backButton.setOnClickListener { viewModel.setScreenMode(ScreenMode.LIST) }
+            backButton.setOnClickListener { viewModel.screenMode = ScreenMode.LIST }
             addButton.setOnClickListener {
                 viewModel.clearFields()
-                viewModel.setCurrentItemId("new")
-                viewModel.setScreenMode(ScreenMode.ITEM)
+                viewModel.currentItemId = "new"
+                viewModel.screenMode = ScreenMode.ITEM
             }
         }
     }

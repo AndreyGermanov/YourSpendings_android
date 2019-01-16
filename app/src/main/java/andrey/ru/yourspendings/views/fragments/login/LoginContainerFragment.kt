@@ -22,28 +22,30 @@ open class LoginContainerFragment: Fragment() {
         val view = inflater.inflate(R.layout.fragment_login_container,container,false)
         setViewModel()
         setListeners(view)
+        setupScreen(viewModel.mode)
         return view
     }
 
     open fun setViewModel() {
-        viewModel = activity?.run { ViewModelProviders.of(this).get(LoginViewModel::class.java) }
-                ?: throw Exception("Invalid Activity")
+        viewModel = LoginViewModel
+        viewModel.initialize(activity!!.filesDir.absolutePath)
     }
 
     open fun setListeners(view:View) {
-        viewModel.getLoginMode().observe(this, Observer { loginMode ->
-            val transaction = activity!!.supportFragmentManager.beginTransaction()
-            when (loginMode) {
-                LoginMode.LOGIN -> transaction.replace(R.id.fragment_login_container,
-                    LoginFragment()
-                )
-                LoginMode.REGISTER -> transaction.replace(R.id.fragment_login_container,
-                    RegisterFragment()
-                )
-                else -> {}
-            }
-            transaction.commit()
-        })
+        viewModel.modeObserver.observe(this, Observer { loginMode -> setupScreen(loginMode)})
+    }
+
+    private fun setupScreen(loginMode:LoginMode) {
+        val transaction = activity!!.supportFragmentManager.beginTransaction()
+        when (loginMode) {
+            LoginMode.LOGIN -> transaction.replace(R.id.fragment_login_container,
+                LoginFragment()
+            )
+            LoginMode.REGISTER -> transaction.replace(R.id.fragment_login_container,
+                RegisterFragment()
+            )
+        }
+        transaction.commit()
     }
 
 }

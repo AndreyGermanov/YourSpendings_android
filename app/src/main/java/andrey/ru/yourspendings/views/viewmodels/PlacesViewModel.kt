@@ -7,4 +7,4 @@ import andrey.ru.yourspendings.models.PlacesCollection
 /**
  * Created by Andrey Germanov on 1/5/19.
  */
-class PlacesViewModel(override var Collection: IDataCollection<Place> = PlacesCollection): EntityViewModel<Place>(Collection)
+object PlacesViewModel: EntityViewModel<Place>(Collection = PlacesCollection)

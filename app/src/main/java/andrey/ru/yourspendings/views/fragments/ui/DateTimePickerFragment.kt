@@ -11,7 +11,6 @@ import android.view.View
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.ViewModelProviders
 import java.lang.ClassCastException
 import java.time.LocalDateTime
 
@@ -54,16 +53,17 @@ class DateTimePickerFragment: DialogFragment() {
     }
 
     private fun setViewModel() {
-        viewModel = ViewModelProviders.of(this).get(DateTimePickerViewModel::class.java)
+        viewModel = DateTimePickerViewModel.apply {initialize(this@DateTimePickerFragment.activity!!.filesDir.absolutePath)}
+
         subscriberId = arguments?.getString("subscriberId").toString()
-        if (viewModel.getDate() == null) viewModel.setDate(arguments?.getSerializable("initialDateTime") as LocalDateTime)
+        if (viewModel.date == null) viewModel.date = arguments?.getSerializable("initialDateTime") as LocalDateTime
     }
 
     private fun bindUI(view: View) {
         datePicker = view.findViewById(R.id.date_picker)
         timePicker = view.findViewById(R.id.time_picker)
 
-        val date = viewModel.getDate()!!
+        val date = viewModel.date!!
         datePicker.updateDate(date.year, date.monthValue, date.dayOfMonth)
         timePicker.hour = date.hour
         timePicker.minute = date.minute
@@ -71,18 +71,22 @@ class DateTimePickerFragment: DialogFragment() {
 
     private fun setListeners() {
         datePicker.setOnDateChangedListener {_,year,month,day ->
-            val date = viewModel.getDate()!!
-            viewModel.setDate(LocalDateTime.of(year,month,day,date.hour,date.minute))
+            val date = viewModel.date!!
+            var month = month
+            if (month < 1) month = 1
+            viewModel.date = LocalDateTime.of(year,month,day,date.hour,date.minute)
         }
         timePicker.setOnTimeChangedListener { _, hour, minute ->
-            val date = viewModel.getDate()!!
-            viewModel.setDate(LocalDateTime.of(date.year,date.monthValue,date.dayOfMonth,hour,minute))
+            val date = viewModel.date!!
+            viewModel.date = LocalDateTime.of(date.year,date.monthValue,date.dayOfMonth,hour,minute)
         }
     }
 
     private fun getDateTime():LocalDateTime {
+        var month = datePicker.month
+        if (month<1) month = 1
         return LocalDateTime.of(
-            datePicker.year, datePicker.month, datePicker.dayOfMonth,
+            datePicker.year, month, datePicker.dayOfMonth,
             timePicker.hour, timePicker.minute
         )
     }

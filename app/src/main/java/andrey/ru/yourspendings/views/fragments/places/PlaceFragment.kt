@@ -37,9 +37,9 @@ class PlaceFragment : ModelItemFragment<Place>() {
     override fun setListeners(view:View) {
         super.setListeners(view)
 
-        name.setOnKeyListener(this)
-        latitude.setOnKeyListener(this)
-        longitude.setOnKeyListener(this)
+        name.addTextChangedListener(this)
+        latitude.addTextChangedListener(this)
+        longitude.addTextChangedListener(this)
 
         latitudeButton.setOnClickListener { LocationManager.getLocation { lat, _ -> setCoordinate(latitude,lat) }}
         longitudeButton.setOnClickListener { LocationManager.getLocation { _, lng -> setCoordinate(longitude, lng) }}
@@ -53,7 +53,8 @@ class PlaceFragment : ModelItemFragment<Place>() {
         )
 
     override fun setFields(fields:Map<String,Any>?) {
-        val fields = fields ?: viewModel.getFields()
+        var fields = fields ?: viewModel.fields
+        if (fields.isEmpty()) fields = viewModel.fields
         name.setText(fields["name"]?.toString() ?: "")
         latitude.setText(fields["latitude"]?.toString() ?: "0.0")
         longitude.setText(fields["longitude"]?.toString() ?: "0.0")
@@ -61,6 +62,6 @@ class PlaceFragment : ModelItemFragment<Place>() {
 
     private fun setCoordinate(field:EditText,value:Double) {
         field.setText(value.toString())
-        viewModel.setFields(getFields())
+        viewModel.fields = getFields()
     }
 }

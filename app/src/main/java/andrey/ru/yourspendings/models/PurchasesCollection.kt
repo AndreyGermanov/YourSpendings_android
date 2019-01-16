@@ -17,7 +17,7 @@ object PurchasesCollection: Collection<Purchase>() {
         get() = "purchases"
 
     val imgCachePath
-        get() = "${ctx.filesDir.absolutePath}/images/${AuthManager.userId}"
+        get() = "$rootPath/images/${AuthManager.userId}"
 
     val imgCloudPath
         get() = "images/${AuthManager.userId}"
@@ -65,9 +65,9 @@ object PurchasesCollection: Collection<Purchase>() {
             uploadImages(newItem.id,imagesToAdd) { uploadError ->
                 if (!uploadError) removeImages(newItem.id, imagesToRemove) { removeError ->
                     if (newItem.images.isEmpty())
-                        storage.deleteFile("$imgCloudPath/${newItem.id}") { callback(it?.isEmpty() ?: true); }
+                        storage.deleteFile("$imgCloudPath/${newItem.id}") { callback(it?.isEmpty() ?: false); }
                     else callback(removeError)
-                } else callback(uploadError)
+                } else {callback(uploadError)}
             }
         }
     }
@@ -80,7 +80,7 @@ object PurchasesCollection: Collection<Purchase>() {
                 if (!images.containsKey(it.toFile().nameWithoutExtension)) it.toFile().delete()
             }
             try {
-                Files.walk(Paths.get("$imgCachePath")).forEach {
+                Files.walk(Paths.get(imgCachePath)).forEach {
                     if (it.toFile().isDirectory && it.toFile().list().isEmpty()) it.toFile().delete()
                 }
             } catch (e:Exception) { callback() }

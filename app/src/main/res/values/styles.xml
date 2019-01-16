@@ -6,6 +6,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="button">
+        <item name="android:background">@color/blue</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
     <style name="headerText">
         <item name="android:textColor">#FFFFFF</item>
     </style>

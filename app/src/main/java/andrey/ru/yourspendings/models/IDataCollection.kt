@@ -10,12 +10,12 @@ interface IDataCollection<T:Model> {
     fun unsubscribe(subscriber: IDataSubscriber<T>)
     fun saveItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit)
     fun deleteItem(id:String,callback:(error:String?)->Unit)
+    fun loadList(callback:(()->Unit)?=null)
     fun getList():ArrayList<T>
     fun getItemById(id:String):T?
     fun newItem(data:Map<String,Any>):T
     fun newItemFromDB(data:Map<String,Any>):T
     fun validateItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit)
     fun getListTitle():String
-    fun setContext(context: Context)
-    fun getContext():Context
+    fun setPath(rootPath:String)
 }

@@ -12,16 +12,16 @@ import andrey.ru.yourspendings.views.viewmodels.MainViewModel
 import andrey.ru.yourspendings.views.viewmodels.Screens
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 
 @Suppress("PropertyName")
-open class MainActivity : AppCompatActivity(),DialogFragmentListener {
+open class MainActivity : FragmentActivity(),DialogFragmentListener {
 
     lateinit var drawer:DrawerLayout
     private lateinit var navigationView:NavigationView
@@ -37,11 +37,12 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
         setViewModel()
         bindUI()
         setupListeners()
-        setupScreen(viewModel.getCurrentScreen())
+        setupScreen(viewModel.screen)
     }
 
     private fun setViewModel() {
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        viewModel = MainViewModel
+        viewModel.initialize(this.filesDir.absolutePath)
     }
 
     open fun bindUI() {
@@ -50,12 +51,15 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
     }
 
     open fun setupListeners() {
-        viewModel.getScreen().observe(this, Observer { setupScreen(it) })
+        viewModel.screenObserver.observe(this, Observer {
+            setupScreen(it)
+        })
+
         navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.nav_dashboard -> viewModel.setScreen(Screens.DASHBOARD)
-                R.id.nav_places -> viewModel.setScreen(Screens.PLACES)
-                R.id.nav_purchases -> viewModel.setScreen(Screens.PURCHASES)
+                R.id.nav_dashboard -> viewModel.screen = Screens.DASHBOARD
+                R.id.nav_places -> viewModel.screen = Screens.PLACES
+                R.id.nav_purchases -> viewModel.screen = Screens.PURCHASES
                 R.id.nav_signout -> viewModel.logout()
             }
             true
@@ -105,10 +109,11 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
                     ActivityEvent(subscriberId, "purchaseImageCapturedFromCamera", null)
                 )
             REQUEST_PURCHASE_IMAGE_TO_REMOVE ->
-                if (data != null)
+                if (data != null) {
                     viewModel.triggerEvent(
                         ActivityEvent(subscriberId, "purchaseImageRemoved", data.getStringExtra("imagePath"))
                     )
+                }
             REQUEST_TAKE_PICTURE_FROM_PICTURE_LIBRARY ->
                 if (data != null && data.data != null)
                     viewModel.triggerEvent(
@@ -117,4 +122,5 @@ open class MainActivity : AppCompatActivity(),DialogFragmentListener {
 
         }
     }
+
 }

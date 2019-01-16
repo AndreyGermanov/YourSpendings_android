@@ -25,9 +25,10 @@ class PurchaseImageActivity: AppCompatActivity() {
     }
 
     private fun setViewModel() {
-        viewModel = ViewModelProviders.of(this).get(PurchaseImageViewModel::class.java)
-        if (viewModel.currentImageId == -1) viewModel.currentImageId = intent.getIntExtra("currentItemId",0)
-        if (viewModel.subscriberId.isEmpty()) viewModel.subscriberId = intent.getStringExtra("subscriberId")
+        viewModel = PurchaseImageViewModel
+        viewModel.initialize(filesDir.absolutePath)
+        viewModel.subscriberId = intent.getStringExtra("subscriberId")
+        viewModel.currentImageId = intent.getIntExtra("currentItemId",0)
         viewModel.images = intent.getSerializableExtra("images") as? ArrayList<String> ?: ArrayList()
     }
 

@@ -29,14 +29,14 @@ class DashboardFragment: Fragment() {
     }
 
     private fun setViewModel() {
-        viewModel = activity.run { ViewModelProviders.of(activity!!).get(MainViewModel::class.java)}
+        viewModel = MainViewModel
     }
 
     private fun setListeners(view:View) {
         with(view) {
-            findViewById<Button>(R.id.new_purchase_button).setOnClickListener { viewModel.setScreen(Screens.NEW_PURCHASE)}
-            findViewById<Button>(R.id.purchases_list_button).setOnClickListener { viewModel.setScreen(Screens.PURCHASES)}
-            findViewById<Button>(R.id.places_list_button).setOnClickListener { viewModel.setScreen(Screens.PLACES)}
+            findViewById<Button>(R.id.new_purchase_button).setOnClickListener { viewModel.screen = Screens.NEW_PURCHASE}
+            findViewById<Button>(R.id.purchases_list_button).setOnClickListener { viewModel.screen = Screens.PURCHASES}
+            findViewById<Button>(R.id.places_list_button).setOnClickListener { viewModel.screen = Screens.PLACES}
             findViewById<Button>(R.id.logout_button).setOnClickListener {viewModel.logout()}
         }
     }

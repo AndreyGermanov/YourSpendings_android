@@ -25,14 +25,15 @@ open class ModelScreenFragment<T: Model>: ModelFragment<T>() {
     override fun bindUI(view: View) {
         activity!!.supportFragmentManager.beginTransaction().replace(R.id.header_fragment,getHeaderFragment()).commit()
         if (arguments?.getBoolean("newItem") == true) {
-            viewModel.setScreenMode(ScreenMode.ITEM)
-            viewModel.setCurrentItemId("new")
+            viewModel.screenMode = ScreenMode.ITEM
+            viewModel.currentItemId = "new"
         }
+        switchScreen(view,viewModel.screenMode)
     }
 
     override fun setListeners(view: View) {
         if (className.isNotEmpty())
-            viewModel.getScreenMode().observe(this, Observer { switchScreen(view, it) })
+            viewModel.screenModeObserver.observe(this, Observer { switchScreen(view, it) })
     }
 
     private fun switchScreen(view: View, mode: ScreenMode) {
@@ -43,7 +44,7 @@ open class ModelScreenFragment<T: Model>: ModelFragment<T>() {
         item.arguments = arguments
         if (view.findViewById<FrameLayout>(R.id.list_fragment) != null) {
             transaction.replace(R.id.list_fragment,list).replace(R.id.item_fragment,item).commit()
-            viewModel.setLandscape(true)
+            viewModel.isLandscape = true
             return
         }
         when (mode) {
@@ -54,7 +55,7 @@ open class ModelScreenFragment<T: Model>: ModelFragment<T>() {
                 transaction.replace(R.id.fragment_container,item).commit()
             }
         }
-        viewModel.setLandscape(false)
+        viewModel.isLandscape = false
     }
 
     private fun getListFragment():ModelListFragment<T> {

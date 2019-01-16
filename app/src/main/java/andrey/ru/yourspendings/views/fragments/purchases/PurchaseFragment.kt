@@ -27,8 +27,10 @@ import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.*
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -64,7 +66,6 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
             placeDetectBtn = findViewById(R.id.detect_place_btn)
             takePictureBtn = findViewById(R.id.take_picture_button)
         }
-        viewModel.setContext(activity!!)
         setupImagesList(view)
         super.bindUI(view)
     }
@@ -72,8 +73,8 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
     override fun prepareItemForm(view: View) {
         super.prepareItemForm(view)
         val viewModel = viewModel as PurchasesViewModel
-        val item = viewModel.getItems().value?.find { it.id == currentItemId }
-        if (viewModel.getFields()["id"] != item?.id || !viewModel.isLoaded) {
+        val item = viewModel.items.find { it.id == currentItemId }
+        if (viewModel.fields["id"] != item?.id || !viewModel.isLoaded) {
             viewModel.syncImageCache {
                 listAdapter.notifyDataSetChanged()
                 viewModel.isLoaded = true
@@ -83,7 +84,7 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
     }
 
     private fun setupImagesList(view: View) {
-        listAdapter = ModelImagesAdapter(viewModel)
+        listAdapter = ModelImagesAdapter(viewModel,activity!!)
         view.findViewById<RecyclerView>(R.id.images_list_container).apply {
             layoutManager = LinearLayoutManager(this.context,LinearLayoutManager.HORIZONTAL,false)
             adapter = listAdapter
@@ -94,7 +95,7 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         LocationManager.getLocation { lat,lng ->
             PlacesCollection.getClosestPlace(lat,lng) {
                 place_id = it?.id ?: ""
-                viewModel.setFields(getFields())
+                viewModel.fields = getFields()
                 setFields()
             }
         }
@@ -102,7 +103,6 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
 
     override fun setListeners(view: View) {
         super.setListeners(view)
-        date.setOnKeyListener(this)
 
         dateSelectBtn.setOnClickListener {
             DateTimePickerFragment().apply {
@@ -145,7 +145,8 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         val storageDir = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         val fileName = UUID.randomUUID().toString()
         val file = File.createTempFile(fileName,".jpg",storageDir)
-        viewModel.setImagePath(file.absolutePath)
+        viewModel.imagePath = file.absolutePath
+        Files.write(Paths.get(file.absolutePath),listOf(""), Charset.forName("UTF8"),StandardOpenOption.CREATE)
         val fileUri = FileProvider.getUriForFile(activity!!,"andrey.ru.yourspendings.fileprovider",file)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT,fileUri)
@@ -171,7 +172,7 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
     }
 
     override fun setFields(fields:Map<String,Any>?) {
-        val fields = fields ?: viewModel.getFields()
+        val fields = fields ?: viewModel.fields
         date.text = dateFromAny(fields["date"]).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         placeLabel.text = PlacesCollection.getItemById(fields["place_id"]?.toString() ?: "")?.name ?: ""
         place_id = fields["place_id"]?.toString() ?: ""
@@ -180,9 +181,9 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
 
     override fun onActivityEvent(event: ActivityEvent) {
         val viewModel = viewModel as PurchasesViewModel
-        if (event.eventName == "purchaseImageCapturedFromCamera") onAddImageFromCamera(viewModel.getImagePath())
+        if (event.eventName == "purchaseImageCapturedFromCamera") onAddImageFromCamera(viewModel.imagePath)
         if (event.eventName == "purchaseImageCapturedFromLibrary") onAddImageFromLibrary(event.eventData as Uri)
-        if (event.subscriberId != fragmentId.toString()+"-"+currentItemId) return
+        if (event.subscriberId != fragmentId.toString()+"-"+viewModel.currentItemId) return
         when (event.eventName) {
             "dialogSubmit" -> onDateTimeChange(event.eventData as LocalDateTime)
             "itemSelected" -> onPlaceChange(event.eventData.toString())
@@ -191,13 +192,13 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
     }
 
     private fun onDateTimeChange(datetime: LocalDateTime) {
-        date.text = datetime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        viewModel.setFields(getFields())
+        date.text = datetime.minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        viewModel.fields = getFields()
     }
 
     private fun onPlaceChange(placeId: String) {
         place_id = placeId
-        viewModel.setFields(getFields())
+        viewModel.fields = getFields()
         setFields()
     }
 
@@ -206,9 +207,14 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         val viewModel = viewModel as PurchasesViewModel
         val destDir = "${viewModel.imgCachePath}/$currentItemId"
         Files.createDirectories(Paths.get(destDir))
-        (images as HashMap<String,String>)[file.nameWithoutExtension] = (file.lastModified()/1000).toString()
-        Files.move(Paths.get(file.absolutePath),Paths.get(destDir+"/"+file.name))
-        viewModel.setFields(getFields())
+        (images as MutableMap<String,Any>)[file.nameWithoutExtension] = (file.lastModified()/1000).toString()
+        if (Files.exists(Paths.get(file.absolutePath))) {
+//Files.write(Paths.get(destDir + "/" + file.name),Files.readAllLines(Paths.get(file.absolutePath)),StandardOpenOption.CREATE)
+            Files.move(Paths.get(file.absolutePath), Paths.get(destDir + "/" + file.name))
+        } else {
+            return
+        }
+        viewModel.fields = getFields()
         setFields()
         listAdapter.notifyDataSetChanged()
     }
@@ -218,18 +224,18 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         val viewModel = viewModel as PurchasesViewModel
         val filePath = "${viewModel.imgCachePath}/$currentItemId"
         Files.createDirectories(Paths.get(filePath))
-        (images as HashMap<String,String>)[imageId] = (File("$filePath/$imageId.jpg").apply {
+        (images as MutableMap<String,String>)[imageId] = (File("$filePath/$imageId.jpg").apply {
             outputStream().write(activity!!.contentResolver.openInputStream(uri)!!.readBytes()
         )}.lastModified()/1000).toString()
-        viewModel.setFields(getFields())
+        viewModel.fields = getFields()
         setFields()
         listAdapter.notifyDataSetChanged()
     }
 
     private fun onRemoveImage(imagePath:String) {
         val imageId = File(imagePath).nameWithoutExtension
-        (images as HashMap<String,String>).remove(imageId)
-        viewModel.setFields(getFields())
+        (images as MutableMap<String,String>).remove(imageId)
+        viewModel.fields = getFields()
         setFields()
         listAdapter.notifyDataSetChanged()
     }

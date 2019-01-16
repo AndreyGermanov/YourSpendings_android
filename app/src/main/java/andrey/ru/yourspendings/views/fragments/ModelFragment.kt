@@ -40,12 +40,12 @@ abstract class ModelFragment<T: Model>: Fragment(),ActivityEventSubscriber {
 
     open fun setViewModel() {
         if (className.isNotEmpty()) {
-            viewModel = EntityViewModel.getViewModel(this.activity!!, className)!!
-            viewModel.initialize(arguments?.getBoolean("selectMode") ?: false)
-            currentItemId = viewModel.getCurrentItemId().value ?: ""
+            viewModel = EntityViewModel.getViewModel(className)!!
+            viewModel.initialize(activity!!.filesDir.absolutePath,arguments?.getBoolean("selectMode") ?: false)
+            currentItemId = viewModel.currentItemId
             if (currentItemId.isEmpty()) {
                 currentItemId = arguments?.getString("currentItemId") ?: ""
-                viewModel.setCurrentItemId(currentItemId)
+                viewModel.currentItemId = currentItemId
             }
         }
     }
