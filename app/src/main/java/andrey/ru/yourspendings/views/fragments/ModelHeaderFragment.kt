@@ -35,7 +35,6 @@ open class ModelHeaderFragment<T: Model>: ModelFragment<T>() {
     }
 
     override fun setListeners(view: View) {
-
         menuButton.setOnClickListener { (activity as MainActivity).drawer.openDrawer(GravityCompat.START,true)}
 
         if (!className.isEmpty()) {

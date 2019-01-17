@@ -61,13 +61,10 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Per
     var selectMode:Boolean? = null
     var isLoaded = false
 
-    open fun initialize(rootPath:String,selectMode:Boolean) {
+    override fun initialize(rootPath:String) {
         Collection.setPath(rootPath)
         Collection.subscribe(this)
-        Collection.loadList {
-            items = Collection.getList()
-        }
-        if (this.selectMode == null) this.selectMode = selectMode
+        items = Collection.getList()
         super.initialize(rootPath)
     }
 
@@ -95,16 +92,35 @@ open class EntityViewModel<T:Model>(open val Collection:IDataCollection<T>): Per
     fun getListTitle() = Collection.getListTitle()
 
     companion object {
-        fun <T:Model> getViewModel(className:String):EntityViewModel<T>? = (when (className) {
-            "Place" -> PlacesViewModel
-            "Purchase" -> PurchasesViewModel
+        fun <T : Model> getViewModel(className: String, selectMode: Boolean): EntityViewModel<T>? = (when (className) {
+            "Place" -> {
+                val id = PlacesViewModel().apply {this.selectMode = selectMode}.getId()
+                if (instances.containsKey(id)) instances[id]
+                else {
+                    instances[id] = PlacesViewModel().apply { this.selectMode = selectMode }; instances[id]
+                }
+            }
+            "Purchase" -> {
+                val id = PurchasesViewModel().apply {this.selectMode = selectMode}.getId()
+                if (instances.containsKey(id)) instances[id]
+                else {
+                    instances[id] = PurchasesViewModel().apply { this.selectMode = selectMode }; instances[id]
+                }
+            }
             else -> null
         }) as? EntityViewModel<T>
+        private val instances = HashMap<String, Any>()
+    }
+
+    override fun getId():String {
+        var result = super.getId()
+        if (this.selectMode == true) result += "_select"
+        return result
     }
 
     override fun getState():HashMap<String,Any> = hashMapOf(
         "currentItemId" to mCurrentItemId,
-        "fields" to mFields,
+        "fields" to HashMap<String,Any>().apply {putAll(mFields)},
         "screenMode" to mScreenMode,
         "isLandscape" to mIsLandscape
     )

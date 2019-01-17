@@ -24,7 +24,11 @@ class FirebaseAdapter
                     item
                 }
                 callback(items)
+            } else {
+                callback(ArrayList())
             }
+        }.addOnFailureListener {
+            callback(ArrayList())
         }
     }
 

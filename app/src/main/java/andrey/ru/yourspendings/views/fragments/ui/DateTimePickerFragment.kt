@@ -32,7 +32,7 @@ class DateTimePickerFragment: DialogFragment() {
             val builder = AlertDialog.Builder(it)
             builder.setView(view)
             .setPositiveButton("OK") { _: DialogInterface, _: Int ->
-                delegate.onPositiveButtonClicked(subscriberId,getDateTime().plusMonths(1))
+                delegate.onPositiveButtonClicked(subscriberId,getDateTime())
             }
                 .setNegativeButton("Cancel") {_:DialogInterface,_:Int ->}
             builder.create()
@@ -56,7 +56,7 @@ class DateTimePickerFragment: DialogFragment() {
         viewModel = DateTimePickerViewModel.apply {initialize(this@DateTimePickerFragment.activity!!.filesDir.absolutePath)}
 
         subscriberId = arguments?.getString("subscriberId").toString()
-        if (viewModel.date == null) viewModel.date = arguments?.getSerializable("initialDateTime") as LocalDateTime
+        viewModel.date = arguments?.getSerializable("initialDateTime") as LocalDateTime
     }
 
     private fun bindUI(view: View) {
@@ -64,7 +64,9 @@ class DateTimePickerFragment: DialogFragment() {
         timePicker = view.findViewById(R.id.time_picker)
 
         val date = viewModel.date!!
-        datePicker.updateDate(date.year, date.monthValue, date.dayOfMonth)
+        var month = date.monthValue
+        if (month < 0) month = 1
+        datePicker.updateDate(date.year, month, date.dayOfMonth)
         timePicker.hour = date.hour
         timePicker.minute = date.minute
     }
@@ -84,9 +86,9 @@ class DateTimePickerFragment: DialogFragment() {
 
     private fun getDateTime():LocalDateTime {
         var month = datePicker.month
-        if (month<1) month = 1
+        if (month<0) month = 0
         return LocalDateTime.of(
-            datePicker.year, month, datePicker.dayOfMonth,
+            datePicker.year, month+1, datePicker.dayOfMonth,
             timePicker.hour, timePicker.minute
         )
     }

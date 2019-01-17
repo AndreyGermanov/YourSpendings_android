@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 object DateTimePickerViewModel: PersistedViewModel() {
 
     private var mDate: LocalDateTime? = null
-    val formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss")
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
     var date:LocalDateTime?
         get() = mDate

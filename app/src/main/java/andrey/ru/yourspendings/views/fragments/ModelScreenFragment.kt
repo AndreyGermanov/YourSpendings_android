@@ -23,25 +23,32 @@ open class ModelScreenFragment<T: Model>: ModelFragment<T>() {
     override var className:String = ""
 
     override fun bindUI(view: View) {
-        activity!!.supportFragmentManager.beginTransaction().replace(R.id.header_fragment,getHeaderFragment()).commit()
         if (arguments?.getBoolean("newItem") == true) {
             viewModel.screenMode = ScreenMode.ITEM
             viewModel.currentItemId = "new"
+        } else if (arguments?.getBoolean("selectMode") == true) {
+            viewModel.screenMode = ScreenMode.LIST
         }
         switchScreen(view,viewModel.screenMode)
     }
 
     override fun setListeners(view: View) {
         if (className.isNotEmpty())
-            viewModel.screenModeObserver.observe(this, Observer { switchScreen(view, it) })
+            viewModel.screenModeObserver.observe(this, Observer
+            {
+                switchScreen(view, it)
+            })
     }
 
     private fun switchScreen(view: View, mode: ScreenMode) {
-        val transaction = activity!!.supportFragmentManager.beginTransaction()
+        val header = getHeaderFragment()
+        header.arguments = arguments
         val list = getListFragment()
         list.arguments = arguments
         val item = getItemFragment()
         item.arguments = arguments
+        val transaction = activity!!.supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.header_fragment,header)
         if (view.findViewById<FrameLayout>(R.id.list_fragment) != null) {
             transaction.replace(R.id.list_fragment,list).replace(R.id.item_fragment,item).commit()
             viewModel.isLandscape = true

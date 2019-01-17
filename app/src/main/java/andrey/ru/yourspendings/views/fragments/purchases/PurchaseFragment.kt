@@ -75,6 +75,8 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         val viewModel = viewModel as PurchasesViewModel
         val item = viewModel.items.find { it.id == currentItemId }
         if (viewModel.fields["id"] != item?.id || !viewModel.isLoaded) {
+            viewModel.fields = item?.toHashMap() ?: HashMap()
+            setFields(item?.toHashMap())
             viewModel.syncImageCache {
                 listAdapter.notifyDataSetChanged()
                 viewModel.isLoaded = true
@@ -192,7 +194,7 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
     }
 
     private fun onDateTimeChange(datetime: LocalDateTime) {
-        date.text = datetime.minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        date.text = datetime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         viewModel.fields = getFields()
     }
 
@@ -209,7 +211,6 @@ class PurchaseFragment: ModelItemFragment<Purchase>() {
         Files.createDirectories(Paths.get(destDir))
         (images as MutableMap<String,Any>)[file.nameWithoutExtension] = (file.lastModified()/1000).toString()
         if (Files.exists(Paths.get(file.absolutePath))) {
-//Files.write(Paths.get(destDir + "/" + file.name),Files.readAllLines(Paths.get(file.absolutePath)),StandardOpenOption.CREATE)
             Files.move(Paths.get(file.absolutePath), Paths.get(destDir + "/" + file.name))
         } else {
             return

@@ -2,6 +2,7 @@ package andrey.ru.yourspendings.views.adapters
 
 import andrey.ru.yourspendings.views.fragments.purchases.PurchaseImageFragment
 import andrey.ru.yourspendings.views.viewmodels.PurchaseImageViewModel
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -15,7 +16,10 @@ class PurchaseImagesPagerAdapter(fm:FragmentManager,val viewModel:PurchaseImageV
 
     override fun getItem(position: Int): Fragment =
         PurchaseImageFragment().apply {
-            imagePath = viewModel.images[position]
+            arguments = Bundle().apply {
+                putString("imagePath",viewModel.images[position])
+                putString("subscriberId",viewModel.subscriberId)
+            }
             subscriberId = viewModel.subscriberId
         }
 }

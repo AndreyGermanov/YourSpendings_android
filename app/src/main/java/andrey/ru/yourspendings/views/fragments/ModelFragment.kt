@@ -6,6 +6,7 @@ import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.viewmodels.ActivityEvent
 import andrey.ru.yourspendings.views.viewmodels.ActivityEventSubscriber
 import andrey.ru.yourspendings.views.viewmodels.EntityViewModel
+import andrey.ru.yourspendings.views.viewmodels.MainViewModel
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +30,10 @@ abstract class ModelFragment<T: Model>: Fragment(),ActivityEventSubscriber {
         setViewModel()
         bindUI(view)
         setListeners(view)
-        (activity as? MainActivity)?.subscribe(this)
+        (activity as? MainActivity)?.apply {
+            this.viewModel = MainViewModel
+            subscribe(this@ModelFragment)
+        }
         return view
     }
 
@@ -40,8 +44,8 @@ abstract class ModelFragment<T: Model>: Fragment(),ActivityEventSubscriber {
 
     open fun setViewModel() {
         if (className.isNotEmpty()) {
-            viewModel = EntityViewModel.getViewModel(className)!!
-            viewModel.initialize(activity!!.filesDir.absolutePath,arguments?.getBoolean("selectMode") ?: false)
+            viewModel = EntityViewModel.getViewModel(className,arguments?.getBoolean("selectMode") ?: false)!!
+            viewModel.initialize(activity!!.filesDir.absolutePath)
             currentItemId = viewModel.currentItemId
             if (currentItemId.isEmpty()) {
                 currentItemId = arguments?.getString("currentItemId") ?: ""

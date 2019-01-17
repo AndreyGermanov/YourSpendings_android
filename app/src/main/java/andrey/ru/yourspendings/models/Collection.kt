@@ -3,7 +3,6 @@ package andrey.ru.yourspendings.models
 import andrey.ru.yourspendings.db.DatabaseManager
 import andrey.ru.yourspendings.services.AuthManager
 import andrey.ru.yourspendings.services.IAuthServiceSubscriber
-import android.content.Context
 import java.util.ArrayList
 
 /**

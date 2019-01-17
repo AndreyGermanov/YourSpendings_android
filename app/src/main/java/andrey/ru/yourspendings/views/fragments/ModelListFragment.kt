@@ -61,7 +61,9 @@ open class ModelListFragment<T: Model>: ModelFragment<T>() {
             setupButtons()
         })
 
-        editBtn.setOnClickListener { viewModel.screenMode = ScreenMode.ITEM }
+        editBtn.setOnClickListener {
+            viewModel.screenMode = ScreenMode.ITEM
+        }
 
         selectBtn.setOnClickListener {
             with(activity!!) {

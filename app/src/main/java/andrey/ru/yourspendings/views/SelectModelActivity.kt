@@ -3,7 +3,9 @@ package andrey.ru.yourspendings.views
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.fragments.places.PlacesScreenFragment
 import andrey.ru.yourspendings.views.fragments.purchases.PurchasesScreenFragment
+import andrey.ru.yourspendings.views.viewmodels.Screens
 import android.os.Bundle
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 
 /**
@@ -11,14 +13,9 @@ import androidx.fragment.app.Fragment
  */
 class SelectModelActivity : MainActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setupScreen()
-    }
-
-    private fun setupScreen() {
+    override fun setupScreen(screen: Screens?) {
         val model = intent.extras?.getString("model") ?: ""
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         val transaction = supportFragmentManager.beginTransaction()
         var fragment = Fragment()
         when (model) {

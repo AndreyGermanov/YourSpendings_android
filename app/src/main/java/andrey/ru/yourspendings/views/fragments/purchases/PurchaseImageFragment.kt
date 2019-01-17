@@ -21,11 +21,13 @@ class PurchaseImageFragment: Fragment() {
     lateinit var imageView: ImageView
     lateinit var exitButton:Button
     lateinit var deleteButton:Button
-    lateinit var imagePath:String
-    lateinit var subscriberId:String
+    var imagePath:String = ""
+    var subscriberId:String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_purchase_image, container, false)
+        imagePath = arguments?.getString("imagePath") ?: ""
+        if (subscriberId.isEmpty()) subscriberId = arguments?.getString("subscriberId") ?: ""
         bindUI(view)
         setListeners()
         return view
@@ -34,10 +36,10 @@ class PurchaseImageFragment: Fragment() {
     fun bindUI(view:View) {
         with(view) {
             imageView = findViewById(R.id.purchase_image)
+            imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath))
             exitButton = findViewById(R.id.exit_button)
             deleteButton = findViewById(R.id.delete_button)
         }
-        imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath))
     }
 
     fun setListeners() {
@@ -54,5 +56,4 @@ class PurchaseImageFragment: Fragment() {
             }
         }
     }
-
 }

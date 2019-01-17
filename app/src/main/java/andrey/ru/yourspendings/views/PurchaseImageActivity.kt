@@ -25,16 +25,19 @@ class PurchaseImageActivity: AppCompatActivity() {
     }
 
     private fun setViewModel() {
-        viewModel = PurchaseImageViewModel
-        viewModel.initialize(filesDir.absolutePath)
-        viewModel.subscriberId = intent.getStringExtra("subscriberId")
-        viewModel.currentImageId = intent.getIntExtra("currentItemId",0)
-        viewModel.images = intent.getSerializableExtra("images") as? ArrayList<String> ?: ArrayList()
+
+        viewModel = PurchaseImageViewModel.apply {
+            initialize(filesDir.absolutePath)
+            subscriberId = intent.getStringExtra("subscriberId")
+            currentImageId = intent.getIntExtra("currentItemId",0)
+            images = intent.getSerializableExtra("images") as? ArrayList<String> ?: ArrayList()
+        }
     }
 
     private fun bindUI() {
-        viewPager = findViewById(R.id.pager)
-        viewPager.adapter = PurchaseImagesPagerAdapter(supportFragmentManager,viewModel)
-        viewPager.setCurrentItem(viewModel.currentImageId,true)
+        viewPager = findViewById<ViewPager>(R.id.pager).apply {
+            adapter = PurchaseImagesPagerAdapter(supportFragmentManager,viewModel)
+            setCurrentItem(viewModel.currentImageId,true)
+        }
     }
 }

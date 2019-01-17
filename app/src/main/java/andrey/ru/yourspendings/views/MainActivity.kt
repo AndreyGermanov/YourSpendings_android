@@ -1,6 +1,9 @@
 package andrey.ru.yourspendings.views
 
 import andrey.ru.yourspendings.R
+import andrey.ru.yourspendings.models.PlacesCollection
+import andrey.ru.yourspendings.models.PurchasesCollection
+import andrey.ru.yourspendings.services.AuthManager
 import andrey.ru.yourspendings.views.fragments.dashboard.DashboardFragment
 import andrey.ru.yourspendings.views.fragments.login.LoginContainerFragment
 import andrey.ru.yourspendings.views.fragments.places.PlacesScreenFragment
@@ -20,7 +23,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
 
-@Suppress("PropertyName")
+@Suppress("PropertyName", "NAME_SHADOWING")
 open class MainActivity : FragmentActivity(),DialogFragmentListener {
 
     lateinit var drawer:DrawerLayout
@@ -35,14 +38,23 @@ open class MainActivity : FragmentActivity(),DialogFragmentListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setViewModel()
-        bindUI()
-        setupListeners()
-        setupScreen(viewModel.screen)
+        PlacesCollection.loadList {
+            PurchasesCollection.loadList {
+                initActivity()
+            }
+        }
     }
 
-    private fun setViewModel() {
+    open fun initActivity() {
+        bindUI()
+        setupListeners()
+        setupScreen()
+    }
+
+    fun setViewModel() {
         viewModel = MainViewModel
         viewModel.initialize(this.filesDir.absolutePath)
+        viewModel.onAuthStatusChanged(AuthManager.user != null)
     }
 
     open fun bindUI() {
@@ -66,7 +78,9 @@ open class MainActivity : FragmentActivity(),DialogFragmentListener {
         }
     }
 
-    private fun setupScreen(screen: Screens) {
+    open fun setupScreen(screen: Screens? = null) {
+        var screen = screen
+        if (screen == null) screen = viewModel.screen
         drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         drawer.closeDrawer(GravityCompat.START)
         val transaction = supportFragmentManager.beginTransaction()
