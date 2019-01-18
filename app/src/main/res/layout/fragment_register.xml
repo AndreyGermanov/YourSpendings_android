@@ -15,7 +15,7 @@
                     android:text="@string/login"
             />
             <EditText
-                    android:id="@+id/login_text"
+                    android:id="@+id/register_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lines="1"
@@ -28,7 +28,7 @@
                     android:text="@string/password"
             />
             <EditText
-                    android:id="@+id/password_text"
+                    android:id="@+id/register_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lines="1"
@@ -41,7 +41,7 @@
                     android:text="@string/confirm"
             />
             <EditText
-                    android:id="@+id/confirm_password_text"
+                    android:id="@+id/register_confirm_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lines="1"
@@ -51,7 +51,7 @@
     <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/login_button"
+            android:id="@+id/register_button"
             android:text="@string/register"
     />
     <TextView

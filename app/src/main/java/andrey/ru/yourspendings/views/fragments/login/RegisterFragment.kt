@@ -18,7 +18,7 @@ class RegisterFragment  (override var fragmentId:Int = R.layout.fragment_registe
 
     override fun bindUI(view: View) {
         super.bindUI(view)
-        confirmPassword = view.findViewById(R.id.confirm_password_text)
+        //confirmPassword = view.findViewById(R.id.confirm_password_text)
     }
 
     override fun setListeners(view: View) {

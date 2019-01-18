@@ -25,7 +25,10 @@ class ModelImagesAdapter<T: Model>(private var viewModel: EntityViewModel<T>,pri
 
     inner class ImagesViewHolder(val item: View): RecyclerView.ViewHolder(item)
 
-    override fun getItemCount(): Int = (viewModel.fields["images"] as? Map<String,String> ?: HashMap()).size
+    override fun getItemCount(): Int {
+
+        return (viewModel.fields["images"] as? Map<String,String> ?: HashMap()).size
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImagesViewHolder =
         ImagesViewHolder(

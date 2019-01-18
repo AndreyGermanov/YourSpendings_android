@@ -40,10 +40,12 @@ open class LoginFragment  (open var fragmentId:Int = R.layout.fragment_login): L
     }
 
     open fun bindUI(view:View) {
+        /*
         login = view.findViewById(R.id.login_text)
         password = view.findViewById(R.id.password_text)
         submitButton = view.findViewById(R.id.login_button)
         link = view.findViewById(R.id.login_link)
+        */
     }
 
     override fun setListeners(view:View) {
