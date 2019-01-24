@@ -7,6 +7,8 @@
         android:orientation="vertical"
         android:theme="@android:style/Theme.NoTitleBar"
         tools:context=".views.MainActivity">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:text="Portrait"/>
     <FrameLayout android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:id="@+id/header_fragment"

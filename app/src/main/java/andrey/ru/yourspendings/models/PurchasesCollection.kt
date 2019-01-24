@@ -19,8 +19,7 @@ object PurchasesCollection: Collection<Purchase>() {
     val imgCachePath
         get() = "$rootPath/images/${AuthManager.userId}"
 
-    val imgCloudPath
-        get() = "images/${AuthManager.userId}"
+    private val imgCloudPath = "images/${AuthManager.userId}"
 
     override fun getCollectionName(): String = "purchases"
 
@@ -31,7 +30,7 @@ object PurchasesCollection: Collection<Purchase>() {
     override fun newItemFromDB(data:Map<String,Any>):Purchase = Purchase.fromHashMapOfDB(data)
 
 
-    override fun validateItem(fields: HashMap<String, Any>, callback: (result: Any) -> Unit) {
+    override fun validateItem(fields: MutableMap<String, Any>, callback: (result: Any) -> Unit) {
         if ((fields["place_id"]?.toString() ?: "").isEmpty()) {callback("Place must be specified ");return;}
         if ((fields["date"]?.toString() ?: "").isEmpty()) {callback("Date must be specified ");return;}
         val item = newItem(fields)
@@ -72,10 +71,10 @@ object PurchasesCollection: Collection<Purchase>() {
         }
     }
 
-    fun syncImageCache(itemId:String,images:Map<String,String>,callback:()->Unit) {
+    fun syncImageCache(itemId:String,images:Map<String,String>,remove:Boolean=true,callback:()->Unit) {
         val path = Paths.get("$imgCachePath/$itemId/")
         if (!Files.exists(path)) Files.createDirectories(path)
-        if (path.toFile().list().isNotEmpty()) {
+        if (path.toFile().list().isNotEmpty() && remove) {
             Files.walk(path).forEach {
                 if (!images.containsKey(it.toFile().nameWithoutExtension)) it.toFile().delete()
             }

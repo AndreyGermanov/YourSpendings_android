@@ -1,9 +1,8 @@
 package andrey.ru.yourspendings.views.adapters
 
 import andrey.ru.yourspendings.R
-import andrey.ru.yourspendings.models.Model
-import andrey.ru.yourspendings.views.viewmodels.EntityViewModel
-import andrey.ru.yourspendings.views.viewmodels.ScreenMode
+import andrey.ru.yourspendings.views.store.ModelScreenMode
+import andrey.ru.yourspendings.views.store.ModelState
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -12,35 +11,29 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * Created by Andrey Germanov on 1/7/19.
+ * Created by Andrey Germanov on 1/19/19.
  */
-class ModelListAdapter<T: Model>(private var dataset: List<T>,
-                                 private var viewModel: EntityViewModel<T>
-): RecyclerView.Adapter<ModelListAdapter<T>.ViewHolder>() {
+class ModelListAdapter(private var state: ModelState) : RecyclerView.Adapter<ModelListAdapter.ViewHolder>() {
 
     inner class ViewHolder(val item: View): RecyclerView.ViewHolder(item)
 
-    override fun getItemCount(): Int = dataset.size
-
-    fun setDataSet(dataset: List<T>) { this.dataset = dataset }
+    override fun getItemCount(): Int  = state.items.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.model_list_item,parent,false))
 
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val label = holder.item.findViewById<TextView>(R.id.place_title)
-        label.text = dataset[position].getTitle()
+        label.text = state.items[position].getTitle()
         holder.item.setOnClickListener {
-            viewModel.currentItemId = dataset[position].id
-            if (viewModel.selectMode != true) {
-                viewModel.fields = viewModel.getCurrentItem()?.toHashMap() ?: HashMap()
-                viewModel.screenMode = ScreenMode.ITEM
-            }
+            if (!state.selectMode)
+                state.mode = ModelScreenMode.ITEM
+            state.currentItemId = state.items[position].id
         }
-        if (viewModel.currentItemId == dataset[position].id)
+        if (state.currentItemId == state.items[position].id) {
             holder.item.setBackgroundColor(Color.GRAY)
-        else
+        } else {
             holder.item.setBackgroundColor(Color.WHITE)
+        }
     }
 }

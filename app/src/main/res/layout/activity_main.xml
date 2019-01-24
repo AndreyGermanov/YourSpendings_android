@@ -6,14 +6,21 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         android:fitsSystemWindows="true">
-    <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:theme="@android:style/Theme.NoTitleBar"
-            tools:context=".views.MainActivity"
-            android:id="@+id/screen_container"
-    />
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
+        <FrameLayout android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:id="@+id/header_container"/>
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:theme="@android:style/Theme.NoTitleBar"
+                tools:context=".views.MainActivity"
+                android:id="@+id/screen_container"
+        />
+    </LinearLayout>
     <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
             android:layout_width="wrap_content"

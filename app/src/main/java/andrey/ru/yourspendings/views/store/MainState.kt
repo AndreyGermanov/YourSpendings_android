@@ -1,6 +1,6 @@
 package andrey.ru.yourspendings.views.store
 
-import com.google.gson.Gson
+import android.content.res.Configuration
 
 
 /**
@@ -9,10 +9,23 @@ import com.google.gson.Gson
 @Suppress("UNCHECKED_CAST")
 class MainState(override val state:AppState):BaseState(state,"MainState") {
 
+    override fun initialize() {
+        state.fieldSettings[index] = hashMapOf(
+            "orientation" to hashMapOf("transient" to true),
+            "openDrawer" to hashMapOf("transient" to true)
+        ) as HashMap<String,Any>
+    }
     var screen:Screen
         get() = Screen.valueOf(getValue("screen")?.toString() ?: "LOGIN")
         set(value:Screen) { setValue("screen",value.toString())}
 
+    var orientation: Int
+        get() = getValue("orientation")?.toString()?.toDoubleOrNull()?.toInt() ?: Configuration.ORIENTATION_PORTRAIT
+        set(value:Int) { setValue("orientation",value) }
+
+    var openDrawer: Boolean
+        get() = getValue("openDrawer")?.toString()?.toBoolean() ?: false
+        set(value:Boolean) { setValue("openDrawer",value)}
 }
 
 

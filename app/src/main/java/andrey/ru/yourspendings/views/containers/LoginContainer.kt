@@ -1,12 +1,13 @@
 package andrey.ru.yourspendings.views.containers
 
+import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.services.AuthManager
 import andrey.ru.yourspendings.views.MainActivity
-import andrey.ru.yourspendings.views.components.Component
 import andrey.ru.yourspendings.views.components.LoginComponent
 import andrey.ru.yourspendings.views.store.AppState
 import andrey.ru.yourspendings.views.store.LoginMode
 import andrey.ru.yourspendings.views.store.Screen
+import andrey.ru.yourspendings.views.utils.OnFieldChange
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
@@ -14,15 +15,16 @@ import android.widget.Toast
 /**
  * Created by Andrey Germanov on 1/18/19.
  */
-class LoginContainer(context:MainActivity): Container(context) {
-    override var component: Component = LoginComponent(context)
+class LoginContainer: Container() {
 
-    init {
+    override fun initialize(context:MainActivity) {
+        super.initialize(context)
+        component = LoginComponent(context)
         initComponent()
         setListeners()
     }
 
-    fun initComponent() {
+    private fun initComponent() {
         val state = context.store.state.loginState
         with (component as LoginComponent) {
             mode = state.mode
@@ -46,17 +48,12 @@ class LoginContainer(context:MainActivity): Container(context) {
         when (state.loginState.mode) {
             LoginMode.LOGIN -> setLoginListeners()
             LoginMode.REGISTER -> setRegisterListeners()
-
         }
     }
 
-    fun setLoginListeners() {
+    private fun setLoginListeners() {
         val component = component as LoginComponent
-        component.loginName.addTextChangedListener( object:TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onLoginNameChange(component.loginName.text.toString())}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
+        component.loginName.addTextChangedListener( OnFieldChange { onLoginNameChange(it) })
         component.loginPassword.addTextChangedListener( object:TextWatcher {
             override fun afterTextChanged(p0: Editable?) { onLoginPasswordChange(component.loginPassword.text.toString())}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -66,7 +63,7 @@ class LoginContainer(context:MainActivity): Container(context) {
         component.registerLink.setOnClickListener {onRegisterLinkClick()}
     }
 
-    fun setRegisterListeners() {
+    private fun setRegisterListeners() {
         val component = component as LoginComponent
         component.registerName.addTextChangedListener( object:TextWatcher {
             override fun afterTextChanged(p0: Editable?) { onRegisterNameChange(component.registerName.text.toString())}
@@ -87,7 +84,7 @@ class LoginContainer(context:MainActivity): Container(context) {
         component.loginLink.setOnClickListener {onLoginLinkClick()}
     }
 
-    fun onLoginNameChange(text:String) {
+    private fun onLoginNameChange(text:String) {
         context.store.state.loginState.loginName = text
     }
 
@@ -107,7 +104,7 @@ class LoginContainer(context:MainActivity): Container(context) {
         context.store.state.loginState.registerConfirmPassword = text
     }
 
-    fun onLoginButtonClick() {
+    private fun onLoginButtonClick() {
         with (context.store.state.loginState) {
             val error = validateLogin(loginName,loginPassword)
             if (error != null) { loginError = error; return }
@@ -115,15 +112,28 @@ class LoginContainer(context:MainActivity): Container(context) {
         }
     }
 
-    fun validateLogin(login:String,password:String):String? {
-        if (login.isEmpty()) return "Login should not be empty"
-        if (password.isEmpty()) return "Password should not be empty"
+    private fun validateLogin(login:String,password:String):String? {
+        if (login.isEmpty()) return context.getString(R.string.error_empty_login)
+        if (password.isEmpty()) return context.getString(R.string.error_empty_password)
         return null
     }
 
-    fun onRegisterButtonClick() {}
+    private fun onRegisterButtonClick() {
+        with(context.store.state.loginState) {
+            val error = validateRegister(registerName,registerPassword,registerConfirmPassword)
+            if (error != null) { registerError = error; return }
+            AuthManager.register(registerName,registerPassword) { if (it != null) registerError = it }
+        }
+    }
 
-    fun onLoginLinkClick() {
+    private fun validateRegister(login:String,password:String,confirmPassword:String):String? {
+        val result = validateLogin(login,password)
+        if (result != null) return result
+        if (password != confirmPassword) return context.getString(R.string.error_passwords_should_match)
+        return null
+    }
+
+    private fun onLoginLinkClick() {
         with (context.store.state.loginState) {
             mode = LoginMode.LOGIN
             loginName = ""
@@ -131,7 +141,7 @@ class LoginContainer(context:MainActivity): Container(context) {
         }
     }
 
-    fun onRegisterLinkClick() {
+    private fun onRegisterLinkClick() {
         with (context.store.state.loginState) {
             mode = LoginMode.REGISTER
             registerName = ""
@@ -142,15 +152,7 @@ class LoginContainer(context:MainActivity): Container(context) {
 
     override fun onStateChanged(state: AppState, prevState: AppState) {
         if (state.mainState.screen == Screen.LOGIN && prevState.mainState.screen != Screen.LOGIN) {
-            with(state.loginState) {
-                mode = LoginMode.LOGIN
-                loginName = ""
-                loginPassword = ""
-            }
-            with (component as LoginComponent) {
-                loginName.setText("")
-                loginPassword.setText("")
-            }
+            onScreenOpen()
         }
         if (state.loginState.mode != prevState.loginState.mode) {
             onStateChangeMode(state.loginState.mode)
@@ -164,7 +166,20 @@ class LoginContainer(context:MainActivity): Container(context) {
         super.onStateChanged(state, prevState)
     }
 
-    fun onStateChangeMode(loginMode:LoginMode) {
+    private fun onScreenOpen() {
+        with(context.store.state.loginState) {
+            mode = andrey.ru.yourspendings.views.store.LoginMode.LOGIN
+            loginName = ""
+            loginPassword = ""
+        }
+        with (component as LoginComponent) {
+            loginName.setText("")
+            loginPassword.setText("")
+        }
+
+    }
+
+    private fun onStateChangeMode(loginMode:LoginMode) {
         with(component as LoginComponent) {
             mode = loginMode
             setScreen()
@@ -183,7 +198,7 @@ class LoginContainer(context:MainActivity): Container(context) {
         }
     }
 
-    fun onStateChangeLoginError() {
+    private fun onStateChangeLoginError() {
         val state = context.store.state.loginState
         if (state.loginError.isNotEmpty()) {
             Toast.makeText(context, state.loginError, Toast.LENGTH_LONG).show()
@@ -191,7 +206,7 @@ class LoginContainer(context:MainActivity): Container(context) {
         }
     }
 
-    fun onStateChangeRegisterError() {
+    private fun onStateChangeRegisterError() {
         val state = context.store.state.loginState
         if (state.registerError.isNotEmpty()) {
             Toast.makeText(context, state.registerError, Toast.LENGTH_LONG).show()
@@ -200,3 +215,4 @@ class LoginContainer(context:MainActivity): Container(context) {
     }
 
 }
+

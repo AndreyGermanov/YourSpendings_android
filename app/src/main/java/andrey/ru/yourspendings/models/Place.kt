@@ -22,6 +22,5 @@ data class Place(
                 longitude = (data["longitude"]?.toString() ?: "0.0").toDouble()
             )
         fun fromHashMapOfDB(data:Map<String,Any>) = fromHashMap(data)
-        fun getClassName() = "Place"
     }
 }

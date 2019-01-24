@@ -3,14 +3,15 @@ package andrey.ru.yourspendings.views.components
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.store.LoginMode
+import android.annotation.SuppressLint
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import kotlinx.android.synthetic.main.fragment_login.view.*
 
 /**
  * Created by Andrey Germanov on 1/18/19.
  */
+@SuppressLint("ViewConstructor")
 class LoginComponent(context:MainActivity): Component(context) {
 
     lateinit var loginButton: Button

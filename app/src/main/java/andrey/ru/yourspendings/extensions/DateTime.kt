@@ -9,7 +9,7 @@ import java.util.*
  * Created by Andrey Germanov on 1/10/19.
  */
 fun dateFromAny(value:Any?):LocalDateTime {
-    val result = when (value) {
+    return when (value) {
         is LocalDateTime -> {
             value
         }
@@ -27,5 +27,4 @@ fun dateFromAny(value:Any?):LocalDateTime {
             LocalDateTime.now()
         }
     }
-    return result
 }

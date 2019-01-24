@@ -16,9 +16,6 @@ object AuthManager {
     val userId: String
         get() = auth.currentUser?.uid ?: ""
 
-    val isLogin:Boolean
-        get() = user != null
-
     init {
         auth.addAuthStateListener { onAuthStateChanged(it); }
     }

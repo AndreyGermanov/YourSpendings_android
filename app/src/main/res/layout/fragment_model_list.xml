@@ -4,11 +4,10 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
 >
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/select_item"
-    />
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:id="@+id/is_loading"
+              android:visibility="gone"/>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -18,11 +17,13 @@
     <Button android:id="@+id/select_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="@string/select"
     />
     <Button android:id="@+id/edit_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="@string/edit"
     />
 </LinearLayout>

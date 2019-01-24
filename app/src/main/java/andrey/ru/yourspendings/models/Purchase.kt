@@ -56,6 +56,5 @@ class Purchase(override var id:String="",
                 images = (HashMap<String,String>()).apply { putAll((data["images"] as? Map<String,String> ?: HashMap()))}
             )
         }
-        fun getClassName() = "Purchase"
     }
 }

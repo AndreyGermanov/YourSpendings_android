@@ -1,6 +1,6 @@
 package andrey.ru.yourspendings.extensions
 
-public fun distance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
+fun distance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Double {
     val earthRadius = 3958.75
     val dLat = Math.toRadians(lat2 - lat1)
     val dLng = Math.toRadians(lng2 - lng1)

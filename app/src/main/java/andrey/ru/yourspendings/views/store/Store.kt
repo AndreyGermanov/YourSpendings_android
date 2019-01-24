@@ -40,11 +40,14 @@ class Store(application: Application): AndroidViewModel(application) {
     }
 
     fun load() {
-        state = AppState(this,HashMap())
-        if (!Files.exists(statePath)) return
+        if (!Files.exists(statePath)) {
+            state = AppState(this,HashMap())
+            state.initialize()
+            return
+        }
         val lines = Files.readAllLines(statePath)
         if (lines.size==0) return
-        state = AppState(this,gson.fromJson(lines.reduce {s,s1 -> s+s1},MutableMap::class.java) as MutableMap<String,Any>)
+        state = AppState(this,gson.fromJson(lines.reduce {s,s1 -> s+s1},MutableMap::class.java) as MutableMap<String,Any>).apply { initialize()}
     }
 
 }

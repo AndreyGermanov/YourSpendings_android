@@ -8,12 +8,12 @@ import java.util.ArrayList
 /**
  * Created by Andrey Germanov on 1/8/19.
  */
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "LeakingThis")
 abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthServiceSubscriber {
 
     protected val items = ArrayList<T>()
-    protected val db = DatabaseManager.getDB()
-    private val subscribers = ArrayList<IDataSubscriber<T>>()
+    private val db = DatabaseManager.getDB()
+    private val subscribers = ArrayList<IDataSubscriber>()
     lateinit var rootPath:String
 
     open val tableName
@@ -26,11 +26,11 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
 
     override fun getCollectionName(): String = tableName
 
-    override fun subscribe(subscriber: IDataSubscriber<T>) {
+    override fun subscribe(subscriber: IDataSubscriber) {
         if (!this.subscribers.contains(subscriber)) this.subscribers.add(subscriber)
     }
 
-    override fun unsubscribe(subscriber: IDataSubscriber<T>) {
+    override fun unsubscribe(subscriber: IDataSubscriber) {
         if (this.subscribers.contains(subscriber)) this.subscribers.remove(subscriber)
     }
 
@@ -49,7 +49,7 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
                 else -> addItems(changes[key]!!)
             }
         }
-        subscribers.forEach { subscriber -> subscriber.onDataChange(items) }
+        subscribers.forEach { subscriber -> subscriber.onDataChange(items as ArrayList<Model>) }
     }
 
     private fun addItems(changes:List<Map<String,Any>>) = changes.forEach { change ->
@@ -71,9 +71,9 @@ abstract class Collection<T:Model>:IDataCollection<T>,IDatabaseSubscriber,IAuthS
         }
     }
 
-    override fun loadList(callback:(()->Unit)?) = db.getList(tableName) { addItems(it); if (callback!=null) callback()}
+    override fun loadList(callback:(()->Unit)?) = db.getList(tableName) {addItems(it); if (callback!=null) callback()}
 
-    override fun saveItem(fields:HashMap<String,Any>,callback:(result:Any)->Unit) {
+    override fun saveItem(fields:MutableMap<String,Any>,callback:(result:Any)->Unit) {
         validateItem(fields) { result ->
             when (result) {
                 is String -> callback(result)

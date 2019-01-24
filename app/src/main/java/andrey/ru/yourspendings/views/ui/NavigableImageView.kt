@@ -1,7 +1,6 @@
 package andrey.ru.yourspendings.views.ui
 
 import android.content.Context
-import android.graphics.Canvas
 import android.util.AttributeSet
 import android.widget.ImageView
 
@@ -10,5 +9,4 @@ import android.widget.ImageView
  */
 class NavigableImageView(context: Context, attrs: AttributeSet): ImageView(context,attrs) {
 
-    override fun onDraw(canvas: Canvas?) {}
 }

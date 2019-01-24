@@ -6,7 +6,12 @@
               android:layout_height="match_parent"
               android:paddingTop="10dp"
               android:paddingLeft="10dp"
+              android:id="@+id/form_container"
               android:paddingRight="10dp">
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:visibility="gone"
+                 android:id="@+id/model_header_container"/>
     <TableLayout android:layout_width="match_parent"
                  android:layout_height="wrap_content"
                  android:visibility="visible"

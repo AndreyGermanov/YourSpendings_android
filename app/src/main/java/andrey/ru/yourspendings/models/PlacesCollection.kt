@@ -3,7 +3,6 @@ package andrey.ru.yourspendings.models
 import andrey.ru.yourspendings.extensions.distance
 import android.annotation.SuppressLint
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * Created by Andrey Germanov on 1/4/19.
@@ -20,7 +19,7 @@ object PlacesCollection: Collection<Place>() {
 
     override fun newItemFromDB(data:Map<String,Any>):Place = Place.fromHashMapOfDB(data)
 
-    override fun validateItem(fields:HashMap<String,Any>,callback:(result:Any) -> Unit) {
+    override fun validateItem(fields:MutableMap<String,Any>,callback:(result:Any) -> Unit) {
         val name = fields["name"]?.toString() ?: ""
         val latitude = (fields["latitude"]?.toString() ?: "").toDoubleOrNull()
         val longitude= (fields["longitude"]?.toString() ?: "").toDoubleOrNull()
