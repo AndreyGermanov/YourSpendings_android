@@ -16,4 +16,7 @@ class PlacesScreenContainer:ModelScreenContainer() {
         super.initialize(context)
     }
 
+    override fun initialize(context: MainActivity) {
+        this.initialize(context,context.store.state.placesState)
+    }
 }

@@ -1,5 +1,7 @@
 package andrey.ru.yourspendings.views.containers
 
+import andrey.ru.yourspendings.models.IDataSubscriber
+import andrey.ru.yourspendings.models.Model
 import andrey.ru.yourspendings.models.PlacesCollection
 import andrey.ru.yourspendings.models.PurchasesCollection
 import andrey.ru.yourspendings.views.MainActivity
@@ -11,7 +13,7 @@ import andrey.ru.yourspendings.views.store.ModelState
 /**
  * Created by Andrey Germanov on 1/20/19.
  */
-open class ModelListContainer:Container() {
+open class ModelListContainer:Container(),IDataSubscriber {
 
     var state: ModelState? = null
     lateinit var view: ModelListComponent
@@ -27,7 +29,10 @@ open class ModelListContainer:Container() {
         component = view
         initComponent()
         setListeners()
+        subscribeToDB()
     }
+
+    open fun subscribeToDB() {}
 
     private fun initComponent() {
         view.state = state
@@ -72,4 +77,7 @@ open class ModelListContainer:Container() {
         }
         super.onStateChanged(state, prevState)
     }
+
+    override fun onDataChange(items: ArrayList<Model>) {}
+
 }

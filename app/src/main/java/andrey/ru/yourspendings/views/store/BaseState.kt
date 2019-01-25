@@ -14,9 +14,6 @@ abstract class BaseState(open val state:AppState, open val index:String) {
         state.fieldSettings[index] = HashMap()
     }
 
-    val fieldSettings:HashMap<String,Any>
-        get() = state.fieldSettings[index]  ?: HashMap()
-
     open fun setValue(fieldName:String, fieldValue:Any) {
         val storeFields:HashMap<String,Any> = gson.fromJson(gson.toJson(state.fields),HashMap::class.java) as HashMap<String,Any>
         var fieldsToWrite = applyValueToFields(storeFields,fieldName,fieldValue)
@@ -52,14 +49,6 @@ abstract class BaseState(open val state:AppState, open val index:String) {
     open fun getFieldsCopy(fields:Any?):MutableMap<String,Any> =
         gson.fromJson(gson.toJson(fields as? MutableMap<String,Any>),HashMap::class.java) as? MutableMap<String, Any> ?: HashMap()
 
-    fun getFieldSettings(fieldName:String):HashMap<String,Any> {
-        return fieldSettings[fieldName] as? HashMap<String,Any> ?: HashMap()
-    }
-
-    fun getFieldOption(fieldName:String,optionName:String):Any? {
-        val settings = getFieldSettings(fieldName)
-        return settings[optionName]
-    }
 
     open fun shouldWriteFieldToDB(fieldName:String):Boolean = state.shouldWriteFieldToDB(fieldName,index)
 

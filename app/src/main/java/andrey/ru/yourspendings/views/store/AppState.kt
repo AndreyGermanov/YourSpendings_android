@@ -35,12 +35,11 @@ class AppState(private val store:Store, val fields:MutableMap<String,Any>) {
         } as MutableMap<String, Any>)
     }
 
-    fun getPrevState():AppState {
+    private fun getPrevState():AppState {
         val prevFields = gson.fromJson(gson.toJson(fields),HashMap::class.java) as HashMap<String,Any>
-        val result = AppState(store,prevFields).apply {
+        return AppState(store,prevFields).apply {
             initialize()
         }
-        return result
     }
 
     fun triggerStateChange(newFields:MutableMap<String,Any>) {

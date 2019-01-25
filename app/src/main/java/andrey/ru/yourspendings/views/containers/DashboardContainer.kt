@@ -1,7 +1,5 @@
 package andrey.ru.yourspendings.views.containers
 
-import andrey.ru.yourspendings.models.PlacesCollection
-import andrey.ru.yourspendings.models.PurchasesCollection
 import andrey.ru.yourspendings.services.AuthManager
 import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.components.DashboardComponent
@@ -35,21 +33,14 @@ class DashboardContainer:Container() {
             state.purchasesState.mode = ModelScreenMode.LIST
         }
         view.newPurchaseButton.setOnClickListener {
+            state.mainState.screen = Screen.PURCHASES
             state.purchasesState.mode = ModelScreenMode.ITEM
             state.purchasesState.currentItemId = "new"
-            state.mainState.screen = Screen.PURCHASES
         }
         view.placesButton.setOnClickListener {
             state.mainState.screen = Screen.PLACES
             state.placesState.mode = ModelScreenMode.LIST
         }
-        view.logoutButton.setOnClickListener {
-            PurchasesCollection.clear()
-            PlacesCollection.clear()
-            AuthManager.logout()
-        }
-
-
+        view.logoutButton.setOnClickListener { AuthManager.logout() }
     }
-
 }

@@ -77,6 +77,12 @@ open class ModelContainer:Container(),IDataSubscriber {
         }
     }
 
+    open fun save(callback:(result:Any)->Unit) { callback(0)}
+
+    open fun delete(callback:(result:String?)->Unit) { callback(null) }
+
+    open fun subscribeToDB() {}
+
     override fun onStateChanged(state: AppState, prevState: AppState) {
         val oldModelState = this.state.getModelState(prevState)!!
         val newModelState = this.state.getModelState(state)!!
@@ -108,13 +114,6 @@ open class ModelContainer:Container(),IDataSubscriber {
     open fun initExistingItem(state: ModelState) {
         state.fillFieldsFromItem()
     }
-
-
-    open fun save(callback:(result:Any)->Unit) { callback(0)}
-
-    open fun delete(callback:(result:String?)->Unit) { callback(null) }
-
-    open fun subscribeToDB() {}
 
     override fun onDataChange(items: ArrayList<Model>) {
         state.itemsUpdateCounter += 1

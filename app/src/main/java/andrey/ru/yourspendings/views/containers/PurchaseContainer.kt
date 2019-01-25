@@ -124,16 +124,6 @@ class PurchaseContainer:ModelContainer() {
         }
     }
 
-    override fun save(callback: (result: Any) -> Unit) {
-        PurchasesCollection.saveItem(state.fields.apply { put("id",state.currentItemId)}) {
-            result -> callback(result)
-        }
-    }
-
-    override fun delete(callback: (error: String?) -> Unit) {
-        PurchasesCollection.deleteItem(state.currentItemId) { result -> callback(result) }
-    }
-
     override fun setListeners() {
         super.setListeners()
         val state = state as PurchasesState
@@ -159,6 +149,16 @@ class PurchaseContainer:ModelContainer() {
             selectPlaceState.currentItemId = state.place?.id ?: ""
             selectPlaceState.mode = ModelScreenMode.LIST
         }
+    }
+
+    override fun save(callback: (result: Any) -> Unit) {
+        PurchasesCollection.saveItem(state.fields.apply { put("id",state.currentItemId)}) {
+                result -> callback(result)
+        }
+    }
+
+    override fun delete(callback: (error: String?) -> Unit) {
+        PurchasesCollection.deleteItem(state.currentItemId) { result -> callback(result) }
     }
 
     private fun takePictureFromCamera(state:PurchasesState) {

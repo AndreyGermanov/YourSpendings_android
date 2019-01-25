@@ -8,8 +8,6 @@ import andrey.ru.yourspendings.views.store.AppState
 import andrey.ru.yourspendings.views.store.LoginMode
 import andrey.ru.yourspendings.views.store.Screen
 import andrey.ru.yourspendings.views.utils.OnFieldChange
-import android.text.Editable
-import android.text.TextWatcher
 import android.widget.Toast
 
 /**
@@ -53,55 +51,29 @@ class LoginContainer: Container() {
 
     private fun setLoginListeners() {
         val component = component as LoginComponent
-        component.loginName.addTextChangedListener( OnFieldChange { onLoginNameChange(it) })
-        component.loginPassword.addTextChangedListener( object:TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onLoginPasswordChange(component.loginPassword.text.toString())}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
+        component.loginName.addTextChangedListener(
+            OnFieldChange { context.store.state.loginState.loginName = it }
+        )
+        component.loginPassword.addTextChangedListener(
+            OnFieldChange { context.store.state.loginState.loginPassword = it }
+        )
         component.loginButton.setOnClickListener {onLoginButtonClick()}
         component.registerLink.setOnClickListener {onRegisterLinkClick()}
     }
 
     private fun setRegisterListeners() {
         val component = component as LoginComponent
-        component.registerName.addTextChangedListener( object:TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onRegisterNameChange(component.registerName.text.toString())}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
-        component.registerPassword.addTextChangedListener( object:TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onRegisterPasswordChange(component.registerPassword.text.toString())}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
-        component.registerConfirmPassword.addTextChangedListener( object:TextWatcher {
-            override fun afterTextChanged(p0: Editable?) { onRegisterConfirmPasswordChange(component.registerConfirmPassword.text.toString())}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
-        component.registerButton.setOnClickListener {onRegisterButtonClick()}
-        component.loginLink.setOnClickListener {onLoginLinkClick()}
-    }
-
-    private fun onLoginNameChange(text:String) {
-        context.store.state.loginState.loginName = text
-    }
-
-    fun onLoginPasswordChange(text:String) {
-        context.store.state.loginState.loginPassword = text
-    }
-
-    fun onRegisterNameChange(text:String) {
-        context.store.state.loginState.registerName = text
-    }
-
-    fun onRegisterPasswordChange(text:String) {
-        context.store.state.loginState.registerPassword = text
-    }
-
-    fun onRegisterConfirmPasswordChange(text:String) {
-        context.store.state.loginState.registerConfirmPassword = text
+        component.registerName.addTextChangedListener(
+            OnFieldChange { context.store.state.loginState.registerName = it }
+        )
+        component.registerPassword.addTextChangedListener(
+            OnFieldChange { context.store.state.loginState.registerPassword = it }
+        )
+        component.registerConfirmPassword.addTextChangedListener(
+            OnFieldChange { context.store.state.loginState.registerConfirmPassword = it }
+        )
+        component.registerButton.setOnClickListener { onRegisterButtonClick() }
+        component.loginLink.setOnClickListener { onLoginLinkClick() }
     }
 
     private fun onLoginButtonClick() {
@@ -151,18 +123,10 @@ class LoginContainer: Container() {
     }
 
     override fun onStateChanged(state: AppState, prevState: AppState) {
-        if (state.mainState.screen == Screen.LOGIN && prevState.mainState.screen != Screen.LOGIN) {
-            onScreenOpen()
-        }
-        if (state.loginState.mode != prevState.loginState.mode) {
-            onStateChangeMode(state.loginState.mode)
-        }
-        if (state.loginState.loginError != prevState.loginState.loginError) {
-            onStateChangeLoginError()
-        }
-        if (state.loginState.registerError != prevState.loginState.registerError) {
-            onStateChangeRegisterError()
-        }
+        if (state.mainState.screen == Screen.LOGIN && prevState.mainState.screen != Screen.LOGIN) { onScreenOpen() }
+        if (state.loginState.mode != prevState.loginState.mode) { onStateChangeMode(state.loginState.mode) }
+        if (state.loginState.loginError != prevState.loginState.loginError) { onStateChangeLoginError() }
+        if (state.loginState.registerError != prevState.loginState.registerError) { onStateChangeRegisterError() }
         super.onStateChanged(state, prevState)
     }
 
@@ -176,7 +140,6 @@ class LoginContainer: Container() {
             loginName.setText("")
             loginPassword.setText("")
         }
-
     }
 
     private fun onStateChangeMode(loginMode:LoginMode) {
@@ -213,6 +176,4 @@ class LoginContainer: Container() {
             state.registerError = ""
         }
     }
-
 }
-

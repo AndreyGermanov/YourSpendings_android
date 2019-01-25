@@ -6,6 +6,7 @@ import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.components.MainComponent
 import andrey.ru.yourspendings.views.store.AppState
 import andrey.ru.yourspendings.views.store.MainState
+import andrey.ru.yourspendings.views.store.ModelScreenMode
 import andrey.ru.yourspendings.views.store.Screen
 import android.view.View
 import androidx.core.view.GravityCompat
@@ -58,9 +59,15 @@ class MainContainer:Container() {
         view.navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_dashboard -> { store.state.mainState.screen = Screen.DASHBOARD }
-                R.id.nav_places -> store.state.mainState.screen = Screen.PLACES
-                R.id.nav_purchases -> store.state.mainState.screen = Screen.PURCHASES
-                R.id.nav_signout -> AuthManager.logout()
+                R.id.nav_places -> {
+                    store.state.mainState.screen = Screen.PLACES
+                    store.state.placesState.mode = ModelScreenMode.LIST
+                }
+                R.id.nav_purchases -> {
+                    store.state.mainState.screen = Screen.PURCHASES
+                    store.state.purchasesState.mode = ModelScreenMode.LIST
+                }
+                R.id.nav_signout -> { AuthManager.logout() }
             }
             true
         }

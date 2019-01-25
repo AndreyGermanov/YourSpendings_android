@@ -39,32 +39,6 @@ class HeaderContainer : Container() {
         setListeners()
     }
 
-    fun setListeners() {
-        view.menuButton.setOnClickListener {
-           context.store.state.mainState.openDrawer = true
-        }
-        view.addButton.setOnClickListener {
-            context.store.state.getModelState()?.apply {
-                currentItemId = "new"
-                mode = ModelScreenMode.ITEM
-            }
-        }
-        view.backButton.setOnClickListener {
-            context.store.state.getModelState()?.apply { mode = ModelScreenMode.LIST}
-        }
-    }
-
-    override fun onStateChanged(state: AppState, prevState: AppState) {
-        if (state.mainState.screen != prevState.mainState.screen) setupUI()
-        val modelState = state.getModelState()
-        val prevModelState = state.getModelState(prevState)
-        if (modelState != null && prevModelState != null) {
-            if (modelState.mode != prevModelState.mode) setupUI()
-        }
-        if (state.mainState.orientation != prevState.mainState.orientation) setupUI()
-        super.onStateChanged(state, prevState)
-    }
-
     private fun setupUI() {
         val mainState = context.store.state.mainState
         when (mainState.screen) {
@@ -102,9 +76,35 @@ class HeaderContainer : Container() {
             } else {
                 backButton.visibility = View.GONE
                 addButton.visibility = View.VISIBLE
-                headerTitle.text = context.getString(R.string.places_list)
+                headerTitle.text = modelState.getListTitle()
             }
             visibility = View.VISIBLE
         }
+    }
+
+    fun setListeners() {
+        view.menuButton.setOnClickListener {
+           context.store.state.mainState.openDrawer = true
+        }
+        view.addButton.setOnClickListener {
+            context.store.state.getModelState()?.apply {
+                currentItemId = "new"
+                mode = ModelScreenMode.ITEM
+            }
+        }
+        view.backButton.setOnClickListener {
+            context.store.state.getModelState()?.apply { mode = ModelScreenMode.LIST}
+        }
+    }
+
+    override fun onStateChanged(state: AppState, prevState: AppState) {
+        if (state.mainState.screen != prevState.mainState.screen) setupUI()
+        val modelState = state.getModelState()
+        val prevModelState = state.getModelState(prevState)
+        if (modelState != null && prevModelState != null) {
+            if (modelState.mode != prevModelState.mode) setupUI()
+        }
+        if (state.mainState.orientation != prevState.mainState.orientation) setupUI()
+        super.onStateChanged(state, prevState)
     }
 }

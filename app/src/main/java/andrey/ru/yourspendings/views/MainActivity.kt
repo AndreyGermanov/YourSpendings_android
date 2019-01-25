@@ -47,6 +47,8 @@ open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubs
     override fun onAuthStatusChanged(isAuthenticated: Boolean) {
         if (!isAuthenticated) {
             store.state.mainState.screen = Screen.LOGIN
+            PurchasesCollection.clear()
+            PlacesCollection.clear()
         } else {
             if (store.state.mainState.screen == Screen.LOGIN) {
                 store.state.mainState.screen = Screen.DASHBOARD

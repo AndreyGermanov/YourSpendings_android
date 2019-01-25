@@ -15,15 +15,11 @@ import java.nio.file.StandardOpenOption
 @Suppress("UNCHECKED_CAST")
 class Store(application: Application): AndroidViewModel(application) {
 
-    val gson = GsonBuilder().setPrettyPrinting().create()
-    val stateDir = getApplication<Application>().filesDir.absolutePath+"/state/state.json"
-
+    private val gson = GsonBuilder().setPrettyPrinting().create()!!
+    private val stateDir = getApplication<Application>().filesDir.absolutePath+"/state/state.json"
     lateinit var state:AppState
-
     lateinit var rootView: IStoreSubscriber
-
-    val statePath: Path
-        get() = Paths.get(stateDir)
+    private val statePath: Path  = Paths.get(stateDir)
 
     init {
         Files.createDirectories(statePath.parent)
@@ -41,13 +37,12 @@ class Store(application: Application): AndroidViewModel(application) {
 
     fun load() {
         if (!Files.exists(statePath)) {
-            state = AppState(this,HashMap())
-            state.initialize()
+            state = AppState(this,HashMap()).apply { initialize() }
             return
         }
-        val lines = Files.readAllLines(statePath)
-        if (lines.size==0) return
-        state = AppState(this,gson.fromJson(lines.reduce {s,s1 -> s+s1},MutableMap::class.java) as MutableMap<String,Any>).apply { initialize()}
+        val text = Files.readAllLines(statePath).reduce {s,s1 -> s+s1}
+        if (text.isEmpty()) return
+        state = AppState(this,gson.fromJson(text,MutableMap::class.java) as MutableMap<String,Any>).apply {initialize()}
     }
 
 }

@@ -26,7 +26,7 @@ class PurchasesState(override val state:AppState):ModelState(state,"Purchase") {
         get() = PurchasesCollection.getItemById(currentItemId)
 
     override val items:ArrayList<Model>
-        get() = PurchasesCollection.getList() as ArrayList<Model>
+        get() = PurchasesCollection.getList().apply { sortByDescending { it.date } } as ArrayList<Model>
 
     val imgCachePath:String
         get() = PurchasesCollection.imgCachePath

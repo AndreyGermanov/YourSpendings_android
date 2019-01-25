@@ -8,7 +8,7 @@ import andrey.ru.yourspendings.models.PlacesCollection
 class PlacesState(override val state:AppState,override val modelName:String="Places"):ModelState(state,modelName) {
 
     override val items:ArrayList<Model>
-        get() = PlacesCollection.getList() as ArrayList<Model>
+        get() = PlacesCollection.getList().apply { sortBy { it.name }} as ArrayList<Model>
 
     var name:String
         get() = getValueFromMap("fields","name")?.toString() ?: ""
