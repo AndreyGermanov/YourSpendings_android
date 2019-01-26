@@ -20,8 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".views.SelectModelActivity"/>
-        <activity android:name=".views.PurchaseImageActivity"/>
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="andrey.ru.yourspendings.fileprovider"

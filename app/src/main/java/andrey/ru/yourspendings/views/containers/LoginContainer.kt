@@ -15,16 +15,19 @@ import android.widget.Toast
  */
 class LoginContainer: Container() {
 
+    lateinit var view: LoginComponent
+
     override fun initialize(context:MainActivity) {
         super.initialize(context)
-        component = LoginComponent(context)
+        view = LoginComponent(context)
+        component = view
         initComponent()
         setListeners()
     }
 
     private fun initComponent() {
         val state = context.store.state.loginState
-        with (component as LoginComponent) {
+        with (view) {
             mode = state.mode
             render()
             when (mode) {
@@ -42,38 +45,35 @@ class LoginContainer: Container() {
     }
 
     fun setListeners() {
-        val state = context.store.state
-        when (state.loginState.mode) {
+        when (context.store.state.loginState.mode) {
             LoginMode.LOGIN -> setLoginListeners()
             LoginMode.REGISTER -> setRegisterListeners()
         }
     }
 
     private fun setLoginListeners() {
-        val component = component as LoginComponent
-        component.loginName.addTextChangedListener(
+        view.loginName.addTextChangedListener(
             OnFieldChange { context.store.state.loginState.loginName = it }
         )
-        component.loginPassword.addTextChangedListener(
+        view.loginPassword.addTextChangedListener(
             OnFieldChange { context.store.state.loginState.loginPassword = it }
         )
-        component.loginButton.setOnClickListener {onLoginButtonClick()}
-        component.registerLink.setOnClickListener {onRegisterLinkClick()}
+        view.loginButton.setOnClickListener { onLoginButtonClick() }
+        view.registerLink.setOnClickListener { onRegisterLinkClick() }
     }
 
     private fun setRegisterListeners() {
-        val component = component as LoginComponent
-        component.registerName.addTextChangedListener(
+        view.registerName.addTextChangedListener(
             OnFieldChange { context.store.state.loginState.registerName = it }
         )
-        component.registerPassword.addTextChangedListener(
+        view.registerPassword.addTextChangedListener(
             OnFieldChange { context.store.state.loginState.registerPassword = it }
         )
-        component.registerConfirmPassword.addTextChangedListener(
+        view.registerConfirmPassword.addTextChangedListener(
             OnFieldChange { context.store.state.loginState.registerConfirmPassword = it }
         )
-        component.registerButton.setOnClickListener { onRegisterButtonClick() }
-        component.loginLink.setOnClickListener { onLoginLinkClick() }
+        view.registerButton.setOnClickListener { onRegisterButtonClick() }
+        view.loginLink.setOnClickListener { onLoginLinkClick() }
     }
 
     private fun onLoginButtonClick() {
@@ -143,9 +143,9 @@ class LoginContainer: Container() {
     }
 
     private fun onStateChangeMode(loginMode:LoginMode) {
-        with(component as LoginComponent) {
+        with(view) {
             mode = loginMode
-            setScreen()
+            render()
             setListeners()
             when (loginMode) {
                 LoginMode.LOGIN -> {

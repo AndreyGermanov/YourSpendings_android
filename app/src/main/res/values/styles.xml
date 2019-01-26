@@ -5,6 +5,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:datePickerMode">spinner</item>
+        <item name="android:datePickerStyle">@style/customDatePicker</item>
+        <item name="android:timePickerStyle">@style/customTimePicker</item>
+        <item name="android:timePickerMode">spinner</item>
     </style>
     <style name="button">
         <item name="android:background">@color/blue</item>
@@ -16,5 +20,15 @@
     <style name="basicText">
         <item name="android:textColor">#000000</item>
     </style>
+
+    <style name="customDatePicker" parent="@android:style/Widget.DeviceDefault.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
+        <item name="android:calendarViewShown">false</item>
+    </style>
+
+    <style name="customTimePicker">
+        <item name="android:timePickerMode">spinner</item>
+    </style>
+
 
 </resources>

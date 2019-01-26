@@ -5,8 +5,10 @@ import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.store.ModelScreenMode
 import andrey.ru.yourspendings.views.store.Screen
 import android.annotation.SuppressLint
+import android.view.Gravity
 import android.view.View
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 
 /**
@@ -25,16 +27,24 @@ class HeaderComponent(val context: MainActivity): Component(context) {
 
     override fun render() {
         removeAllViews()
-        addView(View.inflate(context, R.layout.fragment_model_header,null))
-        bindUI()
+        addView(LinearLayout(context).apply { layoutParams = horizontal().apply { gravity = Gravity.CENTER }
+            orientation = LinearLayout.HORIZONTAL
+            setBackgroundColor(context.resources.getColor(R.color.colorPrimary,context.theme))
+            addView(headerButton(R.drawable.ic_menu_black_24dp,context.resources.getString(R.string.main_menu))
+                .also { menuButton = it})
+            addView(headerButton(R.drawable.ic_arrow_back_black_24dp,context.resources.getString(R.string.back))
+                .also { backButton = it})
+            addView(headerButton(R.drawable.ic_add_black_24dp,context.resources.getString(R.string.add))
+                .also { addButton = it})
+            addView(textView("").apply { setPadding(0,15,0,10)
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
+                setTextAppearance(R.style.headerText)
+            }.also { headerTitle = it })
+        })
     }
 
-    override fun bindUI() {
-        menuButton = findViewById(R.id.drawer_menu)
-        backButton = findViewById(R.id.back_button)
-        addButton = findViewById(R.id.add_button)
-        headerTitle = findViewById(R.id.header_title)
+    private fun headerButton(resourceId:Int,title:String):ImageButton = imageButton(resourceId,title).apply {
+        background = null
+        setPadding(0,10,0,10)
     }
-
-
 }

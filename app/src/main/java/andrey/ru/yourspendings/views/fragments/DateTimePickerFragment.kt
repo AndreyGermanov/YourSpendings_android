@@ -1,5 +1,6 @@
 package andrey.ru.yourspendings.views.fragments
 
+import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.containers.Container
 import andrey.ru.yourspendings.views.containers.DateTimePickerContainer
@@ -27,8 +28,15 @@ class DateTimePickerFragment: DialogFragment() {
             .setNegativeButton("Cancel") {_:DialogInterface,_:Int ->
                 state.dateSelected = false
                 state.confirmed = true
-            }.create()
+            }.create().apply {
+
+                }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(DialogFragment.STYLE_NO_TITLE,R.style.AppTheme)
     }
 
     override fun onCancel(dialog: DialogInterface) {

@@ -26,9 +26,9 @@ class ModelListAdapter(private var state: ModelState) : RecyclerView.Adapter<Mod
         val label = holder.item.findViewById<TextView>(R.id.place_title)
         label.text = state.items[position].getTitle()
         holder.item.setOnClickListener {
+            state.currentItemId = state.items[position].id
             if (!state.selectMode)
                 state.mode = ModelScreenMode.ITEM
-            state.currentItemId = state.items[position].id
         }
         if (state.currentItemId == state.items[position].id) {
             holder.item.setBackgroundColor(Color.GRAY)

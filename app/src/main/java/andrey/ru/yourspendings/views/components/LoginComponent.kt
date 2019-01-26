@@ -4,9 +4,8 @@ import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.store.LoginMode
 import android.annotation.SuppressLint
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.view.View
+import android.widget.*
 
 /**
  * Created by Andrey Germanov on 1/18/19.
@@ -23,38 +22,47 @@ class LoginComponent(context:MainActivity): Component(context) {
     lateinit var registerConfirmPassword: EditText
     lateinit var loginLink: TextView
     lateinit var registerLink: TextView
-
     var mode: LoginMode = LoginMode.LOGIN
 
     override fun render() {
-        setScreen()
-    }
-
-    fun setScreen() {
         removeAllViews()
-        when(mode) {
-            LoginMode.LOGIN -> addView(inflate(context, R.layout.fragment_login,null))
-            LoginMode.REGISTER -> addView(inflate(context, R.layout.fragment_register,null))
-        }
-        bindUI()
+        addView(LinearLayout(context).apply { layoutParams = fullScreen()
+            orientation = LinearLayout.VERTICAL
+            setPadding(10,10,10,10)
+            when(mode) {
+                LoginMode.LOGIN -> renderLoginScreen(this)
+                LoginMode.REGISTER -> renderRegisterScreen(this)
+            }
+        })
     }
 
-    override fun bindUI() {
-        when (mode) {
-            LoginMode.LOGIN -> {
-                loginName = findViewById(R.id.login_name)
-                loginPassword = findViewById(R.id.login_password)
-                loginButton = findViewById(R.id.login_button)
-                registerLink = findViewById(R.id.register_link)
-            }
-            LoginMode.REGISTER -> {
-                registerName = findViewById(R.id.register_name)
-                registerPassword = findViewById(R.id.register_password)
-                registerConfirmPassword = findViewById(R.id.register_confirm_password)
-                registerButton = findViewById(R.id.register_button)
-                loginLink = findViewById(R.id.login_link)
-            }
-        }
+    private fun renderLoginScreen(view:LinearLayout) {
+        view.addView(TableLayout(context).apply { layoutParams = tableLayoutParams
+            setColumnStretchable(1,true)
+            addView(renderTextRow(context.resources.getString(R.string.login)) { loginName = it })
+            addView(renderPasswordRow(context.resources.getString(R.string.password)) { loginPassword = it })
+        })
+        view.addView(button(context.resources.getString(R.string.login)).also { loginButton = it })
+        view.addView(renderLink(context.resources.getString(R.string.sign_up)).also { registerLink = it })
+    }
+
+    private fun renderRegisterScreen(view:LinearLayout) {
+        view.addView(TableLayout(context).apply { layoutParams = tableLayoutParams
+            setColumnStretchable(1,true)
+            addView(renderTextRow(context.resources.getString(R.string.login)) { registerName = it })
+            addView(renderPasswordRow(context.resources.getString(R.string.password)) { registerPassword = it })
+            addView(renderPasswordRow(context.resources.getString(R.string.confirm)) { registerConfirmPassword = it })
+        })
+        view.addView(button(context.resources.getString(R.string.register)).also { registerButton = it })
+        view.addView(renderLink(context.resources.getString(R.string.login)).also { loginLink = it })
+    }
+
+    private fun renderLink(title:String) = textView(title).apply {
+        setTextColor(context.resources.getColor(R.color.colorPrimary, context.theme))
+        isClickable = true
+        isFocusable = true
+        textAlignment = View.TEXT_ALIGNMENT_CENTER
+        setPadding(0,10,0,0)
     }
 
 }

@@ -39,6 +39,14 @@ class ModelListComponent(val context:MainActivity):Component(context) {
         isLoadingWidget = findViewById(R.id.is_loading)
     }
 
+    private fun setupList() {
+        val state = state ?: return
+        modelList.apply {
+            layoutManager = LinearLayoutManager(this@ModelListComponent.context)
+            adapter = ModelListAdapter(state).apply { modelListAdapter = this; notifyDataSetChanged() }
+        }
+    }
+
     fun updateUI() {
         val state = state ?: return
         if (state.isLoading) {
@@ -52,15 +60,5 @@ class ModelListComponent(val context:MainActivity):Component(context) {
         if (state.selectMode) visibility = View.VISIBLE
         editButton.visibility = visibility
         selectButton.visibility = visibility
-    }
-
-    private fun setupList() {
-        val state = state ?: return
-        modelListAdapter = ModelListAdapter(state)
-        modelList.apply {
-            adapter = modelListAdapter
-            layoutManager = LinearLayoutManager(this@ModelListComponent.context)
-        }
-        modelListAdapter.notifyDataSetChanged()
     }
 }
