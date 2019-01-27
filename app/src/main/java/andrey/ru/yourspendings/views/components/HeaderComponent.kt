@@ -44,7 +44,6 @@ class HeaderComponent(val context: MainActivity): Component(context) {
     }
 
     private fun headerButton(resourceId:Int,title:String):ImageButton = imageButton(resourceId,title).apply {
-        background = null
         setPadding(0,10,0,10)
     }
 }

@@ -18,18 +18,13 @@ class PlaceComponent(override val context:MainActivity): ModelItemComponent(cont
     lateinit var detectLatitudeButton: ImageButton
     lateinit var detectLongitudeButton: ImageButton
 
-    override fun render() {
-        addView(inflate(context,R.layout.fragment_place,null))
-        bindUI()
+    override fun renderForm() = super.renderForm().apply {
+        addView(renderTextRow(context.resources.getString(R.string.place_name)) { name = it })
+        addView(renderNumericRow(context.resources.getString(R.string.latitude)) { latitude = it }.apply {
+            addView(detectButton().also { detectLatitudeButton = it })
+        })
+        addView(renderNumericRow(context.resources.getString(R.string.longitude)) { longitude = it }.apply {
+            addView(detectButton().also { detectLongitudeButton = it })
+        })
     }
-
-    override fun bindUI() {
-        super.bindUI()
-        name = findViewById(R.id.place_name)
-        latitude = findViewById(R.id.place_latitude)
-        longitude = findViewById(R.id.place_longitude)
-        detectLatitudeButton = findViewById(R.id.place_latitude_button)
-        detectLongitudeButton = findViewById(R.id.place_longitude_button)
-    }
-
 }

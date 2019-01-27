@@ -7,6 +7,8 @@ import andrey.ru.yourspendings.views.store.ModelState
 import android.annotation.SuppressLint
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -26,25 +28,20 @@ class ModelListComponent(val context:MainActivity):Component(context) {
 
     override fun render() {
         removeAllViews()
-        addView(inflate(context, R.layout.fragment_model_list,null))
-        bindUI()
-        setupList()
-        updateUI()
-    }
-
-    override fun bindUI() {
-        modelList = findViewById(R.id.list_container)
-        selectButton = findViewById(R.id.select_item)
-        editButton = findViewById(R.id.edit_item)
-        isLoadingWidget = findViewById(R.id.is_loading)
-    }
-
-    private fun setupList() {
         val state = state ?: return
-        modelList.apply {
-            layoutManager = LinearLayoutManager(this@ModelListComponent.context)
-            adapter = ModelListAdapter(state).apply { modelListAdapter = this; notifyDataSetChanged() }
-        }
+        addView(LinearLayout(context).apply { layoutParams = fullScreen()
+            orientation = LinearLayout.VERTICAL
+            addView(TextView(context).apply {layoutParams = horizontal();visibility = View.GONE }
+                .also { isLoadingWidget = it }
+            )
+            addView(RecyclerView(context).apply {layoutParams = horizontal().apply { weight = 10.0f}
+                layoutManager = LinearLayoutManager(this@ModelListComponent.context)
+                adapter = ModelListAdapter(state).apply { modelListAdapter = this; notifyDataSetChanged() }
+            }.also { modelList = it })
+            addView(button(context.resources.getString(R.string.select)).also { selectButton = it })
+            addView(button(context.resources.getString(R.string.edit)).also { editButton = it })
+        })
+        updateUI()
     }
 
     fun updateUI() {

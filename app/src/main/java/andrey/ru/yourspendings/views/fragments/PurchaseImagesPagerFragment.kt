@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import androidx.viewpager.widget.ViewPager
 
@@ -30,30 +32,22 @@ class PurchaseImagesPagerFragment: DialogFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val activity = activity as MainActivity
-        state = activity.store.state.purchasesState
-        val view = inflater.inflate(R.layout.activity_purchase_image,null)
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupUI(view)
-        setListeners(view)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        ViewPager(activity!!).apply {
+            val activity = activity as MainActivity
+            state = activity.store.state.purchasesState
+            layoutParams = LinearLayout.LayoutParams(MATCH_PARENT,MATCH_PARENT)
+            adapter =  PurchaseImagesPagerAdapter(childFragmentManager,state)
+            currentItem = state.images.keys.toSortedSet().indexOf(state.currentImageId)
+            id = R.id.view_pager
+        }.also { pager = it; setListeners()}
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         state.imagesPagerOpened = false
     }
 
-    private fun setupUI(view:View) {
-        pager = view.findViewById(R.id.pager)
-        pager.adapter = PurchaseImagesPagerAdapter(childFragmentManager,state)
-        pager.currentItem = state.images.keys.toSortedSet().indexOf(state.currentImageId)
-    }
-
-    private fun setListeners(view: View) {
+    private fun setListeners() {
         pager.addOnPageChangeListener(OnPagerListener(state))
     }
 

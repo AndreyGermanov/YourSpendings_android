@@ -2,13 +2,17 @@ package andrey.ru.yourspendings.views.fragments
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.MainActivity
+import andrey.ru.yourspendings.views.ui.NavigableImageView
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import java.io.File
 
@@ -22,25 +26,27 @@ class PurchaseImageFragment: Fragment() {
     lateinit var exitButton:Button
     lateinit var deleteButton:Button
     var imagePath:String = ""
-    var subscriberId:String = ""
+    private val fullScreen = LinearLayout.LayoutParams(MATCH_PARENT,MATCH_PARENT)
+    private val horizontal = LinearLayout.LayoutParams(MATCH_PARENT,WRAP_CONTENT)
+    private val wrap = LinearLayout.LayoutParams(WRAP_CONTENT,WRAP_CONTENT)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_purchase_image, container, false)
-        imagePath = arguments?.getString("imagePath") ?: ""
-        bindUI(view)
-        setListeners()
-        return view
-
-    }
-
-    fun bindUI(view:View) {
-        with(view) {
-            imageView = findViewById(R.id.purchase_image)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        LinearLayout(activity).apply { layoutParams = fullScreen
+        orientation = LinearLayout.VERTICAL
+        addView(NavigableImageView(activity!!). apply {
+            layoutParams = fullScreen.apply { weight = 10.0f }
+        }.also {
+            imagePath = arguments?.getString("imagePath") ?: ""
+            imageView = it
             imageView.setImageBitmap(BitmapFactory.decodeFile(imagePath))
-            exitButton = findViewById(R.id.exit_button)
-            deleteButton = findViewById(R.id.delete_button)
-        }
-    }
+        })
+        addView(LinearLayout(activity).apply {layoutParams = horizontal
+            orientation = LinearLayout.HORIZONTAL
+            addView(button(activity!!.resources.getString(R.string.delete)).also { deleteButton = it})
+            addView(button(activity!!.resources.getString(R.string.exit)).also { exitButton = it })
+        })
+    }.also { setListeners() }
+
 
     fun setListeners() {
         val state = (activity as MainActivity).store.state.purchasesState
@@ -51,4 +57,6 @@ class PurchaseImageFragment: Fragment() {
             state.imagesPagerOpened = false
         }
     }
+
+    fun button(title:String) = Button(activity).apply { layoutParams = wrap.apply{ weight = 1.0f}; text = title }
 }

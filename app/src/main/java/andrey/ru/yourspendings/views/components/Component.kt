@@ -1,7 +1,7 @@
 package andrey.ru.yourspendings.views.components
 
-import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.views.MainActivity
+import andrey.ru.yourspendings.views.utils.toDp
 import android.annotation.SuppressLint
 import android.text.InputType
 import android.view.Gravity
@@ -16,7 +16,7 @@ import android.widget.*
 open class Component(context: MainActivity): FrameLayout(context) {
 
     val tableLayoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,TableLayout.LayoutParams.WRAP_CONTENT)
-    private val rowLayoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,TableRow.LayoutParams.WRAP_CONTENT)
+    val rowLayoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,TableRow.LayoutParams.WRAP_CONTENT)
 
     open fun render() {}
 
@@ -49,7 +49,8 @@ open class Component(context: MainActivity): FrameLayout(context) {
             layoutParams = wrap().apply { gravity = Gravity.CENTER }
             setImageResource(resourceId)
             contentDescription = title
-            setPadding(5,5,5,5)
+            setPadding(0,0,0,0)
+            background = null
         }
     }
 
@@ -72,11 +73,32 @@ open class Component(context: MainActivity): FrameLayout(context) {
         addView(editText(title).apply { layoutParams = rowLayoutParams; callback(this) })
     }
 
+    fun renderNumericRow(title:String,callback:(f:EditText)->Unit) = TableRow(context).apply {
+        layoutParams = rowLayoutParams
+        addView(textView(title).apply { layoutParams = rowLayoutParams })
+        addView(editText(title).apply { layoutParams = rowLayoutParams
+            inputType = InputType.TYPE_CLASS_NUMBER
+            callback(this)
+        })
+    }
+
     fun renderPasswordRow(title:String,callback:(f:EditText)->Unit) = TableRow(context).apply {
         layoutParams = rowLayoutParams
         addView(textView(title).apply { layoutParams = rowLayoutParams })
         addView(editText(title).apply { layoutParams = rowLayoutParams
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            callback(this)
+        })
+    }
+
+    fun renderLabelRow(title:String,callback:(f:TextView)->Unit) = TableRow(context).apply {
+        layoutParams = rowLayoutParams
+        setPadding(0,0,5.0f.toDp(context),5.0f.toDp(context))
+        addView(textView(title).apply { layoutParams = rowLayoutParams.apply { gravity = Gravity.CENTER_VERTICAL } })
+        addView(textView("").apply { layoutParams = rowLayoutParams.apply {
+                marginEnd = 5.0f.toDp(context)
+                gravity = Gravity.CENTER_VERTICAL
+            }
             callback(this)
         })
     }
