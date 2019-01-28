@@ -38,8 +38,8 @@ open class ModelItemComponent(open val context:MainActivity):Component(context) 
 
     private fun formButtons() = LinearLayout(context).apply {
         layoutParams = horizontal()
-        addView(button(context.resources.getString(R.string.save)).apply { layoutParams = wrap()}.also { saveButton = it })
-        addView(button(context.resources.getString(R.string.delete)).apply { layoutParams = wrap()}.also { deleteButton = it })
+        addView(button(context.getString(R.string.save)).apply { layoutParams = wrap()}.also { saveButton = it })
+        addView(button(context.getString(R.string.delete)).apply { layoutParams = wrap()}.also { deleteButton = it })
     }
 
     fun detectButton() = imageButton(R.drawable.ic_location_searching_black_24dp,"").apply {

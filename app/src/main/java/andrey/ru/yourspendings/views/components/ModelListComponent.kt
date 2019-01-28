@@ -38,8 +38,8 @@ class ModelListComponent(val context:MainActivity):Component(context) {
                 layoutManager = LinearLayoutManager(this@ModelListComponent.context)
                 adapter = ModelListAdapter(state).apply { modelListAdapter = this; notifyDataSetChanged() }
             }.also { modelList = it })
-            addView(button(context.resources.getString(R.string.select)).also { selectButton = it })
-            addView(button(context.resources.getString(R.string.edit)).also { editButton = it })
+            addView(button(context.getString(R.string.select)).also { selectButton = it })
+            addView(button(context.getString(R.string.edit)).also { editButton = it })
         })
         updateUI()
     }

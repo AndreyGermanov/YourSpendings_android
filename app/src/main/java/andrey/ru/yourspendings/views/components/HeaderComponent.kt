@@ -29,12 +29,12 @@ class HeaderComponent(val context: MainActivity): Component(context) {
         removeAllViews()
         addView(LinearLayout(context).apply { layoutParams = horizontal().apply { gravity = Gravity.CENTER }
             orientation = LinearLayout.HORIZONTAL
-            setBackgroundColor(context.resources.getColor(R.color.colorPrimary,context.theme))
-            addView(headerButton(R.drawable.ic_menu_black_24dp,context.resources.getString(R.string.main_menu))
+            setBackgroundColor(context.getColor(R.color.colorPrimary))
+            addView(headerButton(R.drawable.ic_menu_black_24dp,context.getString(R.string.main_menu))
                 .also { menuButton = it})
-            addView(headerButton(R.drawable.ic_arrow_back_black_24dp,context.resources.getString(R.string.back))
+            addView(headerButton(R.drawable.ic_arrow_back_black_24dp,context.getString(R.string.back))
                 .also { backButton = it})
-            addView(headerButton(R.drawable.ic_add_black_24dp,context.resources.getString(R.string.add))
+            addView(headerButton(R.drawable.ic_add_black_24dp,context.getString(R.string.add))
                 .also { addButton = it})
             addView(textView("").apply { setPadding(0,15,0,10)
                 textAlignment = View.TEXT_ALIGNMENT_CENTER

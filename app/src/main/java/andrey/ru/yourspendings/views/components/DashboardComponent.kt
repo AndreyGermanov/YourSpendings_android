@@ -24,13 +24,13 @@ class DashboardComponent(context: MainActivity): Component(context) {
                 setMargins(10,10,10,10)
             }
             orientation = LinearLayout.VERTICAL
-            addView(button(context.resources.getString(R.string.new_purchase)).apply { newPurchaseButton = this })
-            addView(button(context.resources.getString(R.string.purchases)).apply { purchasesButton = this })
-            addView(button(context.resources.getString(R.string.places)).apply { placesButton = this })
+            addView(button(context.getString(R.string.new_purchase)).apply { newPurchaseButton = this })
+            addView(button(context.getString(R.string.purchases)).apply { purchasesButton = this })
+            addView(button(context.getString(R.string.places)).apply { placesButton = this })
             addView(LinearLayout(context).apply {
                 layoutParams = LinearLayout.LayoutParams(MATCH_PARENT,0,10.0f)
             })
-            addView(button(context.resources.getString(R.string.sign_out)).apply { logoutButton = this })
+            addView(button(context.getString(R.string.sign_out)).apply { logoutButton = this })
         })
     }
 
