@@ -12,15 +12,15 @@ class PlacesState(override val state:AppState,override val modelName:String="Pla
 
     var name:String
         get() = getValueFromMap("fields","name")?.toString() ?: ""
-        set(value:String) { setValueToMap("fields","name",value)}
+        set(value) { setValueToMap("fields","name",value)}
 
     var latitude:Double
         get() = getValueFromMap("fields","latitude")?.toString()?.toDoubleOrNull() ?: 0.0
-        set(value:Double) { setValueToMap("fields","latitude",value)}
+        set(value) { setValueToMap("fields","latitude",value)}
 
     var longitude:Double
         get() = getValueFromMap("fields","longitude")?.toString()?.toDoubleOrNull() ?: 0.0
-        set(value:Double) { setValueToMap("fields","longitude",value) }
+        set(value) { setValueToMap("fields","longitude",value) }
 
     override val item: Place?
         get() = PlacesCollection.getItemById(currentItemId)

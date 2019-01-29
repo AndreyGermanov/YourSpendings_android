@@ -43,4 +43,7 @@
     <string name="purchases_list">Purchases list</string>
     <string name="save_success">Item saved successfully</string>
     <string name="new_place">New place</string>
+    <string name="select_date">Select date</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>

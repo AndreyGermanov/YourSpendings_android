@@ -16,7 +16,6 @@ class PurchasesState(override val state:AppState):ModelState(state,"Purchase") {
         super.initialize()
         with (state.fieldSettings[modelName]!!) {
             put("imagesUpdateCounter", hashMapOf("transient" to true))
-            put("imageCapturedFromCamera", hashMapOf("transient" to true))
             put("imageCapturedFromLibrary", hashMapOf("transient" to true))
             put("removeImageSelected", hashMapOf("transient" to true))
         }
@@ -55,17 +54,9 @@ class PurchasesState(override val state:AppState):ModelState(state,"Purchase") {
         get() = getValue("dateTimePickerOpened")?.toString()?.toBoolean() ?: false
         set(value) { setValue("dateTimePickerOpened",value)}
 
-    var imagePath:String
-        get() = getStringValue("imagePath")
-        set(value) { setValue("imagePath",value) }
-
     var imageUri:Uri
         get() = Uri.parse(getStringValue("imageUri"))
         set(value) { setValue("imageUri",value.toString()) }
-
-    var imageCapturedFromCamera:Boolean
-        get() = getBooleanValue("imageCapturedFromCamera")
-        set(value) { setValue("imageCapturedFromCamera",value)}
 
     var imageCapturedFromLibrary:Boolean
         get() = getBooleanValue("imageCapturedFromLibrary")
@@ -74,6 +65,10 @@ class PurchasesState(override val state:AppState):ModelState(state,"Purchase") {
     var takePictureDialogOpened:Boolean
         get() = getBooleanValue("takePictureDialogOpened")
         set(value) { setValue("takePictureDialogOpened",value) }
+
+    var takePictureCameraDialogOpened: Boolean
+        get() = getBooleanValue("takePictureCameraDialogOpened")
+        set(value) { setValue("takePictureCameraDialogOpened", value ) }
 
     var imagesPagerOpened: Boolean
         get() = getBooleanValue("imagesPagerOpened")

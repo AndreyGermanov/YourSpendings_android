@@ -21,11 +21,11 @@ class DateTimePickerFragment: DialogFragment() {
         val view = Container.getInstance(activity,DateTimePickerContainer::class.java).setView()
         return activity.let {
             AlertDialog.Builder(it).setView(view)
-            .setPositiveButton("OK") { _: DialogInterface, _: Int ->
+            .setPositiveButton(getString(R.string.ok)) { _: DialogInterface, _: Int ->
                 state.dateSelected = true
                 state.confirmed = true
             }
-            .setNegativeButton("Cancel") {_:DialogInterface,_:Int ->
+            .setNegativeButton(getString(R.string.cancel)) { _:DialogInterface, _:Int ->
                 state.dateSelected = false
                 state.confirmed = true
             }.create().apply {

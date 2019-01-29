@@ -3,6 +3,7 @@ package andrey.ru.yourspendings.views
 import andrey.ru.yourspendings.models.PlacesCollection
 import andrey.ru.yourspendings.models.PurchasesCollection
 import andrey.ru.yourspendings.services.AuthManager
+import andrey.ru.yourspendings.services.CameraService
 import andrey.ru.yourspendings.services.IAuthServiceSubscriber
 import andrey.ru.yourspendings.services.LocationManager
 import andrey.ru.yourspendings.views.containers.*
@@ -16,8 +17,7 @@ import androidx.lifecycle.ViewModelProviders
 @Suppress("PropertyName", "NAME_SHADOWING")
 open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubscriber {
 
-    val REQUEST_TAKE_PICTURE_FROM_CAMERA = 1
-    val REQUEST_TAKE_PICTURE_FROM_PICTURE_LIBRARY = 2
+    val REQUEST_TAKE_PICTURE_FROM_PICTURE_LIBRARY = 1
 
     lateinit var store: Store
     lateinit var container:MainContainer
@@ -26,6 +26,7 @@ open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubs
         super.onCreate(savedInstanceState)
 
         LocationManager.setup(this)
+        CameraService.initialize(this)
         PlacesCollection.rootPath = this.filesDir.absolutePath
         PurchasesCollection.rootPath = this.filesDir.absolutePath
         store = ViewModelProviders.of(this).get(Store::class.java)
@@ -37,6 +38,7 @@ open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubs
         with (store.state.mainState) {
             orientation = resources.configuration.orientation
             openDrawer = false
+            lifecycleState = LifecycleState.ON_RESUME
         }
     }
 
@@ -59,8 +61,6 @@ open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubs
     override fun onActivityResult(requestCode:Int, resultCode:Int,data: Intent?) {
         if (resultCode == Activity.RESULT_CANCELED) return
         when(requestCode) {
-            REQUEST_TAKE_PICTURE_FROM_CAMERA ->
-                store.state.purchasesState.imageCapturedFromCamera = true
             REQUEST_TAKE_PICTURE_FROM_PICTURE_LIBRARY ->
                 if (data != null && data.data != null) {
                     store.state.purchasesState.imageUri = data.data!!
@@ -69,5 +69,14 @@ open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubs
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        store.state.mainState.lifecycleState = LifecycleState.ON_PAUSE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        store.state.mainState.lifecycleState = LifecycleState.ON_RESUME
+    }
 
 }

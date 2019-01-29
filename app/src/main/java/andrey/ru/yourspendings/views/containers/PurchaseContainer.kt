@@ -2,25 +2,23 @@ package andrey.ru.yourspendings.views.containers
 
 import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.*
+import andrey.ru.yourspendings.services.CameraService
 import andrey.ru.yourspendings.services.LocationManager
 import andrey.ru.yourspendings.views.MainActivity
 import andrey.ru.yourspendings.views.components.PurchaseComponent
 import andrey.ru.yourspendings.views.fragments.SelectPlaceFragment
 import andrey.ru.yourspendings.views.fragments.DateTimePickerFragment
 import andrey.ru.yourspendings.views.fragments.PurchaseImagesPagerFragment
+import andrey.ru.yourspendings.views.fragments.TakePictureCameraFragment
 import andrey.ru.yourspendings.views.store.*
 import android.content.DialogInterface
 import android.content.Intent
-import android.os.Environment
-import android.provider.MediaStore
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.FileProvider
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import java.io.File
-import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -34,6 +32,8 @@ class PurchaseContainer:ModelContainer() {
     private var imagesPagerFragment: PurchaseImagesPagerFragment? = null
     private var dateTimePickerFragment: DateTimePickerFragment? = null
     private var selectPlaceFragment: SelectPlaceFragment? = null
+    private var takePictureCameraFragment: TakePictureCameraFragment? = null
+
     private lateinit var selectPlaceState:PlacesState
 
     override fun initialize(context: MainActivity) {
@@ -44,6 +44,7 @@ class PurchaseContainer:ModelContainer() {
         component = view
         addChild(Container.getInstance(context,DateTimePickerContainer::class.java))
         addChild(Container.getModelInstance(context,PlacesScreenContainer::class.java,selectPlaceState))
+        addChild(Container.getInstance(context,TakePictureCameraContainer::class.java))
         super.initialize(context)
     }
 
@@ -70,6 +71,7 @@ class PurchaseContainer:ModelContainer() {
         updateTakePictureDialog(state)
         updateImagesPagerDialog(state)
         updateSelectPlaceDialog(state)
+        updateTakePictureCameraDialog(state)
     }
 
     private fun updateDatePickerDialog(state:PurchasesState) {
@@ -77,7 +79,8 @@ class PurchaseContainer:ModelContainer() {
         if (state.dateTimePickerOpened) {
             if (dateTimePickerFragment == null) dateTimePickerFragment = DateTimePickerFragment()
                 .apply {
-                show(ctx.supportFragmentManager,"Select date")
+
+                show(ctx.supportFragmentManager,ctx.getString(R.string.select_date))
             }
         } else { removeFragment(dateTimePickerFragment); dateTimePickerFragment = null }
     }
@@ -105,22 +108,34 @@ class PurchaseContainer:ModelContainer() {
         if (state.imagesPagerOpened && state.images.containsKey(state.currentImageId)) {
             if (imagesPagerFragment == null)
                 imagesPagerFragment = PurchaseImagesPagerFragment()
-                    .apply { show(ctx.supportFragmentManager,"Images") }
+                    .apply { show(ctx.supportFragmentManager,ctx.getString(R.string.images)) }
         } else { removeFragment(imagesPagerFragment); imagesPagerFragment = null }
+    }
+
+    private fun updateTakePictureCameraDialog(state:PurchasesState) {
+        val ctx = context
+        if (state.takePictureCameraDialogOpened) {
+            if (takePictureCameraFragment == null) {
+                takePictureCameraFragment = TakePictureCameraFragment().apply {
+                    show(ctx.supportFragmentManager, ctx.getString(R.string.take_a_picture))
+                }
+            }
+        } else { removeFragment(takePictureCameraFragment); takePictureCameraFragment = null }
     }
 
     private fun updateSelectPlaceDialog(state:PurchasesState) {
         val ctx = context
         if (state.selectPlaceDialogOpened) {
             if (selectPlaceFragment == null) {
-                selectPlaceFragment = SelectPlaceFragment().apply { show(ctx.supportFragmentManager, "Select place") }
+                selectPlaceFragment = SelectPlaceFragment().apply { show(ctx.supportFragmentManager, ctx.getString(R.string.select_place)) }
             }
         } else { removeFragment(selectPlaceFragment); selectPlaceFragment = null }
     }
 
     private fun removeFragment(fragment: Fragment?) {
         if (fragment != null) {
-            context.supportFragmentManager.beginTransaction().remove(fragment).commit()
+            val dialog = fragment as DialogFragment
+            if (dialog.fragmentManager != null) dialog.dismiss()
         }
     }
 
@@ -162,17 +177,13 @@ class PurchaseContainer:ModelContainer() {
     }
 
     private fun takePictureFromCamera(state:PurchasesState) {
-        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val fileName = UUID.randomUUID().toString()
-        val file = File.createTempFile(fileName,".jpg",storageDir)
-        state.imagePath = file.absolutePath
-        state.imageCapturedFromCamera = false
         state.takePictureDialogOpened = false
-        Files.write(Paths.get(file.absolutePath),listOf(""), Charset.forName("UTF8"), StandardOpenOption.CREATE)
-        val fileUri = FileProvider.getUriForFile(context,"andrey.ru.yourspendings.fileprovider",file)
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT,fileUri)
-        context.startActivityForResult(intent,(context).REQUEST_TAKE_PICTURE_FROM_CAMERA)
+        with (context.store.state.takePictureCameraState) {
+            isConfirmed = false
+            isPictureSubmitted = false
+        }
+        state.takePictureCameraDialogOpened = true
+        context.store.state.takePictureCameraState.isPictureTaken = false
     }
 
     private fun takePictureFromLibrary(state:PurchasesState) {
@@ -191,6 +202,10 @@ class PurchaseContainer:ModelContainer() {
         val datePickerState = state.dateTimePickerState
         val prevDatePickerState = prevState.dateTimePickerState
         val prevSelectPlacesState = prevState.selectPlaceState
+        val takePictureCameraState = state.takePictureCameraState
+        val prevTakePictureCameraState = prevState.takePictureCameraState
+        val mainState = state.mainState
+        val prevMainState = prevState.mainState
         if (datePickerState.confirmed != prevDatePickerState.confirmed &&
             datePickerState.subscriberId == "Purchase_"+modelState.currentItemId) {
             modelState.dateTimePickerOpened = false
@@ -207,6 +222,29 @@ class PurchaseContainer:ModelContainer() {
             modelState.selectPlaceDialogOpened = false
             updateForm()
         }
+        if (takePictureCameraState.isConfirmed != prevTakePictureCameraState.isConfirmed) {
+            if (takePictureCameraState.isPictureSubmitted) {
+                onAddImageFromCamera(modelState)
+                takePictureCameraState.isPictureSubmitted = false
+            }
+            updateForm()
+        }
+        if (mainState.orientation != prevMainState.orientation || mainState.lifecycleState != prevMainState.lifecycleState) {
+            if (mainState.lifecycleState == LifecycleState.ON_PAUSE) {
+                removeFragment(imagesPagerFragment)
+                imagesPagerFragment = null
+                removeFragment(dateTimePickerFragment)
+                dateTimePickerFragment = null
+                removeFragment(selectPlaceFragment)
+                selectPlaceFragment = null
+                removeFragment(takePictureCameraFragment)
+                takePictureCameraFragment = null
+            } else if (mainState.lifecycleState == LifecycleState.ON_RESUME) {
+                updateForm()
+            }
+
+        }
+
         super.onStateChanged(state, prevState)
     }
 
@@ -218,9 +256,6 @@ class PurchaseContainer:ModelContainer() {
         if (state.date != prevState.date || state.place != prevState.place) updateForm()
         if (state.dateTimePickerOpened != prevState.dateTimePickerOpened) { updateForm() }
 
-        if (state.imageCapturedFromCamera != prevState.imageCapturedFromCamera && state.imageCapturedFromCamera) {
-            onAddImageFromCamera(state)
-        }
         if (state.imageCapturedFromLibrary != prevState.imageCapturedFromLibrary && state.imageCapturedFromLibrary) {
             onAddImageFromLibrary(state)
         }
@@ -235,9 +270,12 @@ class PurchaseContainer:ModelContainer() {
         }
         if (state.imagesUpdateCounter != prevState.imagesUpdateCounter) view.imagesAdapter.notifyDataSetChanged()
 
-        if (state.selectPlaceDialogOpened != prevState.selectPlaceDialogOpened) {
+        if (state.selectPlaceDialogOpened != prevState.selectPlaceDialogOpened) { updateForm() }
+
+        if (state.takePictureCameraDialogOpened != prevState.takePictureCameraDialogOpened ) {
             updateForm()
         }
+
 
         super.onModelStateChanged(state, prevState)
     }
@@ -253,12 +291,13 @@ class PurchaseContainer:ModelContainer() {
     }
 
     private fun onAddImageFromCamera(state:PurchasesState) {
-        val file = File(state.imagePath)
+        val file = File(CameraService.cameraFilePath)
         val destDir = "${PurchasesCollection.imgCachePath}/${state.currentItemId}"
         Files.createDirectories(Paths.get(destDir))
-        state.images = state.images.apply { put(file.nameWithoutExtension, (file.lastModified()/1000).toString()) }
+        val imageId = UUID.randomUUID().toString()
+        state.images = state.images.apply { put(imageId, (file.lastModified()/1000).toString()) }
         if (Files.exists(Paths.get(file.absolutePath))) {
-            Files.move(Paths.get(file.absolutePath), Paths.get(destDir + "/" + file.name))
+            Files.move(Paths.get(file.absolutePath), Paths.get("$destDir/$imageId.jpg"))
         } else {
             return
         }

@@ -8,22 +8,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 
 /**
  * Created by Andrey Germanov on 1/24/19.
  */
-class SelectPlaceFragment: DialogFragment() {
-
-    override fun onStart() {
-        super.onStart()
-        val dialog = dialog
-        if (dialog != null) {
-            val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val height = ViewGroup.LayoutParams.MATCH_PARENT
-            dialog.window!!.setLayout(width, height)
-        }
-    }
+class SelectPlaceFragment: FullScreenFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val activity = activity as MainActivity

@@ -18,6 +18,7 @@ class AppState(private val store:Store, val fields:MutableMap<String,Any>) {
     lateinit var purchasesState:PurchasesState
     lateinit var dateTimePickerState: DateTimePickerState
     lateinit var selectPlaceState: PlacesState
+    lateinit var takePictureCameraState: TakePictureCameraState
 
     fun initialize() {
         mainState = MainState(this).apply { initialize() }
@@ -26,6 +27,7 @@ class AppState(private val store:Store, val fields:MutableMap<String,Any>) {
         purchasesState = PurchasesState(this).apply { initialize() }
         dateTimePickerState = DateTimePickerState(this).apply { initialize() }
         selectPlaceState = PlacesState(this,"SelectPlace").apply { initialize();}
+        takePictureCameraState = TakePictureCameraState(this).apply  { initialize() }
     }
 
     fun writeFields(newFields:MutableMap<String,Any>) {

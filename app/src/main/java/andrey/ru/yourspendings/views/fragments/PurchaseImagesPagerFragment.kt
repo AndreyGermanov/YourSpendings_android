@@ -11,26 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.LinearLayout
-import androidx.fragment.app.DialogFragment
 import androidx.viewpager.widget.ViewPager
 
 /**
  * Created by Andrey Germanov on 1/23/19.
  */
-class PurchaseImagesPagerFragment: DialogFragment() {
+class PurchaseImagesPagerFragment: FullScreenFragment() {
 
     lateinit var state: PurchasesState
-    lateinit var pager: ViewPager
-
-    override fun onStart() {
-        super.onStart()
-        val dialog = dialog
-        if (dialog != null) {
-            val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val height = ViewGroup.LayoutParams.MATCH_PARENT
-            dialog.window!!.setLayout(width, height)
-        }
-    }
+    private lateinit var pager: ViewPager
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
         ViewPager(activity!!).apply {
