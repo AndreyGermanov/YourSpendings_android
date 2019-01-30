@@ -15,7 +15,6 @@ import android.view.ViewGroup
 class TakePictureCameraFragment: FullScreenFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        (activity as MainActivity).store.state.purchasesState.takePictureCameraDialogOpened = true
         return Container.getInstance(activity as MainActivity,TakePictureCameraContainer::class.java).setView()
     }
 

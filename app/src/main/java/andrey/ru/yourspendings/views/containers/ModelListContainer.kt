@@ -60,10 +60,10 @@ open class ModelListContainer:Container(),IDataSubscriber {
     }
 
     override fun onStateChanged(state: AppState, prevState: AppState) {
-        val newState = this@ModelListContainer.state?.getModelState(state) ?: return
+        val newState = this.state?.getModelState(state) ?: return
         val newIsLoading = newState.isLoading
-        val oldState = this@ModelListContainer.state?.getModelState(prevState) ?: newState
-        val oldIsLoading = this@ModelListContainer.state?.getModelState(prevState)?.isLoading ?: false
+        val oldState = this.state?.getModelState(prevState) ?: newState
+        val oldIsLoading = this.state?.getModelState(prevState)?.isLoading ?: false
         val component = component as ModelListComponent
         component.state = newState
         if (newIsLoading != oldIsLoading) {

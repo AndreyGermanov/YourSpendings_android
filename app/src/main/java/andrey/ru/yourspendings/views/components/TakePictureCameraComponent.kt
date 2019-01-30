@@ -17,6 +17,7 @@ class TakePictureCameraComponent(context: MainActivity):Component(context) {
 
     lateinit var cameraView: SurfaceView
     lateinit var pictureView: ImageView
+    lateinit var previewBtn: Button
     lateinit var takePictureBtn: Button
     lateinit var exitBtn: Button
     lateinit var confirmBtn: Button
@@ -35,6 +36,7 @@ class TakePictureCameraComponent(context: MainActivity):Component(context) {
             pictureView = ImageView(context).apply {
                 layoutParams = fullScreen().apply { weight = 10.0f }
             }.also { this.addView(it) }
+            previewBtn = button(context.getString(R.string.preview)).also { this.addView(it)}
             takePictureBtn = button(context.getString(R.string.take_a_picture)).also { this.addView(it) }
             exitBtn = button(context.getString(R.string.exit)).also { this.addView(it) }
             confirmBtn = button(context.getString(R.string.confirm)).also { this.addView(it) }

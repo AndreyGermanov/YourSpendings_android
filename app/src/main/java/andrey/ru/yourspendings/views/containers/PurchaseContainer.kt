@@ -231,18 +231,11 @@ class PurchaseContainer:ModelContainer() {
         }
         if (mainState.orientation != prevMainState.orientation || mainState.lifecycleState != prevMainState.lifecycleState) {
             if (mainState.lifecycleState == LifecycleState.ON_PAUSE) {
-                removeFragment(imagesPagerFragment)
-                imagesPagerFragment = null
-                removeFragment(dateTimePickerFragment)
-                dateTimePickerFragment = null
-                removeFragment(selectPlaceFragment)
-                selectPlaceFragment = null
-                removeFragment(takePictureCameraFragment)
-                takePictureCameraFragment = null
-            } else if (mainState.lifecycleState == LifecycleState.ON_RESUME) {
-                updateForm()
-            }
-
+                removeFragment(imagesPagerFragment);imagesPagerFragment = null
+                removeFragment(dateTimePickerFragment);dateTimePickerFragment = null
+                removeFragment(selectPlaceFragment);selectPlaceFragment = null
+                removeFragment(takePictureCameraFragment);takePictureCameraFragment = null
+            } else if (mainState.lifecycleState == LifecycleState.ON_RESUME) updateForm()
         }
 
         super.onStateChanged(state, prevState)

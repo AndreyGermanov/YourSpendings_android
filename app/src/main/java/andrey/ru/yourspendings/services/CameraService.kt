@@ -29,10 +29,10 @@ import java.io.FileOutputStream
 object CameraService {
     private lateinit var manager: CameraManager
     lateinit var context: Activity
-    private lateinit var camera: CameraDevice
-    private lateinit var session: CameraCaptureSession
-    private lateinit var previewSurfaceHolder: SurfaceHolder
-    var isPreviewEnabled = false
+    private var camera: CameraDevice? = null
+    private var session: CameraCaptureSession? = null
+    private var previewSurfaceHolder: SurfaceHolder? = null
+    private var isPreviewEnabled = false
     lateinit var cameraFilePath:String
     private var surfaceCallback: SurfaceHolder.Callback? = null
 
@@ -54,24 +54,19 @@ object CameraService {
     }
 
     fun closeCamera() {
-        camera.close()
+        camera?.close()
     }
 
-    fun setPreviewSurface(holder:SurfaceHolder,callback:()->Unit) {
-        previewSurfaceHolder = holder
-        if (surfaceCallback != null) previewSurfaceHolder.removeCallback(surfaceCallback)
-        if (previewSurfaceHolder.surface.isValid) { callback(); return }
-        previewSurfaceHolder.addCallback(OnSurfaceCreated {
-            callback()
-        }.also { surfaceCallback = it })
+    fun setPreviewSurface(holder:SurfaceHolder) {
+        if (previewSurfaceHolder == null) previewSurfaceHolder = holder
     }
 
     fun startPreview(callback:(error:Boolean)->Unit) {
         if (isPreviewEnabled) return
-        isPreviewEnabled = true
-        openCaptureSession(previewSurfaceHolder.surface) { error ->
+        openCaptureSession(previewSurfaceHolder!!.surface) { error ->
             if (!error) {
-                startCaptureRequest(previewSurfaceHolder.surface, true) {
+                startCaptureRequest(previewSurfaceHolder!!.surface, true) {
+                    isPreviewEnabled = true
                     callback(error)
                 }
             } else callback(error)
@@ -80,9 +75,8 @@ object CameraService {
 
     fun stopPreview() {
         if (isPreviewEnabled) {
-            session.abortCaptures()
-            session.close()
-            if (surfaceCallback!=null) previewSurfaceHolder.removeCallback(surfaceCallback)
+            session?.close()
+            if (surfaceCallback!=null) previewSurfaceHolder!!.removeCallback(surfaceCallback)
         }
         isPreviewEnabled = false
     }
@@ -94,33 +88,35 @@ object CameraService {
             .maxBy { it.width * it.height}!!
         val imageReader = ImageReader.newInstance(maxSize.width,maxSize.height, ImageFormat.JPEG,1)
         imageReader.setOnImageAvailableListener(OnImageRead {
-            session.close()
-            camera.close()
-            if (surfaceCallback!=null) previewSurfaceHolder.removeCallback(surfaceCallback)
+            session?.close()
+            camera?.close()
             callback()
         },null)
         openCaptureSession(imageReader.surface) {
-            startCaptureRequest(imageReader.surface,false) {}
+            startCaptureRequest(imageReader.surface,false) {
+            }
         }
 
     }
 
     private fun openCaptureSession(surface:Surface,callback:(error:Boolean)->Unit) {
-        camera.createCaptureSession(listOf(surface), OnSessionOpen { sess, error ->
+        camera?.createCaptureSession(listOf(surface), OnSessionOpen { sess, error ->
             session = sess
             callback(error)
         },null)
     }
 
     private fun startCaptureRequest(surface:Surface,repeating:Boolean,callback:()->Unit) {
-        camera.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE).apply {
-            addTarget(surface)
+        val cameraMode = if (repeating) CameraDevice.TEMPLATE_PREVIEW else CameraDevice.TEMPLATE_STILL_CAPTURE
+        if (camera == null) return
+        session?.abortCaptures()
+        camera!!.createCaptureRequest(cameraMode).apply { addTarget(surface)
             set(CaptureRequest.JPEG_ORIENTATION, getJpegOrientation())
         }.build().also {
             if (repeating)
-                session.setRepeatingRequest(it,OnCapture{},null)
+                session?.setRepeatingRequest(it,OnCapture{},null)
             else {
-                session.capture(it,OnCapture{},null)
+                session?.capture(it,OnCapture{},null)
             }
             callback()
         }
@@ -164,6 +160,8 @@ object CameraService {
             val fout = FileOutputStream(CameraService.cameraFilePath)
             bmp2.compress(Bitmap.CompressFormat.JPEG, 85, fout)
             fout.apply { flush();close() }
+            bmp.recycle()
+            bmp2.recycle()
         }
 
         private fun getExifRotationAngle(attributeCode:Int):Float = when(attributeCode) {
@@ -173,12 +171,6 @@ object CameraService {
             else -> 0.0f
         }
 
-    }
-
-    class OnSurfaceCreated(val callback:()->Unit): SurfaceHolder.Callback {
-        override fun surfaceChanged(p0: SurfaceHolder?, p1: Int, p2: Int, p3: Int) { callback() }
-        override fun surfaceDestroyed(p0: SurfaceHolder?) {}
-        override fun surfaceCreated(p0: SurfaceHolder?) { callback() }
     }
 
     class OnCameraOpen(val callback:(device:CameraDevice,error:Boolean)->Unit): CameraDevice.StateCallback() {

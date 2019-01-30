@@ -20,7 +20,7 @@ class TakePictureCameraContainer:Container() {
 
     lateinit var view: TakePictureCameraComponent
     lateinit var state: TakePictureCameraState
-    lateinit var purchaseState: PurchasesState
+    private lateinit var purchaseState: PurchasesState
 
     override fun initialize(context: MainActivity) {
         super.initialize(context)
@@ -44,6 +44,7 @@ class TakePictureCameraContainer:Container() {
                 pictureView.visibility = View.VISIBLE
                 exitBtn.visibility = View.GONE
                 takePictureBtn.visibility = View.GONE
+                previewBtn.visibility = View.GONE
                 cancelBtn.visibility = View.VISIBLE
                 confirmBtn.visibility = View.VISIBLE
                 if (Files.exists(Paths.get(CameraService.cameraFilePath))) {
@@ -51,51 +52,49 @@ class TakePictureCameraContainer:Container() {
                         BitmapFactory.decodeFile(CameraService.cameraFilePath)
                     )
                 }
-                if (CameraService.isPreviewEnabled && purchaseState.takePictureCameraDialogOpened) {
-                    CameraService.stopPreview()
-                    CameraService.closeCamera()
-                }
             }
         } else {
             with (view) {
                 cameraView.visibility = View.VISIBLE
                 pictureView.visibility = View.GONE
                 exitBtn.visibility = View.VISIBLE
-                takePictureBtn.visibility = View.VISIBLE
+                previewBtn.visibility = if (state.isPreviewEnabled) View.GONE else View.VISIBLE
+                takePictureBtn.visibility = if (state.isPreviewEnabled) View.VISIBLE else View.GONE
                 cancelBtn.visibility = View.GONE
                 confirmBtn.visibility = View.GONE
-                if (!CameraService.isPreviewEnabled && purchaseState.takePictureCameraDialogOpened) {
-                    CameraService.openCamera {
-                        cameraView.refreshDrawableState()
-                        cameraView.invalidate()
-                        CameraService.setPreviewSurface(cameraView.holder) {
-                            CameraService.startPreview {}
-                        }
-                    }
-                }
             }
         }
     }
 
     fun setListeners() {
         with (view) {
+            previewBtn.setOnClickListener {
+                CameraService.setPreviewSurface(cameraView.holder)
+                CameraService.openCamera{
+                    CameraService.startPreview { state.isPreviewEnabled = true }
+                }
+            }
             takePictureBtn.setOnClickListener {
                 CameraService.stopPreview()
                 CameraService.takePicture {
+                    state.isPreviewEnabled = false
                     state.isPictureTaken = true
                 }
             }
             exitBtn.setOnClickListener {
+                state.isPreviewEnabled = false
                 state.isPictureSubmitted = false
                 state.isConfirmed = true
                 (context as MainActivity).store.state.purchasesState.takePictureCameraDialogOpened = false
             }
             confirmBtn.setOnClickListener {
+                state.isPreviewEnabled = false
                 state.isPictureSubmitted = true
                 state.isConfirmed = true
                 (context as MainActivity).store.state.purchasesState.takePictureCameraDialogOpened = false
             }
             cancelBtn.setOnClickListener {
+                state.isPreviewEnabled = false
                 state.isPictureTaken = false
             }
         }
@@ -105,27 +104,22 @@ class TakePictureCameraContainer:Container() {
         val localState = state.takePictureCameraState
         val localPrevState = prevState.takePictureCameraState
 
-        if (localState.isPictureTaken != localPrevState.isPictureTaken) {
-            setupUI()
-        }
+        if (localState.isPictureTaken != localPrevState.isPictureTaken) { setupUI() }
 
-        if (localState.isConfirmed != localPrevState.isConfirmed) {
-            CameraService.stopPreview()
-        }
+        if (localState.isPreviewEnabled != localPrevState.isPreviewEnabled) { setupUI() }
+
+        if (localState.isConfirmed != localPrevState.isConfirmed) { CameraService.stopPreview() }
 
         if (state.purchasesState.takePictureCameraDialogOpened != prevState.purchasesState.takePictureCameraDialogOpened) {
             if (state.purchasesState.takePictureCameraDialogOpened)
                 setupUI()
-            else {
-                CameraService.stopPreview()
-                CameraService.closeCamera()
-            }
+            else releaseCamera()
         }
         if (state.mainState.lifecycleState != prevState.mainState.lifecycleState) {
             if (state.purchasesState.takePictureCameraDialogOpened) {
                 if (state.mainState.lifecycleState == LifecycleState.ON_PAUSE) {
-                    CameraService.stopPreview()
-                    CameraService.closeCamera()
+                    localState.isPreviewEnabled = false
+                    releaseCamera()
                 }
                 if (state.mainState.lifecycleState == LifecycleState.ON_RESUME) {
                     setupUI()
@@ -134,5 +128,11 @@ class TakePictureCameraContainer:Container() {
         }
 
         super.onStateChanged(state, prevState)
+    }
+
+    private fun releaseCamera() {
+        CameraService.stopPreview()
+        CameraService.closeCamera()
+
     }
 }

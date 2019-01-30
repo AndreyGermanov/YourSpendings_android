@@ -9,7 +9,8 @@ class TakePictureCameraState(override val state:AppState): BaseState(state,"Take
     override fun initialize() {
         state.fieldSettings[index] = hashMapOf(
             "isConfirmed" to hashMapOf("transient" to true),
-            "isPictureSubmitted" to hashMapOf("transient" to true)
+            "isPictureSubmitted" to hashMapOf("transient" to true),
+            "isPreviewEnabled" to hashMapOf("transient" to true)
         ) as HashMap<String,Any>
     }
     var isPictureTaken:Boolean
@@ -23,4 +24,9 @@ class TakePictureCameraState(override val state:AppState): BaseState(state,"Take
     var isConfirmed:Boolean
         get() = getBooleanValue("isConfirmed")
         set(value) = setValue("isConfirmed",value)
+
+    var isPreviewEnabled:Boolean
+        get() = getBooleanValue("isPreviewEnabled")
+        set(value) { setValue("isPreviewEnabled",value) }
+
 }
