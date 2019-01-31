@@ -16,6 +16,7 @@ open class Container {
     open lateinit var component: Component
 
     var children = ArrayList<Container>()
+    var parent:Container? = null
 
     open fun initialize(context:MainActivity) {
         this.context = context
@@ -50,6 +51,7 @@ open class Container {
     }
 
     open fun addChild(child:Container):Container {
+        child.parent = this
         if (!children.contains(child)) children.add(child)
         return child
     }

@@ -21,10 +21,11 @@ open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubs
 
     lateinit var store: Store
     lateinit var container:MainContainer
+    var savedInstanceState: Bundle? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        this.savedInstanceState = savedInstanceState
         LocationManager.setup(this)
         CameraService.initialize(this)
         PlacesCollection.rootPath = this.filesDir.absolutePath
@@ -38,7 +39,7 @@ open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubs
         with (store.state.mainState) {
             orientation = resources.configuration.orientation
             openDrawer = false
-            lifecycleState = LifecycleState.ON_RESUME
+            lifecycleState = LifecycleState.ON_CREATE
         }
     }
 
@@ -78,5 +79,28 @@ open class MainActivity : FragmentActivity(), IStoreSubscriber, IAuthServiceSubs
         super.onResume()
         store.state.mainState.lifecycleState = LifecycleState.ON_RESUME
     }
+
+    override fun onStart() {
+        super.onStart()
+        store.state.mainState.lifecycleState = LifecycleState.ON_START
+    }
+
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        store.state.mainState.lifecycleState = LifecycleState.ON_LOW_MEMORY
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        store.state.mainState.lifecycleState = LifecycleState.ON_DESTROY
+    }
+
+    override fun onStop() {
+        super.onStop()
+        store.state.mainState.lifecycleState = LifecycleState.ON_STOP
+    }
+
 
 }

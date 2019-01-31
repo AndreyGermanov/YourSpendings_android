@@ -25,6 +25,11 @@ class PlaceContainer:ModelContainer(),IDataSubscriber {
         super.initialize(context)
     }
 
+    override fun initComponent() {
+        super.initComponent()
+        view.mapFrame.addView(addChild(Container.getInstance(context,MapContainer::class.java,"placesMap")).setView())
+    }
+
     override fun subscribeToDB() {
         PlacesCollection.subscribe(this)
     }

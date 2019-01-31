@@ -48,6 +48,11 @@ class PurchaseContainer:ModelContainer() {
         super.initialize(context)
     }
 
+    override fun initComponent() {
+        super.initComponent()
+        view.mapFrame.addView(addChild(Container.getInstance(context,MapContainer::class.java,"purchasesMap")).setView())
+    }
+
     override fun subscribeToDB() {
         PlacesCollection.subscribe(this)
         PurchasesCollection.subscribe(this)

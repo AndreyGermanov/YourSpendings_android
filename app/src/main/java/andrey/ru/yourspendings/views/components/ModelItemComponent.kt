@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TableLayout
 
@@ -19,6 +20,7 @@ open class ModelItemComponent(open val context:MainActivity):Component(context) 
     lateinit var deleteButton: Button
     lateinit var formContainer: ViewGroup
     lateinit var buttonsContainer: LinearLayout
+    lateinit var mapFrame: FrameLayout
 
     override fun render() = addView(renderLayout())
 
@@ -28,6 +30,7 @@ open class ModelItemComponent(open val context:MainActivity):Component(context) 
         orientation = LinearLayout.VERTICAL
         addView(renderForm())
         addView(formButtons().also { buttonsContainer = it })
+        addView(FrameLayout(context).apply { layoutParams = fullScreen()}.also { mapFrame = it})
     }.also { formContainer = it }
 
     open fun renderForm():TableLayout = TableLayout(context).apply {

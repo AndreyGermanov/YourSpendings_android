@@ -37,4 +37,4 @@ class MainState(override val state:AppState):BaseState(state,"MainState") {
 
 enum class Screen {LOGIN,DASHBOARD,PLACES,PURCHASES}
 
-enum class LifecycleState { ON_PAUSE, ON_RESUME, ON_IDLE }
+enum class LifecycleState { ON_CREATE,ON_PAUSE, ON_RESUME, ON_IDLE, ON_START, ON_STOP, ON_LOW_MEMORY, ON_DESTROY }
