@@ -20,6 +20,7 @@ class Store(application: Application): AndroidViewModel(application) {
     lateinit var state:AppState
     lateinit var rootView: IStoreSubscriber
     private val statePath: Path  = Paths.get(stateDir)
+    var app = application
 
     init {
         Files.createDirectories(statePath.parent)

@@ -1,10 +1,11 @@
 package andrey.ru.yourspendings.views.store
 
+import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.models.Model
 import andrey.ru.yourspendings.models.Place
 import andrey.ru.yourspendings.models.PlacesCollection
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "HasPlatformType")
 class PlacesState(override val state:AppState,override val modelName:String="Places"):ModelState(state,modelName) {
 
     override val items:ArrayList<Model>
@@ -42,6 +43,6 @@ class PlacesState(override val state:AppState,override val modelName:String="Pla
         }
     }
 
-    override fun getListTitle() = "Places list"
+    override fun getListTitle() = state.store.app.getString(R.string.places_list)
 
 }

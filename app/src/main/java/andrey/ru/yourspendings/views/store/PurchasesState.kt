@@ -1,5 +1,6 @@
 package andrey.ru.yourspendings.views.store
 
+import andrey.ru.yourspendings.R
 import andrey.ru.yourspendings.extensions.dateFromAny
 import andrey.ru.yourspendings.models.*
 import android.net.Uri
@@ -9,7 +10,7 @@ import java.time.format.DateTimeFormatter
 /**
  * Created by Andrey Germanov on 1/21/19.
  */
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "HasPlatformType")
 class PurchasesState(override val state:AppState):ModelState(state,"Purchase") {
 
     override fun initialize() {
@@ -90,7 +91,7 @@ class PurchasesState(override val state:AppState):ModelState(state,"Purchase") {
         return state.purchasesState
     }
 
-    override fun getListTitle() = "Purchases list"
+    override fun getListTitle() = state.store.app.getString(R.string.purchases_list)
 
     override fun fillFieldsFromItem() {
         val item = item

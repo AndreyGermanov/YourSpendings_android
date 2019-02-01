@@ -6,7 +6,7 @@ import com.google.gson.Gson
  * Created by Andrey Germanov on 1/18/19.
  */
 @Suppress("UNCHECKED_CAST")
-class AppState(private val store:Store, val fields:MutableMap<String,Any>) {
+class AppState(val store:Store, val fields:MutableMap<String,Any>) {
 
     private val gson = Gson()
 

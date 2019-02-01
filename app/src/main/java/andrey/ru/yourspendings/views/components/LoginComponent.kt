@@ -42,7 +42,7 @@ class LoginComponent(context:MainActivity): Component(context) {
             addView(renderTextRow(context.getString(R.string.login)) { loginName = it })
             addView(renderPasswordRow(context.getString(R.string.password)) { loginPassword = it })
         })
-        view.addView(button(context.getString(R.string.login)).also { loginButton = it })
+        view.addView(button(context.getString(R.string.do_login)).also { loginButton = it })
         view.addView(renderLink(context.getString(R.string.sign_up)).also { registerLink = it })
     }
 
@@ -54,7 +54,7 @@ class LoginComponent(context:MainActivity): Component(context) {
             addView(renderPasswordRow(context.getString(R.string.confirm)) { registerConfirmPassword = it })
         })
         view.addView(button(context.getString(R.string.register)).also { registerButton = it })
-        view.addView(renderLink(context.getString(R.string.login)).also { loginLink = it })
+        view.addView(renderLink(context.getString(R.string.do_login)).also { loginLink = it })
     }
 
     private fun renderLink(title:String) = textView(title).apply {

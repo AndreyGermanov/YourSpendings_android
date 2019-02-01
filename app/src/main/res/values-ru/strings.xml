@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">Мои покупки</string>
+    <string name="select_place">Укажите магазин</string>
+    <string name="place_name">Имя</string>
+    <string name="latitude">Широта</string>
+    <string name="longitude">Долгота</string>
+    <string name="places_list">Список магазинов</string>
+    <string name="back">Назад</string>
+    <string name="save">Сохранить</string>
+    <string name="add">Добавить</string>
+    <string name="delete">Удалить</string>
+    <string name="no">Нет</string>
+    <string name="yes">Да</string>
+    <string name="are_you_sure">Вы уверены ?</string>
+    <string name="login">Имя</string>
+    <string name="do_login">Вход</string>
+    <string name="password">Пароль</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="register">Регистрация</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="register_success">Ваша учетная запись успешно создана. Теперь вы можете пользоваться приложением.</string>
+    <string name="main_menu">Главное меню</string>
+    <string name="sign_out">Выход</string>
+    <string name="places">Магазины</string>
+    <string name="dashboard">Обзор</string>
+    <string name="date">Дата</string>
+    <string name="shop">Магазин</string>
+    <string name="select_item">Выберите элемент</string>
+    <string name="select">Выбрать</string>
+    <string name="edit">Редактировать</string>
+    <string name="images">Изображения</string>
+    <string name="take_a_picture">Добавить фото</string>
+    <string name="exit">Выход</string>
+    <array name="imageSources">
+        <item>Камера</item>
+        <item>Галерея</item>
+    </array>
+    <string name="imageSource">Источник фото</string>
+    <string name="new_purchase">Новая покупка</string>
+    <string name="purchases">Покупки</string>
+    <string name="error_empty_login">Имя не должно быть пустым</string>
+    <string name="error_empty_password">Пароль не должен быть пустым</string>
+    <string name="error_passwords_should_match">Пароли должны совпадать</string>
+    <string name="purchases_list">Список покупок</string>
+    <string name="save_success">Элемент сохранен успешно</string>
+    <string name="new_place">Новое место</string>
+    <string name="select_date">Выбор даты</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
+    <string name="preview">Предварительный просмотр</string>
+
+</resources>
